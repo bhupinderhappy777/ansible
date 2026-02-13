@@ -1,0 +1,5 @@
+---
+# GCP-specific variables
+cloud_provider: gcp
+ansible_user: ubuntu
+# Add GCP-specific configurations here

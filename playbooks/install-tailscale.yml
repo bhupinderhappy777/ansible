@@ -1,0 +1,13 @@
+---
+# Main playbook to install Tailscale on all cloud VMs
+- name: Install Tailscale on cloud VMs
+  hosts: cloud
+  become: yes
+  
+  roles:
+    - tailscale
+
+  tasks:
+    - name: Display completion message
+      debug:
+        msg: "Tailscale installation completed on {{ inventory_hostname }}"

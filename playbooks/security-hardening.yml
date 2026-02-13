@@ -1,0 +1,51 @@
+---
+# Playbook to perform common security hardening tasks
+- name: Security hardening for cloud VMs
+  hosts: cloud
+  become: yes
+  
+  tasks:
+    - name: Update all packages
+      package:
+        name: "*"
+        state: latest
+      when: ansible_os_family in ["Debian", "RedHat"]
+      
+    - name: Ensure firewall is installed
+      package:
+        name: "{{ 'ufw' if ansible_os_family == 'Debian' else 'firewalld' }}"
+        state: present
+        
+    - name: Allow SSH through firewall
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+      when: ansible_os_family == "Debian"
+      
+    - name: Enable firewall
+      ufw:
+        state: enabled
+      when: ansible_os_family == "Debian"
+      
+    - name: Disable root login via SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+      notify: restart sshd
+      
+    - name: Disable password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+      notify: restart sshd
+      
+  handlers:
+    - name: restart sshd
+      systemd:
+        name: "{{ 'ssh' if ansible_os_family == 'Debian' else 'sshd' }}"
+        state: restarted

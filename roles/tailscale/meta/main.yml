@@ -1,0 +1,29 @@
+---
+# Tailscale installation role metadata
+dependencies: []
+
+galaxy_info:
+  author: Infrastructure Team
+  description: Install and configure Tailscale VPN
+  company: your-company
+  license: MIT
+  min_ansible_version: "2.9"
+  
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+    - name: EL
+      versions:
+        - 8
+        - 9
+
+  galaxy_tags:
+    - tailscale
+    - vpn
+    - networking

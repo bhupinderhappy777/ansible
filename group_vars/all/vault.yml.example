@@ -1,0 +1,15 @@
+---
+# This is an example of variables that should be encrypted with Ansible Vault
+# To create your own vault file:
+# 1. Create a password file: echo "your-vault-password" > .vault_pass
+# 2. Add .vault_pass to .gitignore (already done)
+# 3. Create encrypted vault: ansible-vault create group_vars/all/vault.yml
+# 4. Edit this file and add your secrets
+
+# Example secrets:
+# vault_tailscale_auth_key: "tskey-auth-xxxxx-yyyyy"
+# vault_ssh_password: "your-secure-password"
+# vault_api_token: "your-api-token"
+
+# Then reference them in your playbooks:
+# tailscale_auth_key: "{{ vault_tailscale_auth_key }}"

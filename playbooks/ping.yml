@@ -1,0 +1,13 @@
+---
+# Playbook to check connectivity to all hosts
+- name: Ping all hosts
+  hosts: all
+  gather_facts: no
+  
+  tasks:
+    - name: Ping hosts
+      ping:
+      
+    - name: Display success message
+      debug:
+        msg: "Successfully connected to {{ inventory_hostname }}"

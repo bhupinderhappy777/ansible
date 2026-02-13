@@ -1,0 +1,5 @@
+---
+# AWS-specific variables
+cloud_provider: aws
+ansible_user: ubuntu
+# Add AWS-specific configurations here

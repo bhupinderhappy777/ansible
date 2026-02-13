@@ -1,0 +1,24 @@
+# Ansible specific
+*.retry
+.vault_pass
+*.pyc
+__pycache__/
+.ansible/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/

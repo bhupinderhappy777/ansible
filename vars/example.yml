@@ -1,0 +1,21 @@
+---
+# Example variables file for running Ansible playbooks
+# Copy this file and customize it for your environment
+#
+# Usage: ansible-playbook playbooks/install-tailscale.yml -e @vars/example.yml
+
+# Tailscale Authentication Key
+# Get this from: https://login.tailscale.com/admin/settings/keys
+# tailscale_auth_key: "tskey-auth-xxxxx-yyyyy"
+
+# Additional Tailscale arguments
+# Examples:
+# - Accept routes from other devices: "--accept-routes"
+# - Advertise subnet routes: "--advertise-routes=10.0.0.0/24"
+# - Advertise as exit node: "--advertise-exit-node"
+# - Multiple args: "--accept-routes --advertise-routes=10.0.0.0/24"
+# tailscale_args: "--accept-routes"
+
+# Whether to automatically connect to Tailscale network
+# Set to false if you want to install but not connect yet
+# tailscale_up: true

@@ -1,0 +1,25 @@
+---
+# Tasks for Debian/Ubuntu systems
+
+- name: Create keyrings directory
+  file:
+    path: /usr/share/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Tailscale GPG key
+  get_url:
+    url: https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.noarmor.gpg
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: '0644'
+
+- name: Add Tailscale repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+    state: present
+    filename: tailscale
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
