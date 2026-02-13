@@ -16,13 +16,14 @@
     enabled: yes
 
 - name: Connect to Tailscale network
-  command: tailscale up {{ tailscale_args }}
+  command: "tailscale up --authkey={{ tailscale_auth_key }} {{ tailscale_args }}"
   when: 
     - tailscale_up | bool
     - tailscale_auth_key != ""
   register: tailscale_status
   changed_when: "'already logged in' not in tailscale_status.stdout"
   failed_when: false
+  no_log: true
 
 - name: Check Tailscale status
   command: tailscale status
