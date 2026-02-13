@@ -1,0 +1,18 @@
+---
+# Playbook to gather system information from all hosts
+- name: Gather system information
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Gather facts
+      setup:
+      
+    - name: Display system information
+      debug:
+        msg: |
+          Hostname: {{ ansible_hostname }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          IP Address: {{ ansible_default_ipv4.address }}
+          CPU Cores: {{ ansible_processor_vcpus }}
+          Memory: {{ ansible_memtotal_mb }} MB

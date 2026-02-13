@@ -1,0 +1,15 @@
+---
+# Tasks for RedHat/CentOS systems
+
+- name: Add Tailscale repository for RedHat-based systems
+  yum_repository:
+    name: tailscale-stable
+    description: Tailscale stable
+    baseurl: https://pkgs.tailscale.com/stable/rhel/$releasever/tailscale.repo
+    gpgcheck: yes
+    gpgkey: https://pkgs.tailscale.com/stable/rhel/$releasever/repo.gpg
+    enabled: yes
+
+- name: Update yum cache
+  yum:
+    update_cache: yes

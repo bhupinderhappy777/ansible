@@ -1,0 +1,36 @@
+---
+# Main tasks file for Tailscale installation
+
+- name: Include OS-specific tasks
+  include_tasks: "{{ ansible_os_family | lower }}.yml"
+
+- name: Ensure Tailscale is installed
+  package:
+    name: tailscale
+    state: present
+
+- name: Start and enable Tailscale service
+  systemd:
+    name: tailscaled
+    state: started
+    enabled: yes
+
+- name: Connect to Tailscale network
+  command: tailscale up {{ tailscale_args }}
+  when: 
+    - tailscale_up | bool
+    - tailscale_auth_key != ""
+  register: tailscale_status
+  changed_when: "'already logged in' not in tailscale_status.stdout"
+  failed_when: false
+
+- name: Check Tailscale status
+  command: tailscale status
+  register: tailscale_status_output
+  changed_when: false
+  failed_when: false
+
+- name: Display Tailscale status
+  debug:
+    var: tailscale_status_output.stdout_lines
+  when: tailscale_status_output.stdout_lines is defined
