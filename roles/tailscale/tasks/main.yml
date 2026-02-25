@@ -1,6 +1,10 @@
 ---
 # Main tasks file for Tailscale installation
 
+# CRITICAL: Explicitly load the vault vars file
+vars_files:
+  - vars/example.yml
+
 - name: Check if tailscale binary exists
   stat:
     path: /usr/bin/tailscale
