@@ -1,7 +1,7 @@
 ---
 - name: Setup Ansible user with sudo access
-  hosts: local
-  become: true  # This runs as root
+- hosts: localhost
+  connection: local
   
   tasks:
     - name: Create ansible user
