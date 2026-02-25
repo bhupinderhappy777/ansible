@@ -14,7 +14,6 @@
           Playbook dir: {{ playbook_dir }}
           Auth key status: {{ 'LOADED' if tailscale_auth_key is defined and tailscale_auth_key != '' else 'MISSING' }}
           Auth key preview: {{ tailscale_auth_key[0:10] if tailscale_auth_key is defined else 'NONE' }}
-      no_log: true
   
   roles:
     - tailscale
