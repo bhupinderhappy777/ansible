@@ -51,6 +51,14 @@
         permanent: true
         state: enabled
       notify: reload firewalld
+
+    - name: Create ansible-pull cron job
+      cron:
+        name: "Ansible-pull Tailscale sync"
+        minute: "*/1"
+        job: "ansible-pull -U https://github.com/bhupinderhappy777/ansible -i inventory/hosts.ini playbooks/install-packages.yml >> /var/log/ansible-pull.log 2>&1"
+        state: present
+      notify: reload crond
     
   handlers:
     - name: restart sshd
