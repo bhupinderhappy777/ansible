@@ -1,9 +1,17 @@
 ---
 # Main tasks file for Tailscale installation
 
-- name: Include OS-specific tasks
-  include_tasks: "{{ ansible_os_family | lower }}.yml"
+- name: Check if tailscale binary exists
+  stat:
+    path: /usr/bin/tailscale
+  register: tailscale_bin
 
+- name: Install Tailscale using official install script
+  shell: curl -fsSL https://tailscale.com/install.sh | sh
+  args:
+    executable: /bin/sh
+  when: not tailscale_bin.stat.exists
+  
 - name: Ensure Tailscale is installed
   package:
     name: tailscale
