@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Load vault vars explicitly
       include_vars:
-        file: vars/example.yml
+        file: {{ playbook_dir }}/vars/example.yml
       no_log: true
   
   roles:
