@@ -5,7 +5,7 @@
 
   # Fix 1: Use ABSOLUTE playbook_dir path
   vars_files:
-    - "{{ playbook_dir }}/vars/example.yml"
+    - "{{ playbook_dir }}/../vars/example.yml"
   
   pre_tasks:
     - name: TEST - Vars loaded?
