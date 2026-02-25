@@ -1,7 +1,6 @@
 ---
 # Main playbook to install Tailscale on all cloud VMs
-- hosts: localhost
-  connection: local
+- hosts: oci_harjot
   
   roles:
     - tailscale
