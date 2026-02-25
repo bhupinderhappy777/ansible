@@ -24,7 +24,7 @@
     enabled: yes
 
 - name: Connect to Tailscale network
-  command: "tailscale up --authkey={{ tailscale_auth_key }} {{ tailscale_args }}"
+  command: "tailscale up --authkey={{ tailscale_auth_key }}"
   when: 
     - tailscale_up | bool
     - tailscale_auth_key != ""
