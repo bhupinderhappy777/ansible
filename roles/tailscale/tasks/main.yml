@@ -23,6 +23,14 @@
     state: started
     enabled: yes
 
+- name: Debug conditions
+  debug:
+    msg: |
+      tailscale_up bool: {{ tailscale_up | bool }}
+      tailscale_up type: {{ tailscale_up | type_debug }}
+      tailscale_auth_key: "{{ tailscale_auth_key | default('EMPTY') }}"
+      tailscale_auth_key != "": {{ tailscale_auth_key != "" }}
+
 - name: Connect to Tailscale network
   command: "tailscale up --authkey={{ tailscale_auth_key }}"
   when: 
