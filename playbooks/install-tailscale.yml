@@ -2,7 +2,6 @@
 # Main playbook to install Tailscale on all cloud VMs
 - hosts: localhost
   connection: local
-  gather_facts: false
   
   roles:
     - tailscale
