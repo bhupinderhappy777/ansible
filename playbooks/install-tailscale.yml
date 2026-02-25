@@ -3,17 +3,9 @@
 - hosts: localhost
   connection: local
 
-  # Fix 1: Use ABSOLUTE playbook_dir path
+  # Path to encrypted vars file
   vars_files:
     - "{{ playbook_dir }}/../vars/example.yml"
-  
-  pre_tasks:
-    - name: TEST - Vars loaded?
-      debug:
-        msg: |
-          Playbook dir: {{ playbook_dir }}
-          Auth key status: {{ 'LOADED' if tailscale_auth_key is defined and tailscale_auth_key != '' else 'MISSING' }}
-          Auth key preview: {{ tailscale_auth_key[0:10] if tailscale_auth_key is defined else 'NONE' }}
   
   roles:
     - tailscale
