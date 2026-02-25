@@ -26,9 +26,9 @@
 
 - name: Connect to Tailscale network
   command: "tailscale up --authkey={{ tailscale_auth_key }}"
-  when: 
-    - tailscale_up | bool
-    - tailscale_auth_key != ""
+  when:
+    - tailscale_auth_key is defined  # Safe check
+    - tailscale_auth_key | length > 0
   register: tailscale_status
   changed_when: "'already logged in' not in tailscale_status.stdout"
   failed_when: false
