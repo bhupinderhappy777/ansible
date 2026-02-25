@@ -6,7 +6,7 @@
 
 # Tailscale Authentication Key
 # Get this from: https://login.tailscale.com/admin/settings/keys
-# tailscale_auth_key: "tskey-auth-xxxxx-yyyyy"
+tailscale_auth_key: "tskey-auth-xxxxx-yyyyy"
 
 # Additional Tailscale arguments
 # Examples:
