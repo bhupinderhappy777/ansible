@@ -2,10 +2,6 @@
 # Main playbook to install Tailscale on all cloud VMs
 - hosts: localhost
   connection: local
-
-  # Path to encrypted vars file
-  vars_files:
-    - "{{ playbook_dir }}/../vars/example.yml"
   
   roles:
     - tailscale
