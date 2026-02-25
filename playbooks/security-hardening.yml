@@ -1,7 +1,7 @@
 ---
 # Playbook to perform common security hardening tasks
-- name: Security hardening for cloud VMs
-  hosts: cloud
+- name: Security hardening
+  hosts: all
   become: yes
   
   tasks:
