@@ -23,3 +23,17 @@
         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
         validate: '/usr/sbin/visudo -cf %s'
         backup: yes  # Creates backup before change
+
+    - name: Ensure .ssh dir
+      file:
+        path: /home/ansible/.ssh
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0700'
+
+    - name: Adding public key (hardcoded)
+      ansible.posix.authorized_key:
+        user: ansible
+        state: present
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"
