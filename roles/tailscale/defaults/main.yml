@@ -1,5 +1,5 @@
 ---
-# Default variables for Tailscale role
-tailscale_auth_key: ""
+
+tailscale_auth_key: "{{ tailscale_auth_key | default('') }}"
 tailscale_args: ""
 tailscale_up: true
