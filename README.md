@@ -1,200 +1,172 @@
-# Multi-Cloud Infrastructure as Code with Ansible
+# Ansible GitOps Bootstrap - Complete System Setup
 
-This repository provides a ready-to-use Infrastructure as Code (IaaC) setup using Ansible to manage VMs across multiple cloud providers (AWS, Azure, GCP, DigitalOcean, etc.) and configure them with essential tools like Tailscale.
+## 🎯 **Overview**
 
-## 📁 Repository Structure
+This repository provides **fully automated GitOps provisioning** for new servers using `ansible-pull`. One command bootstraps SSH access, Tailscale VPN, and cron-based continuous sync.
+
+**Your structure is production-grade** — follows Ansible best practices with roles, inventories, and vault encryption.
 
 ```
-.
-├── ansible.cfg              # Ansible configuration
-├── inventory/
-│   └── hosts.ini           # Inventory file with cloud VMs
-├── group_vars/             # Group-specific variables
-│   ├── aws.yml
-│   ├── azure.yml
-│   ├── gcp.yml
-│   └── digitalocean.yml
-├── host_vars/              # Host-specific variables
-├── roles/
-│   └── tailscale/          # Tailscale installation role
-│       ├── tasks/
-│       ├── defaults/
-│       ├── handlers/
-│       ├── templates/
-│       └── meta/
-└── playbooks/              # Ansible playbooks
-    ├── install-tailscale.yml
-    ├── ping.yml
-    └── system-info.yml
+📁 bhupinderhappy777/ansible
+├── site.yml                 # Master playbook (all-in-one)
+├── ansible.cfg             # Config
+├── requirements.yml        # Galaxy dependencies  
+├── inventory/hosts.ini
+├── group_vars/all/vault.yml # Encrypted secrets
+├── playbooks/*.yml         # Individual playbooks
+└── roles/tailscale/        # Custom roles
 ```
 
-## 🚀 Quick Start
+## 🚀 **Quick Start (Fresh System)**
 
-### Prerequisites
+### **Step 1: Install Prerequisites**
+```bash
+# RHEL/Fedora/CentOS/Rocky
+sudo dnf install -y epel-release ansible git
 
-1. **Install Ansible**:
-   ```bash
-   # On Ubuntu/Debian
-   sudo apt update
-   sudo apt install ansible
-   
-   # On macOS
-   brew install ansible
-   
-   # Using pip
-   pip install ansible
-   ```
+# Ubuntu/Debian  
+sudo apt update && sudo apt install -y ansible git
+```
 
-2. **SSH Access**: Ensure you have SSH access to your VMs with key-based authentication.
+### **Step 2: Bootstrap Ansible User + SSH + Cron**
+```bash
+sudo ansible-pull -U https://github.com/bhupinderhappy777/ansible \
+  -i "localhost-live,localhost," \
+  playbooks/create_ansible_user.yml
+```
 
-### Setup
+**✅ Done**: `ansible` user created, SSH key added, sudo NOPASSWD, SSHD/firewalld configured, cron job active.
 
-1. **Clone this repository**:
-   ```bash
-   git clone <your-repo-url>
-   cd ansible
-   ```
+**Test**:
+```bash
+ssh ansible@$(hostname -I | awk '{print $1}')  # Local IP
+sudo whoami  # root
+```
 
-2. **Configure your inventory**:
-   Edit `inventory/hosts.ini` and add your VM IP addresses:
-   ```ini
-   [aws]
-   aws-vm-1 ansible_host=3.xxx.xxx.xxx
-   
-   [azure]
-   azure-vm-1 ansible_host=20.xxx.xxx.xxx
-   
-   [gcp]
-   gcp-vm-1 ansible_host=35.xxx.xxx.xxx
-   ```
+### **Step 3: Setup Vault Password**
+```bash
+# As root on each node
+echo "your-32-char-vault-password-here" > /root/vault_pass.txt
+chmod 600 /root/vault_pass.txt
+```
 
-3. **Test connectivity**:
-   ```bash
-   ansible-playbook playbooks/ping.yml
-   ```
+### **Step 4: Join Tailscale Network**
+```bash
+sudo ansible-pull -U https://github.com/bhupinderhappy777/ansible \
+  -i "localhost-live,localhost," \
+  playbooks/install-tailscale.yml \
+  --vault-password-file /root/vault_pass.txt
+```
 
-## 📖 Usage
+**✅ Done**: Tailscale joined, SSH accessible via `100.x.x.x` Tailscale IPs.
 
-### Install Tailscale on All Cloud VMs
+**Test**:
+```bash
+tailscale status  # Logged in
+ssh ansible@100.125.123.68  # Tailscale IP
+```
 
-To install Tailscale on all your cloud VMs:
+### **Step 5: Full System Setup** (One Command)
+```bash
+sudo ansible-pull -U https://github.com/bhupinderhappy777/ansible \
+  -i "localhost-live,localhost," \
+  site.yml \
+  --vault-password-file /root/vault_pass.txt
+```
+
+Runs: user → security → tailscale → packages → workstation setup.
+
+## 🔐 **Secrets Management**
+
+### **Add Tailscale Auth Key**
+1. Generate: https://login.tailscale.com/admin/authkeys → **Reusable + Pre-approved**
+2. On laptop:
+```bash
+# Move vars/example.yml → group_vars/all/vault.yml
+cat > group_vars/all/vault.yml << 'EOF'
+tailscale_auth_key: "tskey-your-key-here"
+EOF
+
+ansible-vault encrypt group_vars/all/vault.yml
+git add group_vars/all/vault.yml && git commit -m "Add Tailscale vault" && git push
+```
+
+**Auto-loaded** by Ansible — no `vars_files:` needed anywhere!
+
+## 🕐 **Cron Automation** (Auto-setup by `create_ansible_user.yml`)
 
 ```bash
-ansible-playbook playbooks/install-tailscale.yml
+# Runs every 20min, syncs all playbooks
+*/20 * * * * root ansible-pull -U https://github.com/bhupinderhappy777/ansible \
+  -i "localhost-live,localhost," \
+  site.yml \
+  --vault-password-file /root/vault_pass.txt >> /var/log/ansible-pull.log 2>&1
 ```
 
-**With Tailscale auth key** (recommended):
-```bash
-ansible-playbook playbooks/install-tailscale.yml -e "tailscale_auth_key=tskey-auth-xxxxx"
-```
+**Monitor**: `tail -f /var/log/ansible-pull.log`
 
-**With additional Tailscale arguments**:
-```bash
-ansible-playbook playbooks/install-tailscale.yml \
-  -e "tailscale_auth_key=tskey-auth-xxxxx" \
-  -e "tailscale_args='--advertise-routes=10.0.0.0/8'"
-```
+## 📁 **Available Playbooks**
 
-### Target Specific Cloud Provider
+| Playbook | Purpose |
+|---|---|
+| `create_ansible_user.yml` | SSH user + sudo + cron bootstrap |
+| `install-tailscale.yml` | Join Tailscale VPN |
+| `security-hardening.yml` | Fail2ban + SSH hardening |
+| `system-info.yml` | Gather facts |
+| `update-packages.yml` | Full system upgrade |
+| `ping.yml` | Connectivity test |
+| `install-packages.yml` | Packages installation |
 
-```bash
-# Only AWS VMs
-ansible-playbook playbooks/install-tailscale.yml --limit aws
-
-# Only Azure VMs
-ansible-playbook playbooks/install-tailscale.yml --limit azure
-
-# Specific host
-ansible-playbook playbooks/install-tailscale.yml --limit aws-vm-1
-```
-
-### Gather System Information
+## 🛠 **Development Workflow**
 
 ```bash
-ansible-playbook playbooks/system-info.yml
+# Test playbook locally
+ansible-playbook -i "localhost," playbooks/install-tailscale.yml \
+  --vault-password-file /root/vault_pass.txt -vvv
+
+# Install Galaxy dependencies
+ansible-galaxy install -r requirements.yml
+
+# Lint check
+ansible-lint playbooks/*.yml
 ```
 
-### Run Ad-Hoc Commands
+## 🔄 **Rotate Secrets**
 
 ```bash
-# Check uptime on all hosts
-ansible all -a "uptime"
+# New Tailscale key → re-encrypt vault
+ansible-vault edit group_vars/all/vault.yml
+git commit && git push  # Cron auto-deploys
 
-# Update packages on Ubuntu/Debian hosts
-ansible cloud -m apt -a "update_cache=yes upgrade=dist" --become
-
-# Restart a service
-ansible cloud -m systemd -a "name=tailscaled state=restarted" --become
+# Rotate vault password  
+ansible-vault rekey group_vars/all/vault.yml
+# Update /root/vault_pass.txt on nodes
 ```
 
-## 🔧 Configuration
+## 🧪 **Troubleshooting**
 
-### Tailscale Role Variables
+| Issue | Check |
+|---|---|
+| `Could not match host pattern` | Use `-i "localhost-live,localhost,"` |
+| Vault empty | `ansible-vault view group_vars/all/vault.yml` |
+| Cron not running | `sudo crontab -l \| grep ansible` |
+| SSH Tailscale fails | `ss -tlnp \| grep 22` + `firewall-cmd --list-all` |
+| Ansible-pull fails | `tail -f /var/log/ansible-pull.log` |
 
-Configure these in `group_vars/`, `host_vars/`, or pass via command line:
+## 🎨 **Your Structure = Production Grade ✅**
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `tailscale_auth_key` | `""` | Tailscale authentication key |
-| `tailscale_args` | `""` | Additional arguments for `tailscale up` |
-| `tailscale_up` | `true` | Whether to automatically connect to Tailscale |
-
-### Example: Host-Specific Configuration
-
-Create `host_vars/aws-vm-1.yml`:
-```yaml
----
-tailscale_auth_key: "tskey-auth-xxxxx"
-tailscale_args: "--advertise-routes=10.0.1.0/24 --accept-routes"
+```
+✅ Playbooks organized
+✅ Roles structure  
+✅ Inventory setup
+✅ Vault encryption
+✅ GitOps cron
+✅ Auto inventory fix
+✅ Tailscale integration
 ```
 
-## 🌐 Supported Cloud Providers
+**Perfect for homelab → scales to production.** Add `site.yml` + `requirements.yml` for 100% compliance. [docs.ansible](https://docs.ansible.com/ansible/2.8/user_guide/playbooks_best_practices.html)
 
-This setup works with VMs from any cloud provider. The inventory includes examples for:
+***
 
-- **AWS EC2**
-- **Azure Virtual Machines**
-- **Google Cloud Platform (GCP)**
-- **DigitalOcean Droplets**
-- **Any other cloud or on-premise VMs**
-
-## 🔐 Security Best Practices
-
-1. **SSH Keys**: Use SSH keys instead of passwords
-2. **Ansible Vault**: Store sensitive data (auth keys, passwords) in Ansible Vault:
-   ```bash
-   ansible-vault create group_vars/all/vault.yml
-   ansible-playbook playbooks/install-tailscale.yml --ask-vault-pass
-   ```
-3. **Limited User Access**: Use non-root users with sudo privileges
-4. **Firewall Rules**: Configure appropriate firewall rules on your VMs
-
-## 📝 Creating Additional Roles
-
-To add more functionality, create additional roles:
-
-```bash
-# Create a new role
-mkdir -p roles/my-role/{tasks,defaults,handlers,templates,meta}
-
-# Edit the tasks
-vim roles/my-role/tasks/main.yml
-
-# Use in playbook
-# roles:
-#   - my-role
-```
-
-## 🤝 Contributing
-
-Feel free to add more roles, playbooks, and configurations to extend this IaaC setup!
-
-## 📚 Resources
-
-- [Ansible Documentation](https://docs.ansible.com/)
-- [Tailscale Documentation](https://tailscale.com/kb/)
-- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
-
-## 📄 License
-
-MIT License - feel free to use and modify as needed.
+*Built by Bhupinder Singh Gill — Life-long learner automating the world one playbook at a time.*
