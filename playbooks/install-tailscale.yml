@@ -1,7 +1,7 @@
 ---
 # Main playbook to install Tailscale on all cloud VMs
 - name: Install Tailscale on cloud VMs
-  hosts: cloud
+  hosts: local
   become: yes
   
   roles:
