@@ -10,20 +10,21 @@
         shell: /bin/bash
         create_home: true
 
-    - name: Add ansible to wheel group
+    - name: Add ansible to admin group (distro-aware)
       user:
         name: ansible
-        groups: wheel
+        groups: "{{ 'wheel' if ansible_os_family == 'RedHat' else 'sudo' }}"
         append: yes
 
-    - name: Enable NOPASSWD for wheel group
-      lineinfile:
-        path: /etc/sudoers
-        regexp: '^%wheel\s+ALL=\(ALL\)'
-        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    - name: Enable NOPASSWD sudo (distro-aware)
+      copy:
+        dest: "/etc/sudoers.d/ansible"
+        content: "{{ '%wheel ALL=(ALL) NOPASSWD: ALL' if ansible_os_family == 'RedHat' else '%sudo ALL=(ALL) NOPASSWD: ALL' }}\n"
+        owner: root
+        group: root
+        mode: '0440'
         validate: '/usr/sbin/visudo -cf %s'
-        backup: yes  # Creates backup before change
-
+        
     - name: Ensure .ssh dir
       file:
         path: /home/ansible/.ssh
