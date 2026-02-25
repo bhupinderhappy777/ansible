@@ -5,6 +5,9 @@
   roles:
     - tailscale
 
+  vars_files:
+    - "{{ playbook_dir }}/../group_vars/all/vault.yml"
+
   tasks:
     - name: Display completion message
       debug:
