@@ -32,7 +32,6 @@
   register: tailscale_status
   changed_when: "'already logged in' not in tailscale_status.stdout"
   failed_when: false
-  no_log: true
 
 - name: Check Tailscale status
   command: tailscale status
