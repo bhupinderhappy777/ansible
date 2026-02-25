@@ -69,3 +69,8 @@
     - name: reload firewalld
       command: firewall-cmd --reload
 
+    - name: reload crond 
+      systemd:
+        name: crond  
+        state: reloaded
+
