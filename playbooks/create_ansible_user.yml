@@ -52,12 +52,12 @@
         state: enabled
       notify: reload firewalld
     
-    handlers:
-      - name: restart sshd
-        systemd:
-          name: sshd
-          state: restarted
-    
-      - name: reload firewalld
-        command: firewall-cmd --reload
+  handlers:
+    - name: restart sshd
+      systemd:
+        name: sshd
+        state: restarted
+  
+    - name: reload firewalld
+      command: firewall-cmd --reload
 
