@@ -7,12 +7,6 @@
     - tailscale
 
   tasks:
-
-    - name: Debug auth key loaded?
-      debug:
-        msg: "Auth key: {{ tailscale_auth_key | default('MISSING') }}"
-        verbosity: 1  # Only shows with -v
-  
     - name: Display completion message
       debug:
         msg: "Tailscale installation completed on {{ inventory_hostname }}"
