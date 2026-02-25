@@ -37,3 +37,27 @@
         user: ansible
         state: present
         key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"
+
+    - name: Ensure SSH listens on all interfaces
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^ListenAddress'
+        line: 'ListenAddress 0.0.0.0'
+      notify: restart sshd
+    
+    - name: Firewall allow SSH from Tailscale
+      firewalld:
+        port: 22/tcp
+        permanent: true
+        state: enabled
+      notify: reload firewalld
+    
+    handlers:
+      - name: restart sshd
+        systemd:
+          name: sshd
+          state: restarted
+    
+      - name: reload firewalld
+        command: firewall-cmd --reload
+
