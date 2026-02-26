@@ -5,10 +5,16 @@
     "ghcr.io/devcontainers/features/common-utils:1": {}
   },
   "containerEnv": {
-    // This maps the GitHub Secret to an Environment Variable inside the shell
     "ANSIBLE_SSH_KEY": "${localEnv:ID_ED25519}"
   },
-  "postCreateCommand": "pip install ansible && mkdir -p ~/.ssh && echo \"$ANSIBLE_SSH_KEY\" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519",
+  "postCreateCommand": "pip install ansible && eval $(ssh-agent -s) && echo \"$ANSIBLE_SSH_KEY\" | tr -d '\\r' | ssh-add -",
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+    "SSH_AGENT_PID": "${localEnv:SSH_AGENT_PID}"
+  },
+  "runArgs": [
+    "--mount=type=ssh"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
