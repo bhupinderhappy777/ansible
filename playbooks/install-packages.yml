@@ -1,9 +1,41 @@
 ---
-
-- hosts: all
-
+- name: Install Essential Tools (Shell-Only)
+  hosts: all
+  become: true
+  gather_facts: true
   tasks:
-    - name: Install htop
-      package:
-        name: htop
+    - name: Install Debian tools
+      apt:
+        pkg:
+          - htop
+          - sysstat
+          - traceroute
+          - iproute2
+          - curl
+          - wget
         state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: RPM systems - Setup EPEL & install (bulletproof shell)
+      shell: |
+        set -e
+        # Import GPG keys
+        rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-9 || true
+        curl -o /tmp/epel.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm || true
+
+        # Install EPEL if missing
+        if ! rpm -q epel-release; then
+          rpm -i /tmp/epel.rpm || dnf config-manager --enable ol9_developer_EPEL crb || true
+        fi
+
+        # Refresh & install
+        dnf makecache
+        dnf install -y htop sysstat traceroute iproute curl wget || true
+
+        rm -f /tmp/epel.rpm
+      args:
+        executable: bash
+        creates: /usr/bin/htop
+      changed_when: false
+      when: ansible_os_family == "RedHat"

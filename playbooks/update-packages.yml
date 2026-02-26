@@ -1,43 +1,19 @@
 ---
-# Playbook to update all packages on cloud VMs
-- name: Update packages on all cloud VMs
-  hosts: cloud
+- name: Update all packages
+  hosts: all
   become: yes
-  
+
   tasks:
-    - name: Update apt cache (Debian/Ubuntu)
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
-      
-    - name: Upgrade all packages (Debian/Ubuntu)
-      apt:
-        upgrade: dist
-      when: ansible_os_family == "Debian"
-      register: apt_upgrade
-      
-    - name: Update yum cache (RedHat/CentOS)
-      yum:
-        update_cache: yes
-      when: ansible_os_family == "RedHat"
-      
-    - name: Upgrade all packages (RedHat/CentOS)
-      yum:
-        name: "*"
-        state: latest
-      when: ansible_os_family == "RedHat"
-      register: yum_upgrade
-      
-    - name: Check if reboot is required (Debian/Ubuntu)
-      stat:
-        path: /var/run/reboot-required
-      register: reboot_required
-      when: ansible_os_family == "Debian"
-      
-    - name: Display reboot requirement
+    - name: Full system upgrade
+      package:
+        upgrade: dist  # Full distro upgrade (apt dist, dnf full, yum latest)
+      register: upgrade_result
+
+    - name: Reboot if kernel updated (universal)
+      reboot:
+        reboot_timeout: 300
+      when: "'kernel' in upgrade_result.msg or upgrade_result is changed"
+
+    - name: Display upgrade summary
       debug:
-        msg: "Reboot is required on {{ inventory_hostname }}"
-      when:
-        - ansible_os_family == "Debian"
-        - reboot_required.stat.exists
+        msg: "Upgraded {{ upgrade_result.changed | default(false) | ternary('yes', 'no') }} packages on {{ inventory_hostname }}"

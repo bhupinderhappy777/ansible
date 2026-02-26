@@ -1,6 +1,7 @@
 # Ansible specific
 *.retry
 .vault_pass
+vault_pass.txt
 *.pyc
 __pycache__/
 .ansible/

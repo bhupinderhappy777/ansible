@@ -1,18 +1,18 @@
 ---
-# Playbook to gather system information from all hosts
-- name: Gather system information
+- name: System Information
   hosts: all
-  become: yes
-  
+  gather_facts: true
+
   tasks:
     - name: Gather facts
       setup:
-      
-    - name: Display system information
+
+    - name: Display clean system info
       debug:
         msg: |
-          Hostname: {{ ansible_hostname }}
-          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
-          IP Address: {{ ansible_default_ipv4.address }}
-          CPU Cores: {{ ansible_processor_vcpus }}
-          Memory: {{ ansible_memtotal_mb }} MB
+          {{ inventory_hostname }}:
+            • OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+            • IP: {{ ansible_default_ipv4.address | default('N/A') }}
+            • CPU: {{ ansible_processor_vcpus | default('N/A') }} cores
+            • Memory: {{ (ansible_memtotal_mb / 1024) | round(1) }} GB
+            • Uptime: {{ ansible_uptime_seconds | int / 86400 | round(1) }} days
