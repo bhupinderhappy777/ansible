@@ -1,5 +1,0 @@
----
-# DigitalOcean-specific variables
-cloud_provider: digitalocean
-ansible_user: root
-# Add DigitalOcean-specific configurations here

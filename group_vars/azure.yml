@@ -1,5 +1,0 @@
----
-# Azure-specific variables
-cloud_provider: azure
-ansible_user: azureuser
-# Add Azure-specific configurations here
