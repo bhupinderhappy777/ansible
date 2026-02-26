@@ -1,0 +1,50 @@
+---
+- name: Deploy and Execute load scripts
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create loadscripts directory
+      file:
+        path: /home/ansible/loadscripts
+        state: directory
+        owner: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Copy load_controller.sh
+      copy:
+        src: load_controller.sh
+        dest: /home/ansible/loadscripts/load_controller.sh
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'  # Executable
+
+    - name: Copy load_generator.py
+      copy:
+        src: load_generator.py
+        dest: /home/ansible/loadscripts/load_generator.py
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'  # Executable
+
+    - name: Verify scripts deployed
+      shell: "ls -la /home/ansible/loadscripts/"
+      register: scripts_list
+
+    - name: Show deployed scripts
+      debug:
+        var: scripts_list.stdout_lines
+
+    - name: Execute load_controller.sh
+      shell: /home/ansible/loadscripts/load_controller.sh
+      environment:
+        PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      register: controller_output
+      args:
+        executable: /bin/bash
+      changed_when: true
+
+
+    - name: Show controller output
+      debug:
+        msg: "{{ controller_output.stdout_lines }}"
