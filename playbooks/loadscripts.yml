@@ -17,7 +17,7 @@
         dest: /home/ansible/loadscripts/load_controller.sh
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-        mode: '0755'  # Executable
+        mode: '0755'
 
     - name: Copy load_generator.py
       copy:
@@ -25,7 +25,7 @@
         dest: /home/ansible/loadscripts/load_generator.py
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-        mode: '0755'  # Executable
+        mode: '0755'
 
     - name: Verify scripts deployed
       shell: "ls -la /home/ansible/loadscripts/"
@@ -35,16 +35,16 @@
       debug:
         var: scripts_list.stdout_lines
 
-    - name: Execute load_controller.sh
-      shell: /home/ansible/loadscripts/load_controller.sh
+    - name: Start load_controller.sh daemon (background forever)
+      shell: nohup /home/ansible/loadscripts/load_controller.sh > /home/ansible/load_controller.log 2>&1 &
       environment:
         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-      register: controller_output
       args:
         executable: /bin/bash
-      changed_when: true
+      async: 10  # Short timeout
+      poll: 0    # Fire-and-forget (don't wait)
+      register: daemon_job
 
-
-    - name: Show controller output
+    - name: Show daemon status
       debug:
-        msg: "{{ controller_output.stdout_lines }}"
+        msg: "Daemon started: Job ID {{ daemon_job.ansible_job_id }}. Logs: /home/ansible/load_controller.log"

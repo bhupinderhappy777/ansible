@@ -1,0 +1,83 @@
+---
+- name: Install Syncthing & Sync Home Folders
+  hosts: all
+  become: yes
+  vars:
+    syncthing_user: bhupi
+    syncthing_folders:
+      - path: "/home/{{ syncthing_user }}/Documents"
+      - path: "/home/{{ syncthing_user }}/Downloads"
+      - path: "/home/{{ syncthing_user }}/Pictures"
+      - path: "/home/{{ syncthing_user }}/Music"
+      - path: "/home/{{ syncthing_user }}/Videos"
+
+  tasks:
+    - name: Create bhupi user (idempotent)
+      user:
+        name: "{{ syncthing_user }}"
+        shell: /bin/bash
+        create_home: yes
+        state: present
+        groups: users
+        append: yes
+
+    - name: Install Syncthing (universal shell)
+      shell: |
+        if command -v apt >/dev/null; then
+          apt update && apt install -y syncthing
+        elif command -v dnf >/dev/null; then
+          dnf copr enable -y free/syncthing || dnf install -y syncthing
+        fi
+      changed_when: true
+
+    - name: Create Syncthing config dir
+      file:
+        path: "/home/{{ syncthing_user }}/.config/syncthing"
+        state: directory
+        owner: "{{ syncthing_user }}"
+        group: "{{ syncthing_user }}"
+        mode: '0700'
+
+    - name: Ensure home folders exist
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ syncthing_user }}"
+        group: "{{ syncthing_user }}"
+        mode: '0755'
+      loop: "{{ syncthing_folders }}"
+
+    - name: Enable/start Syncthing service
+      systemd:
+        name: "syncthing@{{ syncthing_user }}.service"
+        enabled: yes
+        state: started
+
+    - name: Extract GUI password
+      shell: grep -oP '(?<=<password>).*?(?=</password>)' "/home/{{ syncthing_user }}/.config/syncthing/gui.xml"
+      register: sync_pass
+      ignore_errors: yes
+
+    - name: Firewall - Open GUI port
+      block:
+        - name: Firewalld
+          firewalld:
+            port: "8384/tcp"
+            permanent: yes
+            state: enabled
+            immediate: yes
+          when: "'firewalld' in ansible_facts.services"
+
+        - name: UFW
+          ufw:
+            rule: allow
+            port: '8384/tcp'
+          when: "'ufw' in ansible_facts.services"
+
+  post_tasks:
+    - name: Syncthing Status
+      debug:
+        msg: |
+          ✅ Syncthing: http://{{ ansible_default_ipv4.address }}:8384
+          🔑 Password: {{ sync_pass.stdout | default('Check ~/.config/syncthing/gui.xml') }}
+          📁 Folders: {{ syncthing_folders | map(attribute='path') | list | join('\n  - ') }}

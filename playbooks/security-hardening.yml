@@ -1,51 +1,56 @@
 ---
-# Playbook to perform common security hardening tasks
 - name: Security hardening
   hosts: all
   become: yes
-  
+
   tasks:
-    - name: Update all packages
-      package:
-        name: "*"
-        state: latest
-      when: ansible_os_family in ["Debian", "RedHat"]
-      
-    - name: Ensure firewall is installed
+    - name: Update all packages (SHELL bypass)
+      shell: |
+        if command -v apt >/dev/null; then
+          apt-get update && apt-get upgrade -y
+        elif command -v dnf >/dev/null; then
+          dnf upgrade -y
+        elif command -v yum >/dev/null; then
+          yum update -y
+        fi
+      changed_when: true
+
+    - name: Install firewall
       package:
         name: "{{ 'ufw' if ansible_os_family == 'Debian' else 'firewalld' }}"
         state: present
-        
-    - name: Allow SSH through firewall
+
+    - name: UFW - Allow SSH
       ufw:
         rule: allow
         port: '22'
         proto: tcp
       when: ansible_os_family == "Debian"
-      
-    - name: Enable firewall
+
+    - name: UFW - Enable
       ufw:
         state: enabled
       when: ansible_os_family == "Debian"
-      
-    - name: Disable root login via SSH
+
+    - name: SSH - Disable root login
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^PermitRootLogin'
+        regexp: '^#?PermitRootLogin'
         line: 'PermitRootLogin no'
-        state: present
-      notify: restart sshd
-      
-    - name: Disable password authentication
+        validate: 'sshd -t %s'
+      notify: restart ssh
+
+    - name: SSH - Disable password auth
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^PasswordAuthentication'
+        regexp: '^#?PasswordAuthentication'
         line: 'PasswordAuthentication no'
-        state: present
-      notify: restart sshd
-      
+        validate: 'sshd -t %s'
+      notify: restart ssh
+
   handlers:
-    - name: restart sshd
+    - name: restart ssh
       systemd:
-        name: "{{ 'ssh' if ansible_os_family == 'Debian' else 'sshd' }}"
+        name: "{{ 'ssh.service' if ansible_os_family == 'Debian' else 'sshd.service' }}"
         state: restarted
+        daemon_reload: yes
