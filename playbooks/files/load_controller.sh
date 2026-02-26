@@ -1,65 +1,52 @@
 #!/bin/bash
 
-RED='\033[0;31m'      # For errors or important actions
-GREEN='\033[0;32m'    # For successful actions
-YELLOW='\033[0;33m'   # For information
-NC='\033[0m'          # No Color
+RED='\033[0;31m'      # Fixed: single \
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
 
-# Check if sysstat package is installed
-if ! command -v mpstat &> /dev/null
-then
-    echo -e "${RED}sysstat could not be found. Install it with 'sudo apt-get install sysstat'${NC}"
-    exit
+if ! command -v mpstat &> /dev/null; then
+    echo -e "${RED}sysstat missing${NC}"
+    exit 1
 fi
 
 load_pids=()
 
-# Function to stop child processes and exit
-function cleanup {
-    echo -e "${RED}Stopping load generators and exiting...${NC}"
+cleanup() {
+    echo -e "${RED}Stopping generators...${NC}"
     for pid in "${load_pids[@]}"; do
-        kill $pid
+        kill $pid 2>/dev/null || true
     done
-    exit
+    exit 0
 }
 
-# Catch interrupt signal (Ctrl+C) and terminate signal
 trap cleanup SIGINT SIGTERM
 
 while true; do
     output=$(mpstat -P ALL 5 1)
-    avg_usage=$(echo "$output" | awk '/Average:/ && $2 ~ /[0-9]/ {total+=$NF; count++} END {print 100 - total/count}')
-    echo -e "${YELLOW}Average CPU Usage: $avg_usage%. Current number of load generators: ${#load_pids[@]}${NC}"
+    avg_usage=$(echo "$output" | awk '/Average:/ && $2 ~ /[0-9]/ {total+=$NF; count++} END {print 100-total/count}')
+
+    # ACTUAL running count (ps check)
+    running_generators=$(ps -C python3 -o pid= | wc -l)
+
+    echo -e "${YELLOW}CPU: $avg_usage%. Generators: $running_generators (array:${#load_pids[@]})${NC}"
 
     if (( $(echo "$avg_usage < 12.0" | bc -l) )); then
-        echo -e "${GREEN}CPU usage is below 15%, starting additional load generators...${NC}"
+        echo -e "${GREEN}Starting 5 generators...${NC}"
         for i in {1..5}; do
-            python3 load_generator.py 0.01 & load_pid=$!
-            load_pids+=($load_pid)
+            python3 /home/ansible/loadscripts/load_generator.py 0.01 & load_pids+=($!)
         done
-    elif (( $(echo "$avg_usage >= 12.0 && $avg_usage < 15.0" | bc -l) )); then
-        echo -e "${GREEN}CPU usage is between 12% and 15%, starting one additional load generator until 15% CPU usage...${NC}"
-        python3 load_generator.py 0.01 & load_pid=$!
-        load_pids+=($load_pid)
-    elif (( $(echo "$avg_usage > 20.0" | bc -l) )); then
+    elif (( $(echo "$avg_usage >=12 && $avg_usage < 15" | bc -l) )); then
+        echo -e "${GREEN}Starting 1 generator...${NC}"
+        python3 /home/ansible/loadscripts/load_generator.py 0.01 & load_pids+=($!)
+    elif (( $(echo "$avg_usage > 20" | bc -l) )); then
         if (( ${#load_pids[@]} > 0 )); then
-            echo -e "${RED}CPU usage is above 20%, stopping one load generator...${NC}"
-            kill ${load_pids[-1]} # kill the last load generator
-            unset 'load_pids[${#load_pids[@]}-1]' # remove it from the array
-        else
-            echo -e "${RED}CPU usage is above 20%, no load generators are running...${NC}"
+            echo -e "${RED}Killing last generator...${NC}"
+            kill "${load_pids[-1]}"  # Kill by PID
+            unset 'load_pids[-1]'    # Fixed pop
         fi
-    elif (( $(echo "$avg_usage > 80.0" | bc -l) )); then
-        if (( ${#load_pids[@]} > 0 )); then
-            echo -e "${RED}CPU usage is above 80%, stopping all load generators...${NC}"
-            for pid in "${load_pids[@]}"; do
-                kill $pid
-            done
-            load_pids=()
-            echo -e "${GREEN}Current number of load generators: 0${NC}"
-        else
-            echo -e "${RED}CPU usage is above 80%, no load generators are running...${NC}"
-        fi
+    elif (( $(echo "$avg_usage > 80" | bc -l) )); then
+        cleanup
     fi
     sleep 5
 done
