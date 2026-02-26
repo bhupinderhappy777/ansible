@@ -1,9 +1,11 @@
 ---
-- name: Security hardening
+- name: Security hardening with verification
   hosts: all
   become: yes
+  gather_facts: yes
 
   tasks:
+    # Existing hardening tasks (unchanged)
     - name: Update all packages (SHELL bypass)
       shell: |
         if command -v apt >/dev/null; then
@@ -15,10 +17,17 @@
         fi
       changed_when: true
 
-    - name: Install firewall
+    - name: Install firewall - Debian
       package:
-        name: "{{ 'ufw' if ansible_os_family == 'Debian' else 'firewalld' }}"
+        name: ufw
         state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install firewall - RedHat
+      shell: |
+        dnf makecache
+        dnf install -y firewalld
+      when: ansible_os_family == "RedHat"
 
     - name: UFW - Allow SSH
       ufw:
@@ -32,12 +41,28 @@
         state: enabled
       when: ansible_os_family == "Debian"
 
+    - name: Enable firewalld - RedHat
+      systemd:
+        name: firewalld
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: firewalld - Allow SSH
+      firewalld:
+        service: ssh
+        permanent: yes
+        state: enabled
+        immediate: yes
+      when: ansible_os_family == "RedHat"
+
     - name: SSH - Disable root login
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: '^#?PermitRootLogin'
         line: 'PermitRootLogin no'
-        validate: 'sshd -t %s'
+        validate: 'sshd -t -f %s'
+        backup: yes
       notify: restart ssh
 
     - name: SSH - Disable password auth
@@ -45,8 +70,104 @@
         path: /etc/ssh/sshd_config
         regexp: '^#?PasswordAuthentication'
         line: 'PasswordAuthentication no'
-        validate: 'sshd -t %s'
+        validate: 'sshd -t -f %s'
+        backup: yes
       notify: restart ssh
+
+    # NEW: Prep verification facts
+    - name: Read sshd_config for verification
+      slurp:
+        src: /etc/ssh/sshd_config
+      register: sshd_config_raw
+
+    - name: Parse sshd_config lines
+      set_fact:
+        sshd_config_lines: "{{ sshd_config_raw['content'] | b64decode | split('\n') }}"
+
+    # Verification tasks (run always)
+    - name: Verify SSH config - root disabled
+      assert:
+        that:
+          - "'PermitRootLogin no' in sshd_config_lines"
+        fail_msg: "❌ PermitRootLogin not 'no' on {{ inventory_hostname }}"
+        success_msg: "✅ Root login disabled"
+
+    - name: Verify SSH config - password auth disabled
+      assert:
+        that:
+          - "'PasswordAuthentication no' in sshd_config_lines"
+        fail_msg: "❌ PasswordAuthentication not 'no' on {{ inventory_hostname }}"
+        success_msg: "✅ Password auth disabled"
+
+    - name: Verify SSH syntax valid
+      command: sshd -t
+      changed_when: false
+      failed_when: false
+      register: ssh_test
+
+    - name: Assert SSH syntax passes
+      assert:
+        that:
+          - ssh_test.rc == 0
+        fail_msg: "❌ SSH config syntax invalid on {{ inventory_hostname }}"
+
+    - name: Verify SSH service active
+      service_facts: {}
+
+    - name: Determine SSH service name
+      set_fact:
+        ssh_service_name: "{{ 'ssh.service' if ansible_os_family == 'Debian' else 'sshd.service' }}"
+
+    - name: Assert SSH service running
+      assert:
+        that:
+        - >
+            (ansible_os_family == "Debian" and
+            ansible_facts.services['ssh.service'].state == 'running') or
+            (ansible_os_family == "RedHat" and
+            ansible_facts.services['sshd.service'].state == 'running')
+        fail_msg: "❌ SSH service not running on {{ inventory_hostname }} ({{ ansible_os_family }})"
+        success_msg: "✅ SSH service running ({{ ansible_os_family }})"
+
+    - name: Verify SSH listening on port 22
+      wait_for:
+        port: 22
+        timeout: 5
+      register: ssh_port
+
+    - name: Assert SSH port open
+      assert:
+        that:
+          - ssh_port is succeeded
+        fail_msg: "❌ SSH not listening port 22 on {{ inventory_hostname }}"
+
+    - name: Verify UFW allows SSH
+      shell: ufw status numbered | grep 22
+      register: ufw_status
+      changed_when: false
+      failed_when: false
+      when: ansible_os_family == "Debian"
+
+    - name: Assert UFW SSH rule exists
+      assert:
+        that:
+          - "'22' in ufw_status.stdout"
+        fail_msg: "❌ UFW missing SSH rule on {{ inventory_hostname }}"
+      when: ansible_os_family == "Debian"
+
+    - name: Verify firewalld allows SSH
+      shell: firewall-cmd --list-services
+      register: fw_services
+      changed_when: false
+      failed_when: false
+      when: ansible_os_family == "RedHat"
+
+    - name: Assert firewalld SSH service
+      assert:
+        that:
+          - "'ssh' in fw_services.stdout"
+        fail_msg: "❌ firewalld missing SSH on {{ inventory_hostname }}"
+      when: ansible_os_family == "RedHat"
 
   handlers:
     - name: restart ssh
