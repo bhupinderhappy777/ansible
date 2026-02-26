@@ -25,7 +25,7 @@ jobs:
           pip install ansible ansible-lint
 
       - name: Create vault password file
-        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /home/runner/work/ansible/ansible/.vault_pass && echo "secrets.ANSIBLE_VAULT_PASSWORD"
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /home/runner/work/ansible/ansible/.vault_pass && cat /home/runner/work/ansible/ansible/.vault_pass
         
       - name: Run ansible-lint
         run: ansible-lint roles/tailscale molecule/default
