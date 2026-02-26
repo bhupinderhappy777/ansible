@@ -1,41 +1,28 @@
 ---
-- name: Install Essential Tools (Shell-Only)
+- name: Install Essential Tools (Shell Bypass - dnf5 Safe)
   hosts: all
   become: true
   gather_facts: true
-  tasks:
-    - name: Install Debian tools
-      apt:
-        pkg:
-          - htop
-          - sysstat
-          - traceroute
-          - iproute2
-          - curl
-          - wget
-        state: present
-        update_cache: true
-      when: ansible_os_family == "Debian"
 
-    - name: RPM systems - Setup EPEL & install (bulletproof shell)
+  tasks:
+    - name: Install tools (universal shell - dnf5 safe)
       shell: |
         set -e
-        # Import GPG keys
-        rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-9 || true
-        curl -o /tmp/epel.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm || true
-
-        # Install EPEL if missing
-        if ! rpm -q epel-release; then
-          rpm -i /tmp/epel.rpm || dnf config-manager --enable ol9_developer_EPEL crb || true
+        if command -v apt >/dev/null; then
+          apt-get update -qq
+          apt-get install -y -qq htop sysstat traceroute iproute2 curl wget
+        elif command -v dnf >/dev/null; then
+          dnf install -y htop sysstat traceroute iproute curl wget
+        elif command -v yum >/dev/null; then
+          yum install -y htop sysstat traceroute iproute curl wget
         fi
+      changed_when: false  # Idempotent
 
-        # Refresh & install
-        dnf makecache
-        dnf install -y htop sysstat traceroute iproute curl wget || true
-
-        rm -f /tmp/epel.rpm
-      args:
-        executable: bash
-        creates: /usr/bin/htop
+    - name: List installed tools
+      shell: "{{ item }} --version 2>/dev/null | head -1 || echo '{{ item }} missing'"
+      loop:
+        - htop
+        - sar
+        - traceroute
+        - curl
       changed_when: false
-      when: ansible_os_family == "RedHat"
