@@ -1,0 +1,41 @@
+---
+- name: Deploy security hardening cron (cron-safe)
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Install cron (universal shell)
+      shell: |
+        set -e
+        if command -v apt >/dev/null; then
+          apt-get update -qq >/dev/null
+          apt-get install -y -qq cron
+        elif command -v dnf >/dev/null; then
+          dnf install -y cronie
+        elif command -v yum >/dev/null; then
+          yum install -y cronie
+        fi
+      changed_when: false
+
+    - name: Add security hardening cron (single-line)
+      cron:
+        name: "Security hardening"
+        weekday: "1"
+        hour: "3"
+        minute: "0"
+        job: "ansible-pull -U https://github.com/bhupinderhappy777/ansible playbooks/security-hardening.yml --vault-id @none >> /var/log/ansible-security.log 2>&1"
+        state: present
+        user: root
+
+    - name: Ensure vault password file dir
+      file:
+        path: /root
+        state: directory
+        mode: '0700'
+
+  handlers:
+    - name: Restart cron service
+      systemd:
+        name: "{{ 'cron' if ansible_os_family == 'Debian' else 'crond' }}"
+        state: restarted
