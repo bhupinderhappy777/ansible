@@ -3,29 +3,32 @@
 
 
 - name: Check if tailscale binary exists
-  stat:
+  ansible.builtin.stat:
     path: /usr/bin/tailscale
   register: tailscale_bin
 
 - name: Install Tailscale using official install script
-  shell: curl -fsSL https://tailscale.com/install.sh | sh
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://tailscale.com/install.sh | sh
   args:
-    executable: /bin/sh
+    executable: /bin/bash
+    creates: /usr/bin/tailscale
   when: not tailscale_bin.stat.exists
-  
+
 - name: Ensure Tailscale is installed
-  package:
+  ansible.builtin.package:
     name: tailscale
     state: present
 
 - name: Start and enable Tailscale service
-  systemd:
+  ansible.builtin.systemd:
     name: tailscaled
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Connect to Tailscale network
-  command: "tailscale up --authkey={{ tailscale_auth_key }}"
+  ansible.builtin.command: "tailscale up --authkey={{ tailscale_auth_key }}"
   when:
     - tailscale_auth_key is defined
     - tailscale_auth_key | length > 0
@@ -33,14 +36,14 @@
   changed_when: "'already logged in' not in tailscale_status.stdout"
   failed_when: false
   no_log: true
-  
+
 - name: Check Tailscale status
-  command: tailscale status
+  ansible.builtin.command: tailscale status
   register: tailscale_status_output
   changed_when: false
   failed_when: false
 
 - name: Display Tailscale status
-  debug:
+  ansible.builtin.debug:
     var: tailscale_status_output.stdout_lines
   when: tailscale_status_output.stdout_lines is defined

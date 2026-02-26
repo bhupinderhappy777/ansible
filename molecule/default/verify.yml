@@ -1,0 +1,14 @@
+---
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Check tailscale binary
+      ansible.builtin.stat:
+        path: /usr/bin/tailscale
+      register: tailscale_binary
+
+    - name: Assert tailscale is installed
+      ansible.builtin.assert:
+        that:
+          - tailscale_binary.stat.exists

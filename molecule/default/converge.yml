@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    tailscale_auth_key: ""
+  roles:
+    - role: tailscale

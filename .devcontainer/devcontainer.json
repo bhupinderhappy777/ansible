@@ -1,0 +1,19 @@
+{
+  "name": "Ansible Control Node",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {}
+  },
+  "containerEnv": {
+    // This maps the GitHub Secret to an Environment Variable inside the shell
+    "ANSIBLE_SSH_KEY": "${localEnv:ID_ED25519}"
+  },
+  "postCreateCommand": "pip install ansible && mkdir -p ~/.ssh && echo \"$ANSIBLE_SSH_KEY\" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible"
+      ]
+    }
+  }
+}
