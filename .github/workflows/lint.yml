@@ -24,8 +24,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible ansible-lint
 
+      - name: Debug secret injection
+        run: |
+          if [ -z "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" ]; then
+            echo "ANSIBLE_VAULT_PASSWORD secret is not set or empty"
+          else
+            echo "ANSIBLE_VAULT_PASSWORD secret is set"
+          fi
+
       - name: Create vault password file
-        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /home/runner/work/ansible/ansible/.vault_pass && cat /home/runner/work/ansible/ansible/.vault_pass
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+        
+      - name: Debug vault password file
+        run: |
+          if [ -f .vault_pass ]; then
+            echo "File exists, size: $(stat -c%s .vault_pass) bytes"
+            if [ -s .vault_pass ]; then
+              echo "File has content"
+            else
+              echo "File is empty"
+            fi
+          else
+            echo "File does not exist"
+          fi
         
       - name: Run ansible-lint
-        run: ansible-lint roles/tailscale molecule/default
+        run: ansible-lint --vault-password-file .vault_pass roles/tailscale molecule/default
