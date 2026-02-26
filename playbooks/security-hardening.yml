@@ -4,6 +4,9 @@
   become: yes
   gather_facts: yes
 
+  vars:
+    ansible_vault_password_file: null
+
   tasks:
     # Existing hardening tasks (unchanged)
     - name: Update all packages (SHELL bypass)

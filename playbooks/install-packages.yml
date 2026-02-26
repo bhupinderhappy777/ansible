@@ -1,11 +1,11 @@
 ---
-- name: Install Essential Tools (Shell Bypass - dnf5 Safe)
+- name: Install Essential Tools
   hosts: all
   become: true
   gather_facts: true
 
   tasks:
-    - name: Install tools (universal shell - dnf5 safe)
+    - name: Install tools - shell
       shell: |
         set -e
         if command -v apt >/dev/null; then
@@ -16,7 +16,7 @@
         elif command -v yum >/dev/null; then
           yum install -y htop sysstat traceroute iproute curl wget
         fi
-      changed_when: false  # Idempotent
+      changed_when: false
 
     - name: List installed tools
       shell: "{{ item }} --version 2>/dev/null | head -1 || echo '{{ item }} missing'"

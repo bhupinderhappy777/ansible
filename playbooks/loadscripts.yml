@@ -41,8 +41,8 @@
         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       args:
         executable: /bin/bash
-      async: 10  # Short timeout
-      poll: 0    # Fire-and-forget (don't wait)
+      async: 10
+      poll: 0
       register: daemon_job
 
     - name: Show daemon status
