@@ -10,10 +10,9 @@
     curl -fsSL https://tailscale.com/install.sh | sh
   args:
     executable: /bin/bash
-  # Fix: no-changed-when & risky-shell-pipe
   when: not tailscale_bin.stat.exists
-  register: install_result
-  changed_when: install_result.rc == 0
+  register: tailscale_install_result
+  changed_when: tailscale_install_result.rc == 0
 
 - name: Ensure Tailscale service is started and enabled
   ansible.builtin.systemd:
