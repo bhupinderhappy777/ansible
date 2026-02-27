@@ -1,6 +1,7 @@
 [DEFAULT]
 user={{ oci_user_ocid }}
 fingerprint={{ oci_fingerprint }}
-key_file={{ ansible_env.HOME }}/.oci/oci_api_key.pem
+key_file=/home/{{ service_user }}/.oci/oci_api_key.pem
 tenancy={{ oci_tenancy_ocid }}
 region={{ oci_region }}
+ansible_vault_secret_ocid={{ ansible_vault_secret_ocid }}

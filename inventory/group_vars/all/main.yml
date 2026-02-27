@@ -1,17 +1,7 @@
-system_packages:
-  Debian:
-    - { pkg: "htop", bin: "htop" }
-    - { pkg: "sysstat", bin: "sar" }
-    - { pkg: "traceroute", bin: "traceroute" }
-    - { pkg: "iproute2", bin: "ip" }
-    - { pkg: "curl", bin: "curl" }
-    - { pkg: "wget", bin: "wget" }
-    - { pkg: "zsh", bin: "zsh" }
-  RedHat:
-    - { pkg: "htop", bin: "htop" }
-    - { pkg: "sysstat", bin: "sar" }
-    - { pkg: "traceroute", bin: "traceroute" }
-    - { pkg: "iproute", bin: "ip" }
-    - { pkg: "curl", bin: "curl" }
-    - { pkg: "wget", bin: "wget" }
-    - { pkg: "zsh", bin: "zsh" }
+# group_vars/oci_harjot.yml
+ansible_user: ansible
+ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+ansible_become_method: sudo
+ansible_become_user: root
+service_user: "bhupi"
+oci_venv_path: "/opt/oci"

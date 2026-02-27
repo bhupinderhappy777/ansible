@@ -5,6 +5,3 @@
 
 - name: Harden SSH Configuration
   ansible.builtin.include_tasks: ssh.yml
-
-- name: Configure OS-Specific Firewall
-  ansible.builtin.include_tasks: firewall.yml

@@ -1,0 +1,8 @@
+---
+- import_tasks: update.yml
+- import_tasks: firewall.yml
+- import_tasks: ssh.yml
+- import_tasks: verify.yml
+
+- name: Configure OS-Specific Firewall
+  ansible.builtin.include_tasks: firewall.yml

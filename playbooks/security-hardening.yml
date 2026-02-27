@@ -8,17 +8,28 @@
     ansible_vault_password_file: null
 
   tasks:
-    # Existing hardening tasks (unchanged)
-    - name: Update all packages (SHELL bypass)
-      shell: |
-        if command -v apt >/dev/null; then
-          apt-get update && apt-get upgrade -y
-        elif command -v dnf >/dev/null; then
-          dnf upgrade -y
-        elif command -v yum >/dev/null; then
-          yum update -y
-        fi
-      changed_when: true
+    - name: Update and upgrade all packages (Native)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        purge: yes
+        allow_downgrades: yes
+      when: ansible_os_family == "Debian"
+      become: yes
+
+    - name: Ensure dnf5 python bindings are installed
+      ansible.builtin.raw: dnf install -y python3-libdnf5
+      when: ansible_os_family == "RedHat"
+      become: yes
+      changed_when: false
+
+    - name: Update all packages (RedHat)
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+      become: yes
 
     - name: Install firewall - Debian
       package:
