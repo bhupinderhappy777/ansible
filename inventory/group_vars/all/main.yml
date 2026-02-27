@@ -1,22 +1,3 @@
----
-# Common variables for all hosts
-# Uncomment and configure as needed
-
-# Tailscale configuration (store auth key securely using Ansible Vault)
-# tailscale_auth_key: "tskey-auth-xxxxx-yyyyy"
-# tailscale_args: "--accept-routes"
-
-# SSH configuration
-# ansible_ssh_private_key_file: ~/.ssh/id_rsa
-
-# Common timezone
-# timezone: "UTC"
-
-# DNS servers
-# dns_servers:
-#   - 8.8.8.8
-#   - 8.8.4.4
-# Package names mapping
 system_packages:
   Debian:
     - { pkg: "htop", bin: "htop" }
@@ -25,6 +6,7 @@ system_packages:
     - { pkg: "iproute2", bin: "ip" }
     - { pkg: "curl", bin: "curl" }
     - { pkg: "wget", bin: "wget" }
+    - { pkg: "zsh", bin: "zsh" }
   RedHat:
     - { pkg: "htop", bin: "htop" }
     - { pkg: "sysstat", bin: "sar" }
@@ -32,3 +14,4 @@ system_packages:
     - { pkg: "iproute", bin: "ip" }
     - { pkg: "curl", bin: "curl" }
     - { pkg: "wget", bin: "wget" }
+    - { pkg: "zsh", bin: "zsh" }

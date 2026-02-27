@@ -4,3 +4,45 @@
     name: sysstat
     state: started
     enabled: yes
+
+- name: Get all local users from /etc/passwd
+  ansible.builtin.getent:
+    database: passwd
+
+- name: Update shell to Zsh for all human users
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    shell: /bin/zsh
+  loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+  # Filter: only users with a home in /home (prevents breaking system users)
+  when: "'/home/' in item.value[4]"
+  become: yes
+
+- name: Install Oh My Zsh for all human users
+  ansible.builtin.git:
+    repo: 'https://github.com/ohmyzsh/ohmyzsh.git'
+    dest: "{{ item.value[4] }}/.oh-my-zsh"
+    depth: 1
+  loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+  when: "'/home/' in item.value[4]"
+  become: yes
+
+- name: Install zsh-autosuggestions plugin
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-autosuggestions'
+    dest: "{{ item.value[4] }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    depth: 1
+  loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+  when: "'/home/' in item.value[4]"
+  become: yes
+
+- name: Deploy .zshrc template to all users
+  ansible.builtin.template:
+    src: zshrc.j2
+    dest: "{{ item.value[4] }}/.zshrc"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    mode: '0644'
+  loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+  when: "'/home/' in item.value[4]"
+  become: yes
