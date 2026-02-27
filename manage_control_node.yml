@@ -1,0 +1,8 @@
+---
+- name: Setup Management Control Node
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/vault.yml
+  roles:
+    - management

@@ -1,0 +1,65 @@
+---
+- name: Install system dependencies for OCI SDK
+  ansible.builtin.package:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - gcc
+      - libffi-devel
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install system dependencies for OCI SDK (Debian)
+  ansible.builtin.package:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - build-essential
+      - libffi-dev
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install OCI Python SDK and CLI via pip
+  ansible.builtin.pip:
+    name:
+      - oci
+      - oci-cli
+    state: present
+    executable: pip3
+
+- name: Create OCI configuration directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.oci"
+    state: directory
+    mode: '0700'
+
+- name: Deploy OCI configuration file
+  ansible.builtin.template:
+    src: oci_config.j2
+    dest: "{{ ansible_env.HOME }}/.oci/config"
+    mode: '0600'
+
+- name: Check if OCI API key exists
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.oci/oci_api_key.pem"
+  register: oci_key_stat
+
+- name: Generate OCI API private key if missing
+  ansible.builtin.command: >
+    openssl genrsa -out {{ ansible_env.HOME }}/.oci/oci_api_key.pem 2048
+  when: not oci_key_stat.stat.exists
+
+- name: Generate OCI API public key
+  ansible.builtin.command: >
+    openssl rsa -pubout -in {{ ansible_env.HOME }}/.oci/oci_api_key.pem
+    -out {{ ansible_env.HOME }}/.oci/oci_api_key_public.pem
+  when: not oci_key_stat.stat.exists
+
+- name: Fetch public key for manual console upload
+  ansible.builtin.slurp:
+    src: "{{ ansible_env.HOME }}/.oci/oci_api_key_public.pem"
+  register: oci_pub_key
+
+- name: Show Public Key for OCI Console
+  ansible.builtin.debug:
+    msg: "{{ oci_pub_key['content'] | b64decode }}"
