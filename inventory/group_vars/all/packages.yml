@@ -8,6 +8,7 @@ system_packages:
     - { pkg: "pipx", bin: "pipx" }
     - { pkg: "wget", bin: "wget" }
     - { pkg: "zsh", bin: "zsh" }
+    - { pkg: "stow", bin: "stow" }
   RedHat:
     - { pkg: "htop", bin: "htop" }
     - { pkg: "sysstat", bin: "sar" }
@@ -17,3 +18,4 @@ system_packages:
     - { pkg: "wget", bin: "wget" }
     - { pkg: "zsh", bin: "zsh" }
     - { pkg: "pipx", bin: "pipx" }
+    - { pkg: "stow", bin: "stow" }
