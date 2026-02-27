@@ -5,10 +5,15 @@
   register: tailscale_bin
 
 - name: Install Tailscale via official script
-  ansible.builtin.shell: "curl -fsSL https://tailscale.com/install.sh | sh"
-  when: not tailscale_bin.stat.exists
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://tailscale.com/install.sh | sh
   args:
     executable: /bin/bash
+  # Fix: no-changed-when & risky-shell-pipe
+  when: not tailscale_bin.stat.exists
+  register: install_result
+  changed_when: install_result.rc == 0
 
 - name: Ensure Tailscale service is started and enabled
   ansible.builtin.systemd:

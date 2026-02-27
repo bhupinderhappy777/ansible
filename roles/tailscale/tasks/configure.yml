@@ -7,11 +7,13 @@
 
 - name: Connect to Tailscale network
   ansible.builtin.command: "tailscale up --authkey={{ tailscale_auth_key }}"
+  # Fix: var-naming[no-role-prefix] and no-changed-when
+  register: tailscale_up_result
+  changed_when: "'success' in tailscale_up_result.stdout or tailscale_up_result.rc == 0"
   when: 
     - tailscale_auth_key is defined
     - "'Logged out' in tailscale_status_check.stdout or 'NeedsLogin' in tailscale_status_check.stdout"
-  no_log: true 
-  register: up_result
+  no_log: true
 
 - name: Display Tailscale IP address
   ansible.builtin.debug:
