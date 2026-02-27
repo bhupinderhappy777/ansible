@@ -1,0 +1,10 @@
+---
+# tasks file for roles/bootstrap
+- name: Setup Administrative User
+  ansible.builtin.include_tasks: user.yml
+
+- name: Harden SSH Configuration
+  ansible.builtin.include_tasks: ssh.yml
+
+- name: Configure OS-Specific Firewall
+  ansible.builtin.include_tasks: firewall.yml

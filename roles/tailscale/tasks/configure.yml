@@ -1,0 +1,18 @@
+---
+- name: Check Tailscale login status
+  ansible.builtin.command: tailscale status
+  register: tailscale_status_check
+  changed_when: false
+  failed_when: false
+
+- name: Connect to Tailscale network
+  ansible.builtin.command: "tailscale up --authkey={{ tailscale_auth_key }}"
+  when: 
+    - tailscale_auth_key is defined
+    - "'Logged out' in tailscale_status_check.stdout or 'NeedsLogin' in tailscale_status_check.stdout"
+  no_log: true 
+  register: up_result
+
+- name: Display Tailscale IP address
+  ansible.builtin.debug:
+    msg: "Tailscale IP: {{ ansible_facts['all_ipv4_addresses'] | select('match', '^100\\.') | first | default('Not Found') }}"

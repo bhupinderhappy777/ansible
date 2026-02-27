@@ -1,0 +1,8 @@
+---
+- name: Install base packages
+  ansible.builtin.package:
+    name: "{{ item.pkg }}"
+    state: present
+  loop: "{{ system_packages[ansible_os_family] | default(system_packages['Debian']) }}"
+  loop_control:
+    label: "{{ item.pkg }}"

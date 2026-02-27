@@ -1,0 +1,6 @@
+---
+- name: Ensure sysstat service is enabled and started
+  ansible.builtin.service:
+    name: sysstat
+    state: started
+    enabled: yes

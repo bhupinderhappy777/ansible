@@ -1,28 +1,31 @@
 ---
-- name: Install Essential Tools
+- name: Install Essential Tools (Refined Verification)
   hosts: all
   become: true
   gather_facts: true
 
   tasks:
-    - name: Install tools - shell
-      shell: |
-        set -e
-        if command -v apt >/dev/null; then
-          apt-get update -qq
-          apt-get install -y -qq htop sysstat traceroute iproute2 curl wget
-        elif command -v dnf >/dev/null; then
-          dnf install -y htop sysstat traceroute iproute curl wget
-        elif command -v yum >/dev/null; then
-          yum install -y htop sysstat traceroute iproute curl wget
-        fi
-      changed_when: false
+    - name: Ensure essential tools are present
+      ansible.builtin.package:
+        name: "{{ item.pkg }}"
+        state: present
+      loop: "{{ system_packages[ansible_os_family] | default(system_packages['Debian']) }}"
+      loop_control:
+        label: "{{ item.pkg }}"
 
-    - name: List installed tools
-      shell: "{{ item }} --version 2>/dev/null | head -1 || echo '{{ item }} missing'"
-      loop:
-        - htop
-        - sar
-        - traceroute
-        - curl
+    - name: Verify binaries are in the PATH
+      ansible.builtin.command: "which {{ item.bin }}"
+      loop: "{{ system_packages[ansible_os_family] | default(system_packages['Debian']) }}"
+      register: tool_check
       changed_when: false
+      failed_when: false
+      loop_control:
+        label: "{{ item.bin }}"
+
+    - name: Summary of installed tools
+      ansible.builtin.debug:
+        msg: "✅ {{ item.item.pkg }} (binary: {{ item.item.bin }}) is at {{ item.stdout }}"
+      loop: "{{ tool_check.results }}"
+      when: item.rc == 0
+      loop_control:
+        label: "{{ item.item.bin }}"

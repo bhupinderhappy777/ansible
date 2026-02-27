@@ -1,0 +1,19 @@
+---
+- name: Ensure the ansible user exists
+  ansible.builtin.user:
+    name: "{{ bootstrap_user }}"
+    shell: /bin/bash
+    groups: "{{ admin_group }}"
+    append: yes
+
+- name: Configure passwordless sudo
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ bootstrap_user }}"
+    content: "%{{ admin_group }} ALL=(ALL) NOPASSWD: ALL"
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Deploy authorized_key
+  ansible.posix.authorized_key:
+    user: "{{ bootstrap_user }}"
+    key: "{{ bootstrap_ssh_key }}"

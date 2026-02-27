@@ -1,0 +1,17 @@
+---
+- name: Check if tailscale binary exists
+  ansible.builtin.stat:
+    path: /usr/bin/tailscale
+  register: tailscale_bin
+
+- name: Install Tailscale via official script
+  ansible.builtin.shell: "curl -fsSL https://tailscale.com/install.sh | sh"
+  when: not tailscale_bin.stat.exists
+  args:
+    executable: /bin/bash
+
+- name: Ensure Tailscale service is started and enabled
+  ansible.builtin.systemd:
+    name: tailscaled
+    state: started
+    enabled: true

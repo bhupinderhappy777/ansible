@@ -1,0 +1,7 @@
+---
+# This calls the specific task files in order
+- name: Handle Package Installation
+  ansible.builtin.include_tasks: packages.yml
+
+- name: Handle Service Management
+  ansible.builtin.include_tasks: services.yml

@@ -1,26 +1,8 @@
 ---
-# site.yml — Master playbook runs ALL setup in order
-
-- name: 1. Bootstrap Ansible User + SSH + Cron
-  import_playbook: playbooks/setup-ansible.yml
-  tags: bootstrap
-
-- name: 2. Security Hardening
-  import_playbook: playbooks/security-hardening.yml  
-  tags: security
-
-- name: 3. Install Tailscale VPN
-  import_playbook: playbooks/install-tailscale.yml
-  tags: tailscale
-
-- name: 5. System Information & Facts
-  import_playbook: playbooks/system-info.yml
-  tags: info
-
-- name: 6. Workstation Apps (Optional)
-  import_playbook: playbooks/install-workstation.yml
-  tags: workstation
-
-- name: 7. Ping Test (Always Last)
-  import_playbook: playbooks/ping.yml
-  tags: ping
+- name: Apply Infrastructure State
+  hosts: all
+  become: true
+  roles:
+    - { role: bootstrap, tags: ['bootstrap', 'setup'] }
+    - { role: common,    tags: ['common', 'packages'] }
+    - { role: tailscale, tags: ['tailscale', 'network'] }

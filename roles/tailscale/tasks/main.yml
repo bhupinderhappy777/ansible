@@ -1,49 +1,6 @@
 ---
-# Main tasks file for Tailscale installation
+- name: Install Tailscale Package
+  ansible.builtin.include_tasks: install.yml
 
-
-- name: Check if tailscale binary exists
-  ansible.builtin.stat:
-    path: /usr/bin/tailscale
-  register: tailscale_bin
-
-- name: Install Tailscale using official install script
-  ansible.builtin.shell: |
-    set -o pipefail
-    curl -fsSL https://tailscale.com/install.sh | sh
-  args:
-    executable: /bin/bash
-    creates: /usr/bin/tailscale
-  when: not tailscale_bin.stat.exists
-
-- name: Ensure Tailscale is installed
-  ansible.builtin.package:
-    name: tailscale
-    state: present
-
-- name: Start and enable Tailscale service
-  ansible.builtin.systemd:
-    name: tailscaled
-    state: started
-    enabled: true
-
-- name: Connect to Tailscale network
-  ansible.builtin.command: "tailscale up --authkey={{ tailscale_auth_key }}"
-  when:
-    - tailscale_auth_key is defined
-    - tailscale_auth_key | length > 0
-  register: tailscale_status
-  changed_when: "'already logged in' not in tailscale_status.stdout"
-  failed_when: false
-  no_log: true
-
-- name: Check Tailscale status
-  ansible.builtin.command: tailscale status
-  register: tailscale_status_output
-  changed_when: false
-  failed_when: false
-
-- name: Display Tailscale status
-  ansible.builtin.debug:
-    var: tailscale_status_output.stdout_lines
-  when: tailscale_status_output.stdout_lines is defined
+- name: Configure and Authenticate
+  ansible.builtin.include_tasks: configure.yml
