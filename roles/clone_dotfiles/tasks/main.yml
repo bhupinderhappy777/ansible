@@ -1,0 +1,22 @@
+# tasks file for roles/clone_dotfiles
+---
+- name: Ensure .ssh directory exists
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.ssh"
+    state: directory
+    mode: '0700'
+
+- name: Deploy Private SSH Key from Vault
+  copy:
+    content: "{{ ssh_private_key }}"
+    dest: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
+    mode: '0600'
+  no_log: true
+
+- name: Sync Dotfiles Repository
+  git:
+    repo: "{{ dotfiles_repo }}"
+    dest: "{{ dotfiles_home }}"
+    version: "{{ dotfiles_branch }}"
+    update: yes
+    force: yes
