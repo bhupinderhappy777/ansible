@@ -4,24 +4,20 @@
   gather_facts: yes
   vars:
     target_user: "bhupi"
-    dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
+    dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    dotfiles_branch: "plasma"
     target_home: "/home/{{ target_user }}"
     dotfiles_home: "{{ target_home }}/dotfiles"
     ansible_user: "bhupi"
 
   tasks:
-    - name: Mark dotfiles as safe for Git
-      community.general.git_config:
-        name: safe.directory
-        value: "{{ dotfiles_home }}"
-        scope: global
-
     - name: Clone or Update dotfiles repo
       git:
         repo: "{{ dotfiles_repo }}"
         dest: "{{ dotfiles_home }}"
+        version: "{{ dotfiles_branch }}"
         update: yes
-        # This ensures the files are always owned by the user running the script
+        force: yes
         accept_hostkey: yes
 
     - name: Check status of .zshrc
@@ -79,21 +75,21 @@
         state: directory
         mode: '0755'
 
-    - name: Deploy Master Plasma Configuration
-      copy:
-        src: "{{ dotfiles_home }}/plasma/appletsrc.master"
-        dest: "{{ target_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        mode: '0644'
-        force: yes
+    - name: Set Plasma Version Variable
+      set_fact:
+        plasma_version: "{{ 'v6' if ansible_distribution == 'Fedora' else 'v5' }}"
 
-    - name: Ensure Plasma layout script is executable
+    - name: Ensure Restart Script is Executable
       file:
-        path: "{{ dotfiles_home }}/plasma/apply_layout.sh"
+        path: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/apply_layout.sh"
         mode: '0755'
 
-    - name: Apply KDE Plasma Layout
-      shell: "{{ dotfiles_home }}/plasma/apply_layout.sh"
-      args:
-        executable: /bin/bash
+    - name: Deploy Correct Plasma Config
+      copy:
+        src: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/appletsrc.master"
+        dest: "{{ target_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        remote_src: yes
+        force: yes
+
+    - name: Run Version-Specific Restart Script
+      shell: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/apply_layout.sh"
