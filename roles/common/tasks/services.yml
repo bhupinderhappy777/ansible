@@ -35,14 +35,3 @@
   loop: "{{ ansible_facts.getent_passwd | dict2items }}"
   when: "'/home/' in item.value[4]"
   become: yes
-
-- name: Deploy .zshrc template to all users
-  ansible.builtin.template:
-    src: zshrc.j2
-    dest: "{{ item.value[4] }}/.zshrc"
-    owner: "{{ item.key }}"
-    group: "{{ item.key }}"
-    mode: '0644'
-  loop: "{{ ansible_facts.getent_passwd | dict2items }}"
-  when: "'/home/' in item.value[4]"
-  become: yes

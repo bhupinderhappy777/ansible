@@ -7,78 +7,93 @@
     dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
     target_home: "/home/{{ target_user }}"
     dotfiles_home: "{{ target_home }}/dotfiles"
+    ansible_user: "bhupi"
 
   tasks:
-
     - name: Mark dotfiles as safe for Git
-      become: yes
-      become_user: "{{ target_user }}"
       community.general.git_config:
         name: safe.directory
         value: "{{ dotfiles_home }}"
         scope: global
 
-    - name: Clone dotfiles repo
-      become: yes
-      become_user: "{{ target_user }}"
+    - name: Clone or Update dotfiles repo
       git:
         repo: "{{ dotfiles_repo }}"
         dest: "{{ dotfiles_home }}"
         update: yes
+        # This ensures the files are always owned by the user running the script
+        accept_hostkey: yes
 
     - name: Check status of .zshrc
-      become: yes
-      become_user: "{{ target_user }}"
       stat:
         path: "{{ target_home }}/.zshrc"
       register: zshrc_stat
 
     - name: Purge local .zshrc if not a symlink
-      become: yes
-      become_user: "{{ target_user }}"
       file:
         path: "{{ target_home }}/.zshrc"
         state: absent
       when: zshrc_stat.stat.exists and not zshrc_stat.stat.islnk
 
     - name: Link Zsh using Stow
-      become: yes
-      become_user: "{{ target_user }}"
       command: "stow -R -t {{ target_home }} zsh"
       args:
         chdir: "{{ dotfiles_home }}"
 
-    - name: Force Sync KDE Shortcuts (Source of Truth)
-      become: yes
-      become_user: "bhupi"
+    - name: Ensure Plasma config directory exists
       file:
-        src: "/home/bhupi/dotfiles/plasma/.config/kglobalshortcutsrc"
-        dest: "/home/bhupi/.config/kglobalshortcutsrc"
+        path: "{{ target_home }}/.config"
+        state: directory
+        mode: '0755'
+
+    - name: Force Sync KDE Shortcuts
+      file:
+        src: "{{ dotfiles_home }}/plasma/.config/kglobalshortcutsrc"
+        dest: "{{ target_home }}/.config/kglobalshortcutsrc"
         state: link
         force: yes
 
     - name: Ensure Konsole data directory exists
-      become: yes
-      become_user: "bhupi"
       file:
-        path: "/home/bhupi/.local/share/konsole"
+        path: "{{ target_home }}/.local/share/konsole"
         state: directory
         mode: '0755'
 
-    - name: Link Konsole Profile (Source of Truth)
-      become: yes
-      become_user: "bhupi"
+    - name: Link Konsole Profile
       file:
-        src: "/home/bhupi/dotfiles/konsole/.local/share/konsole/my_profile.profile"
-        dest: "/home/bhupi/.local/share/konsole/my_profile.profile"
+        src: "{{ dotfiles_home }}/konsole/.local/share/konsole/my_profile.profile"
+        dest: "{{ target_home }}/.local/share/konsole/my_profile.profile"
         state: link
         force: yes
 
     - name: Set my_profile as the default Konsole profile
-      become: yes
-      become_user: "bhupi"
       ini_file:
-        path: "/home/bhupi/.config/konsolerc"
+        path: "{{ target_home }}/.config/konsolerc"
         section: "Desktop Entry"
         option: "DefaultProfile"
         value: "my_profile.profile"
+
+    - name: Ensure Plasma config directory exists
+      file:
+        path: "{{ target_home }}/.config"
+        state: directory
+        mode: '0755'
+
+    - name: Deploy Master Plasma Configuration
+      copy:
+        src: "{{ dotfiles_home }}/plasma/appletsrc.master"
+        dest: "{{ target_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        mode: '0644'
+        force: yes
+
+    - name: Ensure Plasma layout script is executable
+      file:
+        path: "{{ dotfiles_home }}/plasma/apply_layout.sh"
+        mode: '0755'
+
+    - name: Apply KDE Plasma Layout
+      shell: "{{ dotfiles_home }}/plasma/apply_layout.sh"
+      args:
+        executable: /bin/bash
