@@ -1,19 +1,22 @@
 ---
+
 - name: Check Tailscale login status
   ansible.builtin.command: tailscale status
   register: tailscale_status_check
-  changed_when: false
   failed_when: false
+  changed_when: false
 
 - name: Connect to Tailscale network
-  ansible.builtin.command: "tailscale up --authkey={{ tailscale_auth_key }}"
-  # Fix: var-naming[no-role-prefix] and no-changed-when
-  register: tailscale_up_result
-  changed_when: "'success' in tailscale_up_result.stdout or tailscale_up_result.rc == 0"
+  ansible.builtin.command:
+    cmd: "tailscale up --authkey={{ tailscale_auth_key }} --accept-routes"
+  # We only run this if we aren't already 'active'
   when:
     - tailscale_auth_key is defined
-    - "'Logged out' in tailscale_status_check.stdout or 'NeedsLogin' in tailscale_status_check.stdout"
-  no_log: true
+    - "'Logged in' not in tailscale_status_check.stdout"
+  register: tailscale_up_result
+  # Use no_log to protect your key, but turn it off if you need to debug!
+  no_log: false
+  become: yes
 
 - name: Display Tailscale IP address
   ansible.builtin.debug:
