@@ -25,5 +25,5 @@
     - { role: packages, tags: ['packages'] }
     - { role: clone_dotfiles, tags: ['clone'] }
     - { role: stow, tags: ['stow'] }
-    - { role: wallpaper, tags: ['wallpaper'] }
+#    - { role: wallpaper, tags: ['wallpaper'] }
     - { role: terminal, tags: ['terminal'] }

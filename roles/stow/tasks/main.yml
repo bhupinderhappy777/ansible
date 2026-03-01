@@ -36,6 +36,7 @@
     - "zsh"
     - "konsole"
     - "git"
+    - "systemd"
   register: stow_result
   changed_when: "'LINK' in stow_result.stderr"
 
@@ -71,4 +72,13 @@
 - name: Run Version-Specific Restart Script
   shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
   changed_when: false
+  when: ansible_facts['virtualization_type'] != 'wsl'
+
+- name: Enable and Start Wallpaper Timer
+  ansible.builtin.systemd:
+    name: wallpaper-refresh.timer
+    scope: user
+    enabled: true
+    state: started
+    daemon_reload: true
   when: ansible_facts['virtualization_type'] != 'wsl'
