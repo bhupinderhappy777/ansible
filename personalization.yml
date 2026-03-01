@@ -1,23 +1,27 @@
 ---
 - name: Personalize the Workstation
   hosts: all
-  # Note: Use 'become: no' as default for user-level dotfiles/personalization
   become: no
   vars:
     ansible_user: "bhupi"
+
+    # Dot Files
     dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
     dotfiles_branch: "plasma"
     dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+
+    # Wallpaper Settings
     wallhaven_tag: "id:37"
     wallhaven_res: "3840x2160"
     wallhaven_colors: "000000"
+
+    # Plasma Version
     plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
   roles:
-    # 1. System-level setup (Needs become: yes)
     - { role: bootstrap, tags: ['bootstrap'], become: yes }
-
-    # 2. User-level personalization
+    - { role: management, tags: ['management', 'oci'] }
+    - { role: tailscale, tags: ['tailscale'] }
     - { role: packages, tags: ['packages'] }
     - { role: clone_dotfiles, tags: ['clone'] }
     - { role: stow, tags: ['stow'] }

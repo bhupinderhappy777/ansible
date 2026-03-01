@@ -1,6 +1,6 @@
 - name: Install system dependencies for OCI SDK (RedHat)
   ansible.builtin.package:
-    name: [python3-pip, python3-setuptools, python3-venv, gcc, libffi-devel]
+    name: [python3-pip, python3-setuptools, openssl, gcc, libffi-devel]
     state: present
   when: ansible_facts['os_family'] == "RedHat"
   become: yes
@@ -22,49 +22,48 @@
 
 - name: Create OCI configuration directory
   ansible.builtin.file:
-    path: "/home/{{ service_user }}/.oci"
+    path: "/home/{{ ansible_user }}/.oci"
     state: directory
-    owner: "{{ service_user }}"
-    group: "{{ service_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0700'
-  become: yes
 
 - name: Deploy OCI configuration file
   ansible.builtin.template:
     src: oci_config.j2
-    dest: "/home/{{ service_user }}/.oci/config"
-    owner: "{{ service_user }}"
-    group: "{{ service_user }}"
+    dest: "/home/{{ ansible_user }}/.oci/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0600'
-  become: yes
+
+- name: OCI - Deploy Private Key
+  ansible.builtin.copy:
+    content: "{{ private_key }}"
+    dest: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
+    mode: '0600'
 
 - name: Check if OCI API key exists
   ansible.builtin.stat:
-    path: "/home/{{ service_user }}/.oci/oci_api_key.pem"
+    path: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
   register: oci_key_stat
 
 - name: Generate OCI API private key if missing
   ansible.builtin.command: >
-    openssl genrsa -out /home/{{ service_user }}/.oci/oci_api_key.pem 2048
+    openssl genrsa -out /home/{{ ansible_user }}/.oci/oci_api_key.pem 2048
   args:
-    creates: "/home/{{ service_user }}/.oci/oci_api_key.pem"
+    creates: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
   when: not oci_key_stat.stat.exists
-  become: yes
-  become_user: "{{ service_user }}"
 
 - name: Generate OCI API public key
   ansible.builtin.command: >
-    openssl rsa -pubout -in /home/{{ service_user }}/.oci/oci_api_key.pem
-    -out /home/{{ service_user }}/.oci/oci_api_key_public.pem
+    openssl rsa -pubout -in /home/{{ ansible_user }}/.oci/oci_api_key.pem
+    -out /home/{{ ansible_user }}/.oci/oci_api_key_public.pem
   args:
-    creates: "/home/{{ service_user }}/.oci/oci_api_key_public.pem"
-  when: not oci_key_stat.stat.exists
-  become: yes
-  become_user: "{{ service_user }}"
+    creates: "/home/{{ ansible_user }}/.oci/oci_api_key_public.pem"
 
 - name: Fetch public key for manual console upload
   ansible.builtin.slurp:
-    src: "/home/{{ service_user }}/.oci/oci_api_key_public.pem"
+    src: "/home/{{ ansible_user }}/.oci/oci_api_key_public.pem"
   register: oci_pub_key
 
 - name: Show Public Key for OCI Console

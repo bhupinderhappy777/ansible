@@ -1,5 +1,5 @@
-# group_vars/oci_harjot.yml
-ansible_user: ansible
+# group_vars
+ansible_user: bhupi
 ansible_ssh_private_key_file: ~/.ssh/id_ed25519
 ansible_become_method: sudo
 ansible_become_user: root
