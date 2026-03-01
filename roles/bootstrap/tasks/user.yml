@@ -5,9 +5,9 @@
   ansible.builtin.user:
     name: "{{ bootstrap_user }}"
     shell: /bin/zsh
-    groups: "{{ admin_group }}"
-    append: yes
-    create_home: yes
+    groups: "{{ bootstrap_admin_group }}"
+    append: true
+    create_home: true
 
 - name: TARGET - Configure passwordless sudo
   ansible.builtin.copy:

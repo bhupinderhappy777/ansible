@@ -1,8 +1,8 @@
 ---
 - name: Deploy security hardening cron (cron-safe)
   hosts: all
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
 
   tasks:
     - name: Install cron (universal shell)
@@ -19,7 +19,7 @@
       changed_when: false
 
     - name: Add security hardening cron (single-line)
-      cron:
+      ansible.builtin.cron:
         name: "Security hardening"
         weekday: "1"
         hour: "3"
@@ -29,7 +29,7 @@
         user: root
 
     - name: Ensure vault password file dir
-      file:
+      ansible.builtin.file:
         path: /root
         state: directory
         mode: '0700'

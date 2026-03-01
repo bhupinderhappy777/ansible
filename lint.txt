@@ -1,0 +1,418 @@
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mpersonalization.yml[0m:4
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mpersonalization.yml[0m:22
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use bootstrap_ as a prefix. (vars: admin_group)[0m
+[35mroles/bootstrap/defaults/main.yml[0m:7:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use bootstrap_ as a prefix. (vars: ssh_service_name)[0m
+[35mroles/bootstrap/defaults/main.yml[0m:8:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/name/\name[casing]]8;;\[0m[2m:[0m [31mAll names should start with an uppercase letter.[0m
+[35mroles/bootstrap/handlers/main.yml[0m:2:9 [2mTask/Handler: restart sshd[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/name/\name[casing]]8;;\[0m[2m:[0m [31mAll names should start with an uppercase letter.[0m
+[35mroles/bootstrap/handlers/main.yml[0m:7:9 [2mTask/Handler: reload firewalld[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/no-changed-when/\no-changed-when]8;;\[0m[2m:[0m [31mCommands should not change things if nothing needs doing.[0m
+[35mroles/bootstrap/handlers/main.yml[0m:7 [2mTask/Handler: reload firewalld[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/name/\name[casing]]8;;\[0m[2m:[0m [31mAll names should start with an uppercase letter.[0m
+[35mroles/bootstrap/handlers/main.yml[0m:11:9 [2mTask/Handler: reload ufw[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/bootstrap/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/bootstrap/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/bootstrap/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.1 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/bootstrap/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/bootstrap/tasks/ssh.yml[0m:7
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/bootstrap/tasks/user.yml[0m:2
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/name/\name[template]]8;;\[0m[2m:[0m [31mJinja templates should only be at the end of 'name'[0m
+[35mroles/bootstrap/tasks/user.yml[0m:4:9 [2mTask/Handler: TARGET - Ensure the user {{ bootstrap_user }} exists[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/bootstrap/tasks/user.yml[0m:9
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/bootstrap/tasks/user.yml[0m:10
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/clone_dotfiles/defaults/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/clone_dotfiles/handlers/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.2 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/clone_dotfiles/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/clone_dotfiles/meta/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/clone_dotfiles/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/clone_dotfiles/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/clone_dotfiles/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (file).[0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:4:3 [2mUse `ansible.builtin.file` or `ansible.legacy.file` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (copy).[0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:10:3 [2mUse `ansible.builtin.copy` or `ansible.legacy.copy` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (git).[0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:17:3 [2mUse `ansible.builtin.git` or `ansible.legacy.git` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:21
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:22
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/clone_dotfiles/tasks/main.yml[0m:23
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/management/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/management/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/management/meta/main.yml[0m:1:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.1 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/management/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/management/tasks/main.yml[0m:6
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/management/tasks/main.yml[0m:13
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/management/tasks/main.yml[0m:21
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use management_ as a prefix. (register: oci_key_stat)[0m
+[35mroles/management/tasks/main.yml[0m:45:13 [2mTask/Handler: Check if OCI API key exists[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use management_ as a prefix. (register: oci_pub_key)[0m
+[35mroles/management/tasks/main.yml[0m:64:13 [2mTask/Handler: Fetch public key for manual console upload[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/packages/defaults/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/packages/handlers/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.2 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/packages/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/packages/meta/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/packages/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/packages/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/packages/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/packages/tasks/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:9
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:17
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use packages_ as a prefix. (register: zsh_path)[0m
+[35mroles/packages/tasks/main.yml[0m:20:13 [2mTask/Handler: Locate zsh binary path[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (command).[0m
+[35mroles/packages/tasks/main.yml[0m:21:3 [2mUse `ansible.builtin.command` or `ansible.legacy.command` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/command-instead-of-module/\command-instead-of-module]8;;\[0m[2m:[0m [31mcurl used in place of get_url or uri module[0m
+[35mroles/packages/tasks/main.yml[0m:25 [2mTask/Handler: ZSH | Install Starship Prompt[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/risky-shell-pipe/\risky-shell-pipe]8;;\[0m[2m:[0m [31mShells that use pipes should set the pipefail option.[0m
+[35mroles/packages/tasks/main.yml[0m:25 [2mTask/Handler: ZSH | Install Starship Prompt[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:29
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/latest/\latest[git]]8;;\[0m[2m:[0m [31mResult of the command may vary on subsequent runs.[0m
+[35mroles/packages/tasks/main.yml[0m:31 [2mTask/Handler: ZSH | Install Oh My Zsh[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/latest/\latest[git]]8;;\[0m[2m:[0m [31mResult of the command may vary on subsequent runs.[0m
+[35mroles/packages/tasks/main.yml[0m:37 [2mTask/Handler: ZSH | Install Plugins (Suggestions & Highlighting)[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (user).[0m
+[35mroles/packages/tasks/main.yml[0m:47:3 [2mUse `ansible.builtin.user` or `ansible.legacy.user` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:50
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:56
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action]]8;;\[0m[2m:[0m [31mUse FQCN for module actions, such `community.general.flatpak_remote`.[0m
+[35mroles/packages/tasks/main.yml[0m:59:3 [2mAction `flatpak_remote` is not FQCN.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:63
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action]]8;;\[0m[2m:[0m [31mUse FQCN for module actions, such `community.general.flatpak`.[0m
+[35mroles/packages/tasks/main.yml[0m:66:3 [2mAction `flatpak` is not FQCN.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/packages/tasks/main.yml[0m:72
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (command).[0m
+[35mroles/packages/tasks/main.yml[0m:76:3 [2mUse `ansible.builtin.command` or `ansible.legacy.command` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use packages_ as a prefix. (vars: system_packages)[0m
+[35mroles/packages/vars/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use packages_ as a prefix. (vars: flatpak_packages)[0m
+[35mroles/packages/vars/main.yml[0m:42:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/stow/defaults/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/stow/handlers/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.2 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/stow/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/stow/meta/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/stow/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/stow/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/stow/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/var-naming/\var-naming[no-role-prefix]]8;;\[0m[2m:[0m [31mVariables names from within roles should use stow_ as a prefix. (register: config_stats)[0m
+[35mroles/stow/tasks/main.yml[0m:3:13 [2mTask/Handler: Stow | Check status of existing config files[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/risky-file-permissions/\risky-file-permissions]8;;\[0m[2m:[0m [31mFile permissions unset or incorrect.[0m
+[35mroles/stow/tasks/main.yml[0m:52 [2mTask/Handler: Set my_profile as the default Konsole profile[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action]]8;;\[0m[2m:[0m [31mUse FQCN for module actions, such `community.general.ini_file`.[0m
+[35mroles/stow/tasks/main.yml[0m:53:3 [2mAction `ini_file` is not FQCN.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (file).[0m
+[35mroles/stow/tasks/main.yml[0m:61:3 [2mUse `ansible.builtin.file` or `ansible.legacy.file` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/risky-file-permissions/\risky-file-permissions]8;;\[0m[2m:[0m [31mFile permissions unset or incorrect.[0m
+[35mroles/stow/tasks/main.yml[0m:65 [2mTask/Handler: Deploy Correct Plasma Config (appletsrc)[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (copy).[0m
+[35mroles/stow/tasks/main.yml[0m:66:3 [2mUse `ansible.builtin.copy` or `ansible.legacy.copy` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/stow/tasks/main.yml[0m:69
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/stow/tasks/main.yml[0m:70
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/command-instead-of-shell/\command-instead-of-shell]8;;\[0m[2m:[0m [31mUse shell only when shell functionality is required.[0m
+[35mroles/stow/tasks/main.yml[0m:72 [2mTask/Handler: Run Version-Specific Restart Script[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (shell).[0m
+[35mroles/stow/tasks/main.yml[0m:73:3 [2mUse `ansible.builtin.shell` or `ansible.legacy.shell` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/stow/vars/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/no-changed-when/\no-changed-when]8;;\[0m[2m:[0m [31mCommands should not change things if nothing needs doing.[0m
+[35mroles/tailscale/tasks/configure.yml[0m:9 [2mTask/Handler: Connect to Tailscale network[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/tailscale/tasks/configure.yml[0m:19
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/terminal/defaults/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/terminal/handlers/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.2 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/terminal/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/terminal/meta/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/terminal/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/terminal/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/terminal/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/command-instead-of-module/\command-instead-of-module]8;;\[0m[2m:[0m [31mcurl used in place of get_url or uri module[0m
+[35mroles/terminal/tasks/main.yml[0m:3 [2mTask/Handler: Install Starship Prompt (Binary)[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/risky-shell-pipe/\risky-shell-pipe]8;;\[0m[2m:[0m [31mShells that use pipes should set the pipefail option.[0m
+[35mroles/terminal/tasks/main.yml[0m:3 [2mTask/Handler: Install Starship Prompt (Binary)[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (shell).[0m
+[35mroles/terminal/tasks/main.yml[0m:4:3 [2mUse `ansible.builtin.shell` or `ansible.legacy.shell` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/terminal/tasks/main.yml[0m:5
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (file).[0m
+[35mroles/terminal/tasks/main.yml[0m:10:3 [2mUse `ansible.builtin.file` or `ansible.legacy.file` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (unarchive).[0m
+[35mroles/terminal/tasks/main.yml[0m:16:3 [2mUse `ansible.builtin.unarchive` or `ansible.legacy.unarchive` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/terminal/tasks/main.yml[0m:19
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/risky-file-permissions/\risky-file-permissions]8;;\[0m[2m:[0m [31mFile permissions unset or incorrect.[0m
+[35mroles/terminal/tasks/main.yml[0m:22 [2mTask/Handler: Set Font in Konsole Profile[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action]]8;;\[0m[2m:[0m [31mUse FQCN for module actions, such `community.general.ini_file`.[0m
+[35mroles/terminal/tasks/main.yml[0m:23:3 [2mAction `ini_file` is not FQCN.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/terminal/vars/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/wallpaper/defaults/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/wallpaper/handlers/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/schema/\schema[meta]]8;;\[0m[2m:[0m [31m$.galaxy_info.min_ansible_version 2.2 is not of type 'string'. See https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html#using-role-dependencies[0m
+[35mroles/wallpaper/meta/main.yml[0m:1 [2m Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``schema[playbook]``,
+``schema[tasks]``.
+
+This rule is not skippable and stops further processing of the file.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+[/]
+[0m[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/wallpaper/meta/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: author[0m
+[35mroles/wallpaper/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: company[0m
+[35mroles/wallpaper/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/meta-incorrect/\meta-incorrect]8;;\[0m[2m:[0m [31mShould change default metadata: license[0m
+[35mroles/wallpaper/meta/main.yml[0m:2:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/wallpaper/tasks/main.yml[0m:1
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (file).[0m
+[35mroles/wallpaper/tasks/main.yml[0m:5:3 [2mUse `ansible.builtin.file` or `ansible.legacy.file` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[truthy]]8;;\[0m[2m:[0m [31mTruthy value should be one of [false, true][0m
+[35mroles/wallpaper/tasks/main.yml[0m:14
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (cron).[0m
+[35mroles/wallpaper/tasks/main.yml[0m:19:3 [2mUse `ansible.builtin.cron` or `ansible.legacy.cron` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/fqcn/\fqcn[action-core]]8;;\[0m[2m:[0m [31mUse FQCN for builtin module actions (command).[0m
+[35mroles/wallpaper/tasks/main.yml[0m:27:3 [2mUse `ansible.builtin.command` or `ansible.legacy.command` instead.[0m
+[0m
+[31m[34m]8;;https://docs.ansible.com/projects/lint/rules/yaml/\yaml[comments]]8;;\[0m[2m:[0m [31mMissing starting space in comment[0m
+[35mroles/wallpaper/vars/main.yml[0m:1
+[0m

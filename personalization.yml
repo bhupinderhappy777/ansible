@@ -1,7 +1,7 @@
 ---
 - name: Personalize the Workstation
   hosts: all
-  become: no
+  become: false
   vars:
     ansible_user: "bhupi"
 
@@ -19,7 +19,7 @@
     plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
   roles:
-    - { role: bootstrap, tags: ['bootstrap'], become: yes }
+    - { role: bootstrap, tags: ['bootstrap'], become: true }
     - { role: management, tags: ['management', 'oci'] }
     - { role: tailscale, tags: ['tailscale'] }
     - { role: packages, tags: ['packages'] }

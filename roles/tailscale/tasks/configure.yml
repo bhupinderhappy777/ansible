@@ -16,7 +16,7 @@
   register: tailscale_up_result
   # Use no_log to protect your key, but turn it off if you need to debug!
   no_log: false
-  become: yes
+  become: true
 
 - name: Display Tailscale IP address
   ansible.builtin.debug:

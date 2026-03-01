@@ -3,7 +3,7 @@
   ansible.builtin.service:
     name: sysstat
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Get all local users from /etc/passwd
   ansible.builtin.getent:
@@ -16,7 +16,7 @@
   loop: "{{ ansible_facts.getent_passwd | dict2items }}"
   # Filter: only users with a home in /home (prevents breaking system users)
   when: "'/home/' in item.value[4]"
-  become: yes
+  become: true
 
 - name: Install Oh My Zsh for all human users
   ansible.builtin.git:
@@ -25,7 +25,7 @@
     depth: 1
   loop: "{{ ansible_facts.getent_passwd | dict2items }}"
   when: "'/home/' in item.value[4]"
-  become: yes
+  become: true
 
 - name: Install zsh-autosuggestions plugin
   ansible.builtin.git:
@@ -34,4 +34,4 @@
     depth: 1
   loop: "{{ ansible_facts.getent_passwd | dict2items }}"
   when: "'/home/' in item.value[4]"
-  become: yes
+  become: true

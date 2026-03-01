@@ -3,4 +3,4 @@
   ansible.builtin.systemd:
     name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true

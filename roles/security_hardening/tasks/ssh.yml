@@ -5,7 +5,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     validate: 'sshd -t -f %s'
-    backup: yes
+    backup: true
   loop:
     - { regexp: '^#?PermitRootLogin', line: "PermitRootLogin {{ hardening_permit_root_login }}" }
     - { regexp: '^#?PasswordAuthentication', line: "PasswordAuthentication {{ hardening_password_auth }}" }

@@ -9,7 +9,7 @@
 
   tasks:
     - name: Ensure Local Font Directory Exists
-      file:
+      ansible.builtin.file:
         path: "{{ target_home }}/.local/share/fonts"
         state: directory
         mode: '0755'
@@ -23,16 +23,16 @@
       unarchive:
         src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
         dest: "{{ target_home }}/.local/share/fonts"
-        remote_src: yes
+        remote_src: true
       when: not font_check.stat.exists
       notify: Refresh Font Cache
 
     - name: Install Starship Prompt (Binary)
       shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
-      become: yes
+      become: true
 
     - name: Ensure Konsole Stow Directory Exists
-      file:
+      ansible.builtin.file:
         path: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/.local/share/konsole"
         state: directory
         mode: '0755'

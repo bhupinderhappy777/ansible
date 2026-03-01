@@ -2,12 +2,12 @@
 # tasks file for /home/bhupi/ansible/roles/terminal
 - name: Install Starship Prompt (Binary)
   shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
-  become: yes
+  become: true
   args:
     creates: /usr/local/bin/starship
 
 - name: Ensure Local Font Directory Exists
-  file:
+  ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.local/share/fonts"
     state: directory
     mode: '0755'
@@ -16,7 +16,7 @@
   unarchive:
     src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/DroidSansMono.tar.xz" # DM Mono is part of the Droid family in Nerd Fonts
     dest: "{{ ansible_facts['user_dir'] }}/.local/share/fonts"
-    remote_src: yes
+    remote_src: true
     creates: "{{ ansible_facts['user_dir'] }}/.local/share/fonts/Droid Sans Mono Nerd Font Complete.otf"
 
 - name: Set Font in Konsole Profile

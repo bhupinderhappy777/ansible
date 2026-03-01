@@ -14,10 +14,10 @@
       user:
         name: ansible
         groups: "{{ 'wheel' if ansible_facts['os_family'] == 'RedHat' else 'sudo' }}"
-        append: yes
+        append: true
 
     - name: Enable NOPASSWD sudo (distro-aware)
-      copy:
+      ansible.builtin.copy::
         dest: "/etc/sudoers.d/ansible"
         content: "{{ '%wheel ALL=(ALL) NOPASSWD: ALL' if ansible_facts['os_family'] == 'RedHat' else '%sudo ALL=(ALL) NOPASSWD: ALL' }}\n"
         owner: root
@@ -26,7 +26,7 @@
         validate: '/usr/sbin/visudo -cf %s'
 
     - name: Ensure .ssh dir
-      file:
+      ansible.builtin.file:
         path: /home/ansible/.ssh
         state: directory
         owner: ansible
@@ -61,4 +61,4 @@
         state: restarted
 
     - name: reload firewalld
-      command: firewall-cmd --reload
+      ansible.builtin.command: firewall-cmd --reload

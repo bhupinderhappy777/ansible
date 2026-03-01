@@ -3,14 +3,14 @@
     name: [python3-pip, python3-setuptools, openssl, gcc, libffi-devel]
     state: present
   when: ansible_facts['os_family'] == "RedHat"
-  become: yes
+  become: true
 
 - name: Install system dependencies for OCI SDK (Debian)
   ansible.builtin.package:
     name: [python3-pip, python3-setuptools, python3-venv, build-essential, libffi-dev]
     state: present
   when: ansible_facts['os_family'] == "Debian"
-  become: yes
+  become: true
 
 - name: Create OCI venv and install OCI packages
   ansible.builtin.pip:
@@ -18,7 +18,7 @@
     state: present
     virtualenv: "{{ oci_venv_path }}"
     virtualenv_command: python3 -m venv
-  become: yes
+  become: true
 
 - name: Create OCI configuration directory
   ansible.builtin.file:

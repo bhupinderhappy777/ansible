@@ -1,7 +1,7 @@
 ---
 - name: Sync Environment Across All Nodes
   hosts: all
-  gather_facts: yes
+  gather_facts: true
   vars:
     target_user: "bhupi"
     dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
@@ -16,9 +16,9 @@
         repo: "{{ dotfiles_repo }}"
         dest: "{{ dotfiles_home }}"
         version: "{{ dotfiles_branch }}"
-        update: yes
-        force: yes
-        accept_hostkey: yes
+        update: true
+        force: true
+        accept_hostkey: true
 
     - name: Check status of .zshrc
       stat:
@@ -26,41 +26,41 @@
       register: zshrc_stat
 
     - name: Purge local .zshrc if not a symlink
-      file:
+      ansible.builtin.file:
         path: "{{ target_home }}/.zshrc"
         state: absent
       when: zshrc_stat.stat.exists and not zshrc_stat.stat.islnk
 
     - name: Link Zsh using Stow
-      command: "stow -R -t {{ target_home }} zsh"
+      ansible.builtin.command: "stow -R -t {{ target_home }} zsh"
       args:
         chdir: "{{ dotfiles_home }}"
 
     - name: Ensure Plasma config directory exists
-      file:
+      ansible.builtin.file:
         path: "{{ target_home }}/.config"
         state: directory
         mode: '0755'
 
     - name: Force Sync KDE Shortcuts
-      file:
+      ansible.builtin.file:
         src: "{{ dotfiles_home }}/plasma/.config/kglobalshortcutsrc"
         dest: "{{ target_home }}/.config/kglobalshortcutsrc"
         state: link
-        force: yes
+        force: true
 
     - name: Ensure Konsole data directory exists
-      file:
+      ansible.builtin.file:
         path: "{{ target_home }}/.local/share/konsole"
         state: directory
         mode: '0755'
 
     - name: Link Konsole Profile
-      file:
+      ansible.builtin.file:
         src: "{{ dotfiles_home }}/konsole/.local/share/konsole/my_profile.profile"
         dest: "{{ target_home }}/.local/share/konsole/my_profile.profile"
         state: link
-        force: yes
+        force: true
 
     - name: Set my_profile as the default Konsole profile
       ini_file:
@@ -70,7 +70,7 @@
         value: "my_profile.profile"
 
     - name: Ensure Plasma config directory exists
-      file:
+      ansible.builtin.file:
         path: "{{ target_home }}/.config"
         state: directory
         mode: '0755'
@@ -80,16 +80,16 @@
         plasma_version: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
     - name: Ensure Restart Script is Executable
-      file:
+      ansible.builtin.file:
         path: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/apply_layout.sh"
         mode: '0755'
 
     - name: Deploy Correct Plasma Config
-      copy:
+      ansible.builtin.copy::
         src: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/appletsrc.master"
         dest: "{{ target_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
-        remote_src: yes
-        force: yes
+        remote_src: true
+        force: true
 
     - name: Run Version-Specific Restart Script
       shell: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/apply_layout.sh"

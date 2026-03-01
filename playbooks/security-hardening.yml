@@ -1,8 +1,8 @@
 ---
 - name: Security hardening with verification
   hosts: all
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
 
   vars:
     ansible_vault_password_file: null
@@ -10,18 +10,18 @@
   tasks:
     - name: Update and upgrade all packages (Native)
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
         upgrade: dist
-        autoremove: yes
-        purge: yes
-        allow_downgrades: yes
+        autoremove: true
+        purge: true
+        allow_downgrades: true
       when: ansible_facts['os_family'] == "Debian"
-      become: yes
+      become: true
 
     - name: Ensure dnf5 python bindings are installed
       ansible.builtin.raw: dnf install -y python3-libdnf5
       when: ansible_facts['os_family'] == "RedHat"
-      become: yes
+      become: true
       changed_when: false
 
     - name: Update all packages (RedHat)
@@ -29,10 +29,10 @@
         name: "*"
         state: latest
       when: ansible_facts['os_family'] == "RedHat"
-      become: yes
+      become: true
 
     - name: Install firewall - Debian
-      package:
+      ansible.builtin.package:
         name: ufw
         state: present
       when: ansible_facts['os_family'] == "Debian"
@@ -59,15 +59,15 @@
       systemd:
         name: firewalld
         state: started
-        enabled: yes
+        enabled: true
       when: ansible_facts['os_family'] == "RedHat"
 
     - name: firewalld - Allow SSH
       firewalld:
         service: ssh
-        permanent: yes
+        permanent: true
         state: enabled
-        immediate: yes
+        immediate: true
       when: ansible_facts['os_family'] == "RedHat"
 
     - name: SSH - Disable root login
@@ -76,7 +76,7 @@
         regexp: '^#?PermitRootLogin'
         line: 'PermitRootLogin no'
         validate: 'sshd -t -f %s'
-        backup: yes
+        backup: true
       notify: restart ssh
 
     - name: SSH - Disable password auth
@@ -85,7 +85,7 @@
         regexp: '^#?PasswordAuthentication'
         line: 'PasswordAuthentication no'
         validate: 'sshd -t -f %s'
-        backup: yes
+        backup: true
       notify: restart ssh
 
     # NEW: Prep verification facts
@@ -114,7 +114,7 @@
         success_msg: "✅ Password auth disabled"
 
     - name: Verify SSH syntax valid
-      command: sshd -t
+      ansible.builtin.command: sshd -t
       changed_when: false
       failed_when: false
       register: ssh_test
@@ -188,4 +188,4 @@
       systemd:
         name: "{{ 'ssh.service' if ansible_facts['os_family'] == 'Debian' else 'sshd.service' }}"
         state: restarted
-        daemon_reload: yes
+        daemon_reload: true

@@ -2,7 +2,7 @@
 ---
 # tasks file for wallpaper
 - name: Make Wallpaper Script Executable
-  file:
+  ansible.builtin.file:
     path: "{{ dotfiles_home }}/scripts/wallpaper_wallhaven.sh"
     mode: '0755'
   when: ansible_facts['virtualization_type'] != 'wsl'
@@ -11,12 +11,12 @@
   ansible.builtin.package:
     name: cronie
     state: present
-  become: yes
+  become: true
   # Use ansible_facts for modern compliance
   when: ansible_facts['os_family'] == "RedHat"
 
 - name: Schedule 3 AM Refresh
-  cron:
+  ansible.builtin.cron:
     name: "Daily Wallhaven Refresh via cron"
     minute: "0"
     hour: "3"
@@ -24,7 +24,7 @@
   when: ansible_facts['virtualization_type'] != 'wsl'
 
 - name: Run initial wallpaper fetch
-  command: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
+  ansible.builtin.command: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
   register: wallpaper_output
   changed_when: "'Wallpaper updated' in wallpaper_output.stdout"
   when: ansible_facts['virtualization_type'] != 'wsl'
