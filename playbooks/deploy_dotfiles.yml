@@ -85,7 +85,7 @@
         mode: '0755'
 
     - name: Deploy Correct Plasma Config
-      ansible.builtin.copy::
+      ansible.builtin.copy:
         src: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/appletsrc.master"
         dest: "{{ target_home }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
         remote_src: true

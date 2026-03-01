@@ -12,7 +12,7 @@
         mode: '0755'
 
     - name: Copy load_controller.sh
-      ansible.builtin.copy::
+      ansible.builtin.copy:
         src: load_controller.sh
         dest: /home/ansible/loadscripts/load_controller.sh
         owner: "{{ ansible_user }}"
@@ -20,7 +20,7 @@
         mode: '0755'
 
     - name: Copy load_generator.py
-      ansible.builtin.copy::
+      ansible.builtin.copy:
         src: load_generator.py
         dest: /home/ansible/loadscripts/load_generator.py
         owner: "{{ ansible_user }}"
