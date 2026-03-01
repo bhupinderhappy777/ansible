@@ -1,5 +1,5 @@
 ---
-Prepare the Targets (Remote Nodes)
+#Prepare the Targets (Remote Nodes)
 
 - name: TARGET - Ensure the user {{ bootstrap_user }} exists
   ansible.builtin.user:
