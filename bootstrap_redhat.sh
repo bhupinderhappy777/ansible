@@ -42,7 +42,8 @@ ansible-pull -U "$REPO_URL" \
              --ask-vault-pass \
              --vault-id=@prompt \
              -K \
-             "$PLAYBOOK"
+             "$PLAYBOOK" \
+             --skip-tags="gui,optional"
 
 echo "=================================================================="
 echo "✅ Setup complete!"
