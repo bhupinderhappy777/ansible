@@ -35,11 +35,12 @@ ansible-galaxy collection install community.general ansible.posix
 # -C: Checkout the specific branch
 # -K: Ask for become (sudo) password (needed for the first run)
 # -i: Uses a local-only inventory logic
-echo "🔄 Handing control to ansible-pull..."
+echo "🔄 Handing control to ansible-pull (expecting password files at .vault_pass and .become_pass, remove after script)..."
 ansible-pull -U "$REPO_URL" \
              -C "$BRANCH" \
               -i "localhost," \
-             --ask-vault-pass \
+              --vault-password-file ~/.vault_pass \
+              --become-password-file ~/.become_pass \
              --vault-id=@prompt \
              -K \
              "$PLAYBOOK" \
