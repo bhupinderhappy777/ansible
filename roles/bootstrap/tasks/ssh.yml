@@ -26,4 +26,4 @@
     permanent: true
     state: enabled
     immediate: true
-    when: ansible_facts['virtualization_type'] != 'wsl'
+  when: ansible_facts['virtualization_type'] != 'wsl'
