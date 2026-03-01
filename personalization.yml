@@ -1,6 +1,6 @@
 ---
 - name: Personalize the Workstation
-  hosts: home_lab
+  hosts: all
   # Note: Use 'become: no' as default for user-level dotfiles/personalization
   become: no
   vars:

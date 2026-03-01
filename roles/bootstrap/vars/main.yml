@@ -1,6 +1,5 @@
 ---
-# vars file for roles/bootstrap
----
+# vars file for roles/bootstrap321
 # The user you want to create and manage
 bootstrap_user: bhupi
 
