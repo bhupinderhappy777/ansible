@@ -1,9 +1,9 @@
 ---
-# Purge existing files to prevent Stow conflicts (KDE creates these by default)
-- name: Purge existing configs to force Stow links
-  file:
-    path: "{{ ansible_facts['user_dir'] }}/{{ item }}"
-    state: absent
+# 1. Check every item in the list individually
+- name: Stow | Check status of existing config files
+  ansible.builtin.stat:
+    path: "{{ ansible_user_dir }}/{{ item }}"
+  register: config_stats
   loop:
     - ".zshrc"
     - ".gitconfig"
@@ -13,11 +13,24 @@
     - ".config/kscreenlockerrc"
     - ".config/kdeglobals"
     - ".config/kwalletrc"
-  # Only purge if they aren't already managed symlinks
-  when: not (stow_result.changed | default(false))
 
-- name: Stow Core Configurations (Zsh & Konsole)
-  command: "stow -R -t {{ ansible_facts['user_dir'] }} {{ item }}"
+# 2. Purge only the specific items that are NOT symlinks
+- name: Stow | Purge real files to allow for symlinks
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  # Only delete if the file exists AND it is a regular file (not a symlink)
+  when:
+    - item.stat.exists
+    - not item.stat.islnk
+  loop: "{{ config_stats.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+# 3. Use --no-folding to prevent the .config conflict
+- name: Stow Core Configurations
+  ansible.builtin.command:
+    cmd: "stow -R --no-folding -t {{ ansible_user_dir }} {{ item }}"
   args:
     chdir: "{{ dotfiles_home }}"
   loop:
@@ -25,7 +38,16 @@
     - "konsole"
     - "git"
   register: stow_result
-  changed_when: '"LINK" in stow_result.stderr'
+  changed_when: "'LINK' in stow_result.stderr"
+
+- name: Stow Plasma common files
+  ansible.builtin.command:
+    # Adding --no-folding here is the MAGIC FIX for the .config error
+    cmd: "stow -R --no-folding -t {{ ansible_user_dir }} -d plasma common"
+  args:
+    chdir: "{{ dotfiles_home }}"
+  register: stow_plasma
+  changed_when: "'LINK' in stow_plasma.stderr"
 
 - name: Set my_profile as the default Konsole profile
   ini_file:
@@ -33,13 +55,6 @@
     section: "Desktop Entry"
     option: "DefaultProfile"
     value: "my_profile.profile"
-
-- name: Stow Plasma common files
-  command: "stow -R -t {{ ansible_facts['user_dir'] }} -d plasma common"
-  args:
-    chdir: "{{ dotfiles_home }}"
-  register: stow_plasma
-  changed_when: '"LINK" in stow_plasma.stderr'
 
 # Plasma Version Specific Layout (v5 vs v6)
 - name: Ensure Restart Script is Executable

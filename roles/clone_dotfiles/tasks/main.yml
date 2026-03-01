@@ -18,5 +18,6 @@
     repo: "{{ dotfiles_repo }}"
     dest: "{{ dotfiles_home }}"
     version: "{{ dotfiles_branch }}"
+    accept_hostkey: yes
     update: yes
     force: yes

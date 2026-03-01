@@ -28,6 +28,12 @@
     shell: "{{ zsh_path.stdout }}"
   become: yes
 
+- name: Ensure Flatpak is installed
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+  become: yes
+
 - name: Ensure Flathub repository is enabled
   flatpak_remote:
     name: flathub
