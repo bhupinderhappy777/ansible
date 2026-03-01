@@ -24,7 +24,7 @@
     path: /etc/ssh/sshd_config
     regexp: '^#?ListenAddress 0.0.0.0'
     line: 'ListenAddress 0.0.0.0'
-  notify: restart sshd
+  notify: Restart sshd
 
 - name: FIREWALL - Permit SSH
   ansible.posix.firewalld:
