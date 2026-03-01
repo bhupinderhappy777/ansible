@@ -20,6 +20,7 @@
     path: "{{ item.stat.path }}"
     state: absent
   when:
+    - item.stat.exists
     - not item.stat.isdir
     - not item.stat.islnk
   loop: "{{ config_stats.results }}"
