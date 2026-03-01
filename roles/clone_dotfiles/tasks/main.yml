@@ -7,7 +7,7 @@
     mode: '0700'
 
 - name: Deploy Private SSH Key from Vault
-  ansible.builtin.copy::
+  ansible.builtin.copy:
     content: "{{ ssh_private_key }}"
     dest: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
     mode: '0600'
