@@ -72,3 +72,4 @@
 - name: Run Version-Specific Restart Script
   shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
   changed_when: false
+  when: ansible_facts['virtualization_type'] != 'wsl'
