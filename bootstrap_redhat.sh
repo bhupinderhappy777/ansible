@@ -38,6 +38,7 @@ ansible-galaxy collection install community.general ansible.posix
 echo "🔄 Handing control to ansible-pull..."
 ansible-pull -U "$REPO_URL" \
              -C "$BRANCH" \
+             --ask-vault-pass \
              -K \
              "$PLAYBOOK"
 
