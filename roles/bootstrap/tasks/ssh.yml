@@ -1,4 +1,12 @@
 ---
+
+- name: SSH | Ensure OpenSSH Server is installed
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+  become: yes
+
+
 - name: TARGET - Add authorized SSH key
   ansible.posix.authorized_key:
     user: "{{ bootstrap_user }}"
@@ -18,3 +26,4 @@
     permanent: true
     state: enabled
     immediate: true
+    when: ansible_facts['virtualization_type'] != 'wsl'
