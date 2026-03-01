@@ -16,7 +16,7 @@ echo "📍 Source: $REPO_URL ($BRANCH)"
 # 1. Update System and Install Core Requirements
 echo "📦 Updating DNF and installing base dependencies..."
 sudo dnf update -y
-sudo dnf install -y git python3-pip pipx
+sudo dnf install -y git python3-pip pipx python3-dnf
 
 # 2. Setup Ansible via pipx
 # We use pipx to keep the system Python clean
