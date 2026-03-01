@@ -40,6 +40,7 @@ ansible-pull -U "$REPO_URL" \
              -C "$BRANCH" \
               -i "localhost," \
              --ask-vault-pass \
+             --vault-id=@prompt \
              -K \
              "$PLAYBOOK"
 
