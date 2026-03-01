@@ -37,5 +37,5 @@
   handlers:
     - name: Restart cron service
       systemd:
-        name: "{{ 'cron' if ansible_os_family == 'Debian' else 'crond' }}"
+        name: "{{ 'cron' if ansible_facts['os_family'] == 'Debian' else 'crond' }}"
         state: restarted

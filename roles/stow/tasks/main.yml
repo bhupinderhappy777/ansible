@@ -1,35 +1,35 @@
-
-# tasks file for /home/bhupi/ansible/roles/stow
 ---
+# Purge existing files to prevent Stow conflicts (KDE creates these by default)
 - name: Purge existing configs to force Stow links
   file:
     path: "{{ ansible_facts['user_dir'] }}/{{ item }}"
     state: absent
   loop:
     - ".zshrc"
+    - ".gitconfig"
     - ".local/share/konsole/my_profile.profile"
     - ".config/kwinrc"
     - ".config/kglobalshortcutsrc"
-  # This prevents deleting the files if they are already correct symlinks
-  when: not (stow_konsole.changed | default(false))
+    - ".config/kscreenlockerrc"
+    - ".config/kdeglobals"
+    - ".config/kwalletrc"
+  # Only purge if they aren't already managed symlinks
+  when: not (stow_result.changed | default(false))
 
-- name: Stow Zsh Configurations
-  command: "stow -R -t {{ ansible_user_dir }} zsh"
+- name: Stow Core Configurations (Zsh & Konsole)
+  command: "stow -R -t {{ ansible_facts['user_dir'] }} {{ item }}"
   args:
     chdir: "{{ dotfiles_home }}"
-  register: stow_zsh
-  changed_when: '"LINK" in stow_zsh.stderr or "UNLINK" in stow_zsh.stderr'
-
-- name: Stow Konsole Profiles
-  command: "stow -R -t {{ ansible_user_dir }} konsole"
-  args:
-    chdir: "{{ dotfiles_home }}"
-  register: stow_konsole
-  changed_when: '"LINK" in stow_konsole.stderr'
+  loop:
+    - "zsh"
+    - "konsole"
+    - "git"
+  register: stow_result
+  changed_when: '"LINK" in stow_result.stderr'
 
 - name: Set my_profile as the default Konsole profile
   ini_file:
-    path: "{{ ansible_user_dir }}/.config/konsolerc"
+    path: "{{ ansible_facts['user_dir'] }}/.config/konsolerc"
     section: "Desktop Entry"
     option: "DefaultProfile"
     value: "my_profile.profile"
@@ -41,20 +41,19 @@
   register: stow_plasma
   changed_when: '"LINK" in stow_plasma.stderr'
 
-# Plasma Panels
+# Plasma Version Specific Layout (v5 vs v6)
 - name: Ensure Restart Script is Executable
   file:
     path: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
     mode: '0755'
 
-- name: Deploy Correct Plasma Config
+- name: Deploy Correct Plasma Config (appletsrc)
   copy:
     src: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/appletsrc.master"
-    dest: "{{ ansible_user_dir }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
     remote_src: yes
     force: yes
 
 - name: Run Version-Specific Restart Script
   shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
-
-
+  changed_when: false

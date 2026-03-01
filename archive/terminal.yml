@@ -3,8 +3,8 @@
   hosts: localhost
   connection: local
   vars:
-    target_home: "{{ ansible_env.HOME }}"
-    dotfiles_home: "{{ ansible_env.HOME }}/dotfiles"
+    target_home: "{{ ansible_facts['user_dir'] }}"
+    dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
     plasma_version: "v5" # Change to v6 when on Fedora
 
   tasks:

@@ -4,7 +4,7 @@
   tasks:
     - name: Ensure Wallpaper Script is executable
       file:
-        path: "{{ ansible_env.HOME }}/dotfiles/scripts/wallpaper_wallhaven.sh"
+        path: "{{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
         mode: '0755'
 
     - name: Set up 3:00 AM Gym Wallpaper Cron
@@ -12,9 +12,9 @@
         name: "Daily Wallhaven Refresh"
         minute: "0"
         hour: "3"
-        job: "/bin/bash {{ ansible_env.HOME }}/dotfiles/scripts/wallpaper_wallhaven.sh"
+        job: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
 
     - name: Run initial wallpaper fetch
-      command: "/bin/bash {{ ansible_env.HOME }}/dotfiles/scripts/wallpaper_wallhaven.sh"
+      command: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
       register: wallpaper_output
       changed_when: "'Wallpaper updated' in wallpaper_output.stdout"

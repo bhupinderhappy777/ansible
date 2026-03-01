@@ -1,0 +1,50 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for /home/bhupi/ansible/roles/packages
+- name: Install Core and Utility packages
+  ansible.builtin.package:
+    name: "{{ item.pkg }}"
+    state: present
+  loop: "{{ system_packages[ansible_facts['os_family']].core + system_packages[ansible_facts['os_family']].utilities }}"
+  become: yes
+  tags: [packages, core]
+
+- name: Install Optional quality-of-life packages
+  ansible.builtin.package:
+    name: "{{ item.pkg }}"
+    state: present
+  loop: "{{ system_packages[ansible_facts['os_family']].optional }}"
+  become: yes
+  tags: [optional]
+
+- name: Locate zsh binary path
+  command: which zsh
+  register: zsh_path
+  changed_when: false
+
+- name: Ensure Zsh is the default shell
+  user:
+    name: "{{ ansible_user }}"
+    shell: "{{ zsh_path.stdout }}"
+  become: yes
+
+- name: Ensure Flathub repository is enabled
+  flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+  become: yes
+
+- name: Install GUI Apps via Flatpak
+  flatpak:
+    name: "{{ item }}"
+    state: present
+    method: system
+    remote: flathub
+  loop: "{{ flatpak_packages }}"
+  become: yes
+  tags: [apps, gui]
+
+- name: Allow VS Code Flatpak to access host terminal
+  command: "flatpak override --user --talk-name=org.freedesktop.Flatpak com.visualstudio.code"
+  changed_when: false

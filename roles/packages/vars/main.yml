@@ -1,0 +1,46 @@
+# system_packages for Workstation Personalization
+system_packages:
+  Debian:
+    core:
+      - { pkg: "zsh", bin: "zsh" }
+      - { pkg: "stow", bin: "stow" }
+      - { pkg: "git", bin: "git" }
+      - { pkg: "curl", bin: "curl" }
+      - { pkg: "wget", bin: "wget" }
+    utilities:
+      - { pkg: "htop", bin: "htop" }
+      - { pkg: "sysstat", bin: "sar" }
+      - { pkg: "traceroute", bin: "traceroute" }
+      - { pkg: "iproute2", bin: "ip" }
+      - { pkg: "pipx", bin: "pipx" }
+    optional:
+      - { pkg: "btop", bin: "btop" }
+      - { pkg: "neofetch", bin: "neofetch" }
+      - { pkg: "tmux", bin: "tmux" }
+      - { pkg: "tree", bin: "tree" }
+
+  RedHat:
+    core:
+      - { pkg: "zsh", bin: "zsh" }
+      - { pkg: "stow", bin: "stow" }
+      - { pkg: "git", bin: "git" }
+      - { pkg: "curl", bin: "curl" }
+      - { pkg: "wget", bin: "wget" }
+      - { pkg: "util-linux-user", bin: "chsh" }
+    utilities:
+      - { pkg: "htop", bin: "htop" }
+      - { pkg: "sysstat", bin: "sar" }
+      - { pkg: "traceroute", bin: "traceroute" }
+      - { pkg: "iproute", bin: "ip" }
+      - { pkg: "pipx", bin: "pipx" }
+    optional:
+      - { pkg: "btop", bin: "btop" }
+      - { pkg: "fastfetch", bin: "fastfetch" }
+      - { pkg: "tmux", bin: "tmux" }
+      - { pkg: "tree", bin: "tree" }
+
+flatpak_packages:
+  - com.google.Chrome
+  - com.visualstudio.code
+  - md.obsidian.Obsidian
+  - com.discordapp.Discord

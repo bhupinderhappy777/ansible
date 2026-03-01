@@ -77,7 +77,7 @@
 
     - name: Set Plasma Version Variable
       set_fact:
-        plasma_version: "{{ 'v6' if ansible_distribution == 'Fedora' else 'v5' }}"
+        plasma_version: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
     - name: Ensure Restart Script is Executable
       file:

@@ -15,12 +15,12 @@
         autoremove: yes
         purge: yes
         allow_downgrades: yes
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
       become: yes
 
     - name: Ensure dnf5 python bindings are installed
       ansible.builtin.raw: dnf install -y python3-libdnf5
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
       become: yes
       changed_when: false
 
@@ -28,39 +28,39 @@
       ansible.builtin.package:
         name: "*"
         state: latest
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
       become: yes
 
     - name: Install firewall - Debian
       package:
         name: ufw
         state: present
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: Install firewall - RedHat
       shell: |
         dnf makecache
         dnf install -y firewalld
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
 
     - name: UFW - Allow SSH
       ufw:
         rule: allow
         port: '22'
         proto: tcp
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: UFW - Enable
       ufw:
         state: enabled
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: Enable firewalld - RedHat
       systemd:
         name: firewalld
         state: started
         enabled: yes
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
 
     - name: firewalld - Allow SSH
       firewalld:
@@ -68,7 +68,7 @@
         permanent: yes
         state: enabled
         immediate: yes
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
 
     - name: SSH - Disable root login
       lineinfile:
@@ -130,18 +130,18 @@
 
     - name: Determine SSH service name
       set_fact:
-        ssh_service_name: "{{ 'ssh.service' if ansible_os_family == 'Debian' else 'sshd.service' }}"
+        ssh_service_name: "{{ 'ssh.service' if ansible_facts['os_family'] == 'Debian' else 'sshd.service' }}"
 
     - name: Assert SSH service running
       assert:
         that:
         - >
-            (ansible_os_family == "Debian" and
+            (ansible_facts['os_family'] == "Debian" and
             ansible_facts.services['ssh.service'].state == 'running') or
-            (ansible_os_family == "RedHat" and
+            (ansible_facts['os_family'] == "RedHat" and
             ansible_facts.services['sshd.service'].state == 'running')
-        fail_msg: "❌ SSH service not running on {{ inventory_hostname }} ({{ ansible_os_family }})"
-        success_msg: "✅ SSH service running ({{ ansible_os_family }})"
+        fail_msg: "❌ SSH service not running on {{ inventory_hostname }} ({{ ansible_facts['os_family'] }})"
+        success_msg: "✅ SSH service running ({{ ansible_facts['os_family'] }})"
 
     - name: Verify SSH listening on port 22
       wait_for:
@@ -160,32 +160,32 @@
       register: ufw_status
       changed_when: false
       failed_when: false
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: Assert UFW SSH rule exists
       assert:
         that:
           - "'22' in ufw_status.stdout"
         fail_msg: "❌ UFW missing SSH rule on {{ inventory_hostname }}"
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: Verify firewalld allows SSH
       shell: firewall-cmd --list-services
       register: fw_services
       changed_when: false
       failed_when: false
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
 
     - name: Assert firewalld SSH service
       assert:
         that:
           - "'ssh' in fw_services.stdout"
         fail_msg: "❌ firewalld missing SSH on {{ inventory_hostname }}"
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['os_family'] == "RedHat"
 
   handlers:
     - name: restart ssh
       systemd:
-        name: "{{ 'ssh.service' if ansible_os_family == 'Debian' else 'sshd.service' }}"
+        name: "{{ 'ssh.service' if ansible_facts['os_family'] == 'Debian' else 'sshd.service' }}"
         state: restarted
         daemon_reload: yes
