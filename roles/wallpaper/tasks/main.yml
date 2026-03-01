@@ -5,6 +5,14 @@
   file:
     path: "{{ dotfiles_home }}/scripts/wallpaper_wallhaven.sh"
     mode: '0755'
+  when: ansible_facts['virtualization_type'] != 'wsl'
+
+- name: Ensure Cronie is installed (RedHat)
+  ansible.builtin.package:
+    name: cronie
+    state: present
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Schedule 3 AM Refresh
   cron:
@@ -12,8 +20,10 @@
     minute: "0"
     hour: "3"
     job: "/bin/bash {{ dotfiles_home }}/scripts/wallpaper_wallhaven.sh"
+    when: ansible_facts['virtualization_type'] != 'wsl'
 
 - name: Run initial wallpaper fetch
   command: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
   register: wallpaper_output
   changed_when: "'Wallpaper updated' in wallpaper_output.stdout"
+  when: ansible_facts['virtualization_type'] != 'wsl'
