@@ -6,6 +6,12 @@
     state: present
   become: true
 
+- name: SSH | Ensure sshd is enabled and running
+  ansible.builtin.service:
+    name: sshd
+    state: started
+    enabled: true
+  become: true
 
 - name: TARGET - Add authorized SSH key
   ansible.posix.authorized_key:
