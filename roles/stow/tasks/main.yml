@@ -13,6 +13,7 @@
     - ".config/kscreenlockerrc"
     - ".config/kdeglobals"
     - ".config/kwalletrc"
+    - ".config/audacity/audacity.cfg"
 
 # 2. Purge only the specific items that are NOT symlinks
 - name: Stow | Purge real files to allow for symlinks
@@ -38,6 +39,7 @@
     - "konsole"
     - "git"
     - "systemd"
+    - "audacity"
   register: stow_result
   changed_when: "'LINK' in stow_result.stderr"
 
@@ -57,14 +59,14 @@
     section: "Desktop Entry"
     option: "DefaultProfile"
     value: "my_profile.profile"
-    tags: gui
+  tags: gui
 
 # Plasma Version Specific Layout (v5 vs v6)
 - name: Ensure Restart Script is Executable
   ansible.builtin.file:
     path: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
     mode: '0755'
-    tags: gui
+  tags: gui
 
 - name: Deploy Correct Plasma Config (appletsrc)
   ansible.builtin.copy:
@@ -72,7 +74,7 @@
     dest: "{{ ansible_facts['user_dir'] }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
     remote_src: true
     force: true
-    tags: gui
+  tags: gui
 
 - name: Run Version-Specific Restart Script
   shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
@@ -80,7 +82,7 @@
   when: ansible_facts['virtualization_type'] != 'wsl'
   tags: gui
 
-- name: Enable Timer and Run Initial Refresh
+- name: Enable and Refresh User Services
   ansible.builtin.systemd:
     name: "{{ item }}"
     scope: user
@@ -90,5 +92,7 @@
   loop:
     - wallpaper-refresh.timer
     - wallpaper-refresh.service
+    - inbox-watcher.service
   when: ansible_facts['virtualization_type'] != 'wsl'
   tags: gui
+

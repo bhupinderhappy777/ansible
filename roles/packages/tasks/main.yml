@@ -51,7 +51,7 @@
 - name: Ensure Zsh is the default shell
   user:
     name: "{{ ansible_user }}"
-    shell: "{{ zsh_path.stdout }}"
+    shell: /usr/bin/zsh
   become: true
 
 - name: Ensure Flatpak is installed

@@ -1,0 +1,7 @@
+---
+- name: restart syncthing
+  systemd:
+    name: syncthing
+    scope: user
+    state: restarted
+    daemon_reload: yes

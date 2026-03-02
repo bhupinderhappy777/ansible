@@ -7,6 +7,7 @@ system_packages:
       - { pkg: "git", bin: "git" }
       - { pkg: "curl", bin: "curl" }
       - { pkg: "wget", bin: "wget" }
+      - { pkg: "inotify-tools", bin: "inotifywait" } # dependency for process-inbox
     utilities:
       - { pkg: "htop", bin: "htop" }
       - { pkg: "sysstat", bin: "sar" }
@@ -27,6 +28,7 @@ system_packages:
       - { pkg: "curl", bin: "curl" }
       - { pkg: "wget", bin: "wget" }
       - { pkg: "util-linux-user", bin: "chsh" }
+      - { pkg: "inotify-tools", bin: "inotifywait" } # dependency for process-inbox
     utilities:
       - { pkg: "htop", bin: "htop" }
       - { pkg: "sysstat", bin: "sar" }
@@ -43,4 +45,5 @@ flatpak_packages:
   - com.google.Chrome
   - com.visualstudio.code
   - md.obsidian.Obsidian
-  - com.discordapp.Discord
+  - org.audacityteam.Audacity
+  - org.videolan.VLC
