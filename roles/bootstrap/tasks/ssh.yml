@@ -8,7 +8,7 @@
 
 - name: SSH | Ensure sshd is enabled and running
   ansible.builtin.service:
-    name: sshd
+    name: {{ bootstrap_ssh_service_name }}
     state: started
     enabled: true
   become: true
