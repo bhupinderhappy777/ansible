@@ -8,14 +8,14 @@
 
 - name: Connect to Tailscale network
   ansible.builtin.command:
-    cmd: "tailscale up --authkey={{ tailscale_auth_key }} --accept-routes"
+    cmd: "tailscale up --authkey={{ tailscale_auth_key }} --accept-routes --reset"
   # We only run this if we aren't already 'active'
   when:
     - tailscale_auth_key is defined
     - "'Logged in' not in tailscale_status_check.stdout"
   register: tailscale_up_result
   # Use no_log to protect your key, but turn it off if you need to debug!
-  no_log: false
+  no_log: true
   become: true
 
 - name: Display Tailscale IP address
