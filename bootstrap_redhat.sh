@@ -41,8 +41,6 @@ ansible-pull -U "$REPO_URL" \
               -i "localhost," \
               --vault-password-file ~/.vault_pass \
               --become-password-file ~/.become_pass \
-             --vault-id=@prompt \
-             -K \
              "$PLAYBOOK" \
              --skip-tags="gui,optional"
 
