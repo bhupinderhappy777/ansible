@@ -1,0 +1,30 @@
+---
+- name: Personalize the Workstation
+  hosts: all
+  become: false
+  vars:
+    ansible_user: "bhupi"
+
+    # Dot Files
+    dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    dotfiles_branch: "plasma"
+    dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+
+    # Wallpaper Settings
+    wallhaven_tag: "id:37"
+    wallhaven_res: "3840x2160"
+    wallhaven_colors: "000000"
+
+    # Plasma Version
+    plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
+
+  roles:
+    - { role: bootstrap, tags: ['bootstrap'], become: true }
+    - { role: management, tags: ['management', 'oci'] }
+    - { role: tailscale, tags: ['tailscale'] }
+    - { role: packages, tags: ['packages'] }
+    - { role: clone_dotfiles, tags: ['clone'] }
+    - { role: stow, tags: ['stow'] }
+    - { role: terminal, tags: ['terminal'] }
+
+

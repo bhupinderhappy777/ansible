@@ -1,7 +1,35 @@
 ---
+
+- name: SSH | Ensure OpenSSH Server is installed
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+  become: true
+
+- name: SSH | Ensure sshd is enabled and running
+  ansible.builtin.service:
+    name: sshd
+    state: started
+    enabled: true
+  become: true
+
+- name: TARGET - Add authorized SSH key
+  ansible.posix.authorized_key:
+    user: "{{ bootstrap_user }}"
+    state: present
+    key: "{{ ssh_pub_key }}"
+
 - name: Ensure SSH listens on all interfaces
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?ListenAddress 0.0.0.0'
     line: 'ListenAddress 0.0.0.0'
-  notify: restart sshd
+  notify: Restart sshd
+
+- name: FIREWALL - Permit SSH
+  ansible.posix.firewalld:
+    service: ssh
+    permanent: true
+    state: enabled
+    immediate: true
+  when: ansible_facts['virtualization_type'] != 'wsl'

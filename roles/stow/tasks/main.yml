@@ -1,0 +1,88 @@
+---
+# 1. Check every item in the list individually
+- name: Stow | Check status of existing config files
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['user_dir'] }}/{{ item }}"
+  register: config_stats
+  loop:
+    - ".zshrc"
+    - ".gitconfig"
+    - ".local/share/konsole/my_profile.profile"
+    - ".config/kwinrc"
+    - ".config/kglobalshortcutsrc"
+    - ".config/kscreenlockerrc"
+    - ".config/kdeglobals"
+    - ".config/kwalletrc"
+
+# 2. Purge only the specific items that are NOT symlinks
+- name: Stow | Purge real files to allow for symlinks
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when:
+    - item.stat.exists
+    - not item.stat.isdir
+    - not item.stat.islnk
+  loop: "{{ config_stats.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+# 3. Use --no-folding to prevent the .config conflict
+- name: Stow Core Configurations
+  ansible.builtin.command:
+    cmd: "stow -R --no-folding -t {{ ansible_facts['user_dir'] }} {{ item }}"
+  args:
+    chdir: "{{ dotfiles_home }}"
+  loop:
+    - "zsh"
+    - "konsole"
+    - "git"
+    - "systemd"
+  register: stow_result
+  changed_when: "'LINK' in stow_result.stderr"
+
+- name: Stow Plasma common files
+  ansible.builtin.command:
+    # Adding --no-folding here is the MAGIC FIX for the .config error
+    cmd: "stow -R --no-folding -t {{ ansible_facts['user_dir'] }} -d plasma common"
+  args:
+    chdir: "{{ dotfiles_home }}"
+  register: stow_plasma
+  changed_when: "'LINK' in stow_plasma.stderr"
+
+- name: Set my_profile as the default Konsole profile
+  ini_file:
+    path: "{{ ansible_facts['user_dir'] }}/.config/konsolerc"
+    section: "Desktop Entry"
+    option: "DefaultProfile"
+    value: "my_profile.profile"
+
+# Plasma Version Specific Layout (v5 vs v6)
+- name: Ensure Restart Script is Executable
+  ansible.builtin.file:
+    path: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+    mode: '0755'
+
+- name: Deploy Correct Plasma Config (appletsrc)
+  ansible.builtin.copy:
+    src: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/appletsrc.master"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    remote_src: true
+    force: true
+
+- name: Run Version-Specific Restart Script
+  shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+  changed_when: false
+  when: ansible_facts['virtualization_type'] != 'wsl'
+
+- name: Enable Timer and Run Initial Refresh
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    scope: user
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop:
+    - wallpaper-refresh.timer
+    - wallpaper-refresh.service
+  when: ansible_facts['virtualization_type'] != 'wsl'

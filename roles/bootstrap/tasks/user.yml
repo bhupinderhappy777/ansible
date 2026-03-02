@@ -1,65 +1,19 @@
 ---
-# 1. Prepare the Management Node (Localhost)
-- name: MANAGEMENT - Ensure pipx is installed locally
-  ansible.builtin.package:
-    name: pipx
-    state: present
-  delegate_to: localhost
-  become: yes
-  run_once: true
+#Prepare the Targets (Remote Nodes)
 
-- name: MANAGEMENT - Bootstrap Ansible Collections (Shell Bypass)
-  ansible.builtin.command: "ansible-galaxy collection install {{ item }} --upgrade"
-  loop:
-    - community.general
-    - ansible.posix
-  delegate_to: localhost
-  become: false
-  run_once: true
-  changed_when: false
-
-# We use shell here because the 'pipx' module isn't loaded into memory yet
-- name: MANAGEMENT - Upgrade Ansible Core (Shell Bypass)
-  ansible.builtin.shell: "pipx install ansible-core --force || pipx upgrade ansible-core"
-  delegate_to: localhost
-  become: false
-  run_once: true
-  changed_when: false
-
-- name: MANAGEMENT - Persist pipx PATH in Zshrc
-  ansible.builtin.lineinfile:
-    path: "{{ lookup('env', 'HOME') }}/.zshrc"
-    line: 'export PATH="$HOME/.local/bin:$PATH"'
-    state: present
-    create: yes
-    mode: '0644'
-  delegate_to: localhost
-  run_once: true
-
-# 2. Prepare the Targets (Remote Nodes)
-- name: TARGET - Ensure Zsh is installed on remote host
-  ansible.builtin.package:
-    name: zsh
-    state: present
-  become: yes
-
-- name: TARGET - Detect Zsh binary path
-  ansible.builtin.command: which zsh
-  register: detected_zsh
-  changed_when: false
-
-- name: TARGET - Ensure the ansible user exists with detected shell
+- name: TARGET - Ensure the user {{ bootstrap_user }} exists
   ansible.builtin.user:
     name: "{{ bootstrap_user }}"
-    shell: "{{ detected_zsh.stdout }}"
-    groups: "{{ admin_group }}"
-    append: yes
-  become: yes
+    shell: /bin/zsh
+    groups: "{{ bootstrap_admin_group }}"
+    append: true
+    create_home: true
 
 - name: TARGET - Configure passwordless sudo
   ansible.builtin.copy:
     dest: "/etc/sudoers.d/{{ bootstrap_user }}"
     content: "%{{ admin_group }} ALL=(ALL) NOPASSWD: ALL"
+    owner: root
+    group: root
     mode: '0440'
     validate: '/usr/sbin/visudo -cf %s'
-  become: yes

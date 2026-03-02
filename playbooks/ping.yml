@@ -2,7 +2,7 @@
 # Playbook to check connectivity to all hosts
 - name: Ping all hosts
   hosts: all
-  gather_facts: no
+  gather_factstrue
   
   tasks:
     - name: Ping hosts

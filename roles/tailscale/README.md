@@ -31,7 +31,7 @@ None.
 ```yaml
 ---
 - hosts: servers
-  become: yes
+  become: true
   roles:
     - role: tailscale
       vars:

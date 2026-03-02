@@ -1,0 +1,42 @@
+---
+- name: Phase 3 - Terminal Branding & Font Setup
+  hosts: localhost
+  connection: local
+  vars:
+    target_home: "{{ ansible_facts['user_dir'] }}"
+    dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+    plasma_version: "v5" # Change to v6 when on Fedora
+
+  tasks:
+    - name: Ensure Local Font Directory Exists
+      ansible.builtin.file:
+        path: "{{ target_home }}/.local/share/fonts"
+        state: directory
+        mode: '0755'
+
+    - name: Check if JetBrainsMono Nerd Font is installed
+      stat:
+        path: "{{ target_home }}/.local/share/fonts/JetBrains Mono Regular Nerd Font Complete.ttf"
+      register: font_check
+
+    - name: Download and Install JetBrainsMono Nerd Font
+      unarchive:
+        src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
+        dest: "{{ target_home }}/.local/share/fonts"
+        remote_src: true
+      when: not font_check.stat.exists
+      notify: Refresh Font Cache
+
+    - name: Install Starship Prompt (Binary)
+      shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
+      become: true
+
+    - name: Ensure Konsole Stow Directory Exists
+      ansible.builtin.file:
+        path: "{{ dotfiles_home }}/plasma/{{ plasma_version }}/.local/share/konsole"
+        state: directory
+        mode: '0755'
+
+  handlers:
+    - name: Refresh Font Cache
+      shell: fc-cache -f

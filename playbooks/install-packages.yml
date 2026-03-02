@@ -9,13 +9,13 @@
       ansible.builtin.package:
         name: "{{ item.pkg }}"
         state: present
-      loop: "{{ system_packages[ansible_os_family] | default(system_packages['Debian']) }}"
+      loop: "{{ system_packages[ansible_facts['os_family']] | default(system_packages['Debian']) }}"
       loop_control:
         label: "{{ item.pkg }}"
 
     - name: Verify binaries are in the PATH
       ansible.builtin.command: "which {{ item.bin }}"
-      loop: "{{ system_packages[ansible_os_family] | default(system_packages['Debian']) }}"
+      loop: "{{ system_packages[ansible_facts['os_family']] | default(system_packages['Debian']) }}"
       register: tool_check
       changed_when: false
       failed_when: false
