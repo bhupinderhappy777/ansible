@@ -19,7 +19,9 @@ system_packages:
       - { pkg: "neofetch", bin: "neofetch" }
       - { pkg: "tmux", bin: "tmux" }
       - { pkg: "tree", bin: "tree" }
+      - { pkg: "kate", bin: "kate" }
       - { pkg: "doublecmd-qt", bin: "doublecmd" }
+      - { pkg: "pavucontrol", bin: "pavucontrol" }
 
   RedHat:
     core:
@@ -41,7 +43,9 @@ system_packages:
       - { pkg: "fastfetch", bin: "fastfetch" }
       - { pkg: "tmux", bin: "tmux" }
       - { pkg: "tree", bin: "tree" }
+      - { pkg: "kate", bin: "kate" }
       - { pkg: "doublecmd-qt", bin: "doublecmd" }
+      - { pkg: "pavucontrol", bin: "pavucontrol" }
 
 flatpak_packages:
   - com.google.Chrome
@@ -49,3 +53,9 @@ flatpak_packages:
   - md.obsidian.Obsidian
   - org.audacityteam.Audacity
   - org.videolan.VLC
+  - org.ferdium.Ferdium
+  - com.freerdp.FreeRDP
+  - com.obsproject.Studio
+  - com.microsoft.Edge
+  - org.mozilla.Thunderbird
+  - org.remmina.Remmina
