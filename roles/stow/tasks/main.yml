@@ -75,11 +75,14 @@
   changed_when: false
   when: ansible_facts['virtualization_type'] != 'wsl'
 
-- name: Enable and Start Wallpaper Timer
+- name: Enable Timer and Run Initial Refresh
   ansible.builtin.systemd:
-    name: wallpaper-refresh.timer
+    name: "{{ item }}"
     scope: user
     enabled: true
     state: started
     daemon_reload: true
+  loop:
+    - wallpaper-refresh.timer
+    - wallpaper-refresh.service
   when: ansible_facts['virtualization_type'] != 'wsl'
