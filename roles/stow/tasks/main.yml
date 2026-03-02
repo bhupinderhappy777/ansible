@@ -14,6 +14,10 @@
     - ".config/kdeglobals"
     - ".config/kwalletrc"
     - ".config/audacity/audacity.cfg"
+    - ".config/doublecmd/doublecmd.xml"
+    - ".config/doublecmd/shortcuts.scf"
+    - ".config/doublecmd/colors.json"
+    - ".config/doublecmd/multiarc.ini"
 
 # 2. Purge only the specific items that are NOT symlinks
 - name: Stow | Purge real files to allow for symlinks
@@ -40,6 +44,7 @@
     - "git"
     - "systemd"
     - "audacity"
+    - "doublecmd"
   register: stow_result
   changed_when: "'LINK' in stow_result.stderr"
 

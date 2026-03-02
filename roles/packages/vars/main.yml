@@ -19,6 +19,7 @@ system_packages:
       - { pkg: "neofetch", bin: "neofetch" }
       - { pkg: "tmux", bin: "tmux" }
       - { pkg: "tree", bin: "tree" }
+      - { pkg: "doublecmd-qt", bin: "doublecmd" }
 
   RedHat:
     core:
@@ -40,6 +41,7 @@ system_packages:
       - { pkg: "fastfetch", bin: "fastfetch" }
       - { pkg: "tmux", bin: "tmux" }
       - { pkg: "tree", bin: "tree" }
+      - { pkg: "doublecmd-qt", bin: "doublecmd" }
 
 flatpak_packages:
   - com.google.Chrome
