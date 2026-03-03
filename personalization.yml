@@ -10,11 +10,6 @@
     dotfiles_branch: "plasma"
     dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
 
-    # Wallpaper Settings
-    wallhaven_tag: "id:37"
-    wallhaven_res: "3840x2160"
-    wallhaven_colors: "000000"
-
     # Plasma Version
     plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
