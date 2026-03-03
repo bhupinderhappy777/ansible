@@ -1,0 +1,10 @@
+---
+- name: Enabling virtualization
+  hosts: all
+  become: true
+
+  roles:
+    - { role: virtualization, tags: ['virtualization'] }
+
+
+
