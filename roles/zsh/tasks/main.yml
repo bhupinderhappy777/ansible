@@ -36,7 +36,7 @@
   loop:
     - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
     - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
-    - { name: 'zsh-autoswitch-virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv' }
+    - { name: 'autoswitch_virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv' }
     - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
 - name: Ensure Zsh is the default shell
   ansible.builtin.user:

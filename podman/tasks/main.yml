@@ -1,0 +1,20 @@
+---
+# tasks file for podman
+- name: Podman | Install Podman and components
+  ansible.builtin.package:
+    name:
+      - podman
+      - podman-compose
+      - buildah
+      - skopeo
+    state: present
+  become: true
+
+- name: Podman | Check if Podman is working
+  ansible.builtin.command: podman --version
+  register: podman_version
+  changed_when: false
+
+- name: Podman | Display Podman version
+  ansible.builtin.debug:
+    msg: "Installed Podman version: {{ podman_version.stdout }}"

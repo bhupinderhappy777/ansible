@@ -20,9 +20,9 @@
     - { role: tailscale, tags: ['tailscale'] }
     - { role: packages, tags: ['packages'] }
     - { role: stow, tags: ['stow'] }
+    - { role: zsh, tags: ['zsh'] }
     - { role: terminal, tags: ['terminal'] }
     - { role: syncthing, tags: ['syncthing'] }
-    - { role: zsh, tags: ['zsh'] }
     - { role: virtualization, tags: ['virtualization'] }
 
 
