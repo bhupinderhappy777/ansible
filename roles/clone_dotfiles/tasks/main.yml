@@ -22,4 +22,3 @@
     accept_hostkey: true
     update: true
     force: true
-  register: clone_dotfiles_repo_validation
