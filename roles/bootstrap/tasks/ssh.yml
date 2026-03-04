@@ -93,11 +93,11 @@
 
 - name: Restrict SSH access to Tailscale and specific IPs
   ansible.posix.firewalld:
-    source: "{{ item }}"
-    service: ssh
-    permanent: true
+    rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
     state: enabled
     immediate: true
+    permanent: true
   loop:
-    - 100.64.0.0/10
-    - 198.162.116.140
+    - "100.64.0.0/10"
+    - "198.162.116.140"
+  notify: Restart sshd
