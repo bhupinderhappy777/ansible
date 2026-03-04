@@ -41,7 +41,22 @@
   become: true
   tags: [flatpak, gui]
 
-- name: Allow VS Code Flatpak to access host terminal
-  ansible.builtin.command: "flatpak override --user --talk-name=org.freedesktop.Flatpak com.visualstudio.code"
-  changed_when: false
+- name: Ensure KWallet Secret Service bridge is installed
+  dnf:
+    name: kwallet-pam
+    state: present
+  become: true
+
+- name: Configure VS Code Flatpak permissions
+  community.general.flatpak:
+    name: com.visualstudio.code
+    state: present
+    remote: flathub
+    # Adds the necessary D-Bus permissions for the terminal and KWallet
+    extra_args: >-
+      --user
+      --talk-name=org.freedesktop.Flatpak
+      --talk-name=org.freedesktop.secrets
+      --talk-name=org.kde.kwalletd5
+      --talk-name=org.kde.kwalletd6
   tags: [flatpak, gui]
