@@ -29,3 +29,34 @@
     line: 'export DOCKER_HOST=unix:///run/user/{{ ansible_facts["user_uid"] }}/podman/podman.sock'
     create: yes
   tags: [podman, shell]
+
+- name: Podman | Create Bulletproof Flatpak-friendly wrapper
+  ansible.builtin.copy:
+    dest: "{{ ansible_facts['user_dir'] }}/.local/bin/podman-host"
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # Match "version" and anything that follows it
+      if [[ "$1" == "version" ]]; then
+          echo '{"Client": {"Version": "24.0.0"}, "Server": {"Version": "24.0.0"}, "ApiVersion": "1.41"}'
+          exit 0
+      fi
+
+      if [ -f /.flatpak-info ]; then
+          exec flatpak-spawn --host podman "$@"
+      else
+          exec podman "$@"
+      fi
+  tags: [podman, shell]
+
+- name: Podman | Create docker symlink for VS Code
+  ansible.builtin.file:
+    src: "{{ ansible_facts['user_dir'] }}/.local/bin/podman-host"
+    dest: "{{ ansible_facts['user_dir'] }}/.local/bin/docker"
+    state: link
+  tags: [podman, shell]
+
+- name: Podman | Pre-cache the Toolbox image
+  ansible.builtin.command:
+    cmd: "podman pull registry.fedoraproject.org/fedora-toolbox:41"
+  changed_when: false

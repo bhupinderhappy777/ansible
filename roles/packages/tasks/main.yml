@@ -53,7 +53,7 @@
     path: "~/.var/app/com.visualstudio.code/config/Code/User"
     state: directory
     mode: '0755'
-    tags: [vscode, config]
+  tags: [vscode, config]
 
 - name: VS Code | Force KWallet6 encryption in argv.json
   ansible.builtin.copy:
@@ -65,17 +65,31 @@
     mode: '0644'
   tags: [vscode, config]
 
-- name: VS Code | Grant Flatpak permissions for KWallet, Terminal, and Podman
+- name: VS Code | Create internal Flatpak bin directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/data/node_modules/.bin"
+    state: directory
+    mode: '0755'
+  tags: [vscode, config]
+
+- name: VS Code | Link host wrapper to internal Flatpak bin
+  ansible.builtin.file:
+    src: "{{ ansible_facts['user_dir'] }}/.local/bin/docker"
+    dest: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/data/node_modules/.bin/docker"
+    state: link
+  tags: [vscode, config]
+
+- name: VS Code | Apply Final Flatpak Overrides
   ansible.builtin.command:
     cmd: >
       flatpak override --user
-      --talk-name=org.freedesktop.Flatpak
-      --talk-name=org.freedesktop.secrets
-      --talk-name=org.kde.kwalletd5
-      --talk-name=org.kde.kwalletd6
+      --filesystem=home/.local/bin:ro
       --filesystem=xdg-run/podman:create
-      --filesystem=home
+      --filesystem=/tmp
+      --talk-name=org.freedesktop.Flatpak
+      --talk-name=org.freedesktop.portal.Flatpak
+      --env=SHELL=/usr/bin/zsh
+      --env=PATH=/usr/bin:/app/bin:/app/extra/node_modules/.bin:/home/bhupi/.var/app/com.visualstudio.code/data/node_modules/.bin
       com.visualstudio.code
-  register: vscode_flatpak_override
   changed_when: false
-  tags: [vscode, flatpak]
+  tags: [vscode, config]

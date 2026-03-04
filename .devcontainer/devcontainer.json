@@ -1,16 +1,29 @@
 {
-    "name": "Ansible Home Lab",
-    "image": "mcr.microsoft.com/devcontainers/base:fedora",
+    "name": "Ansible & DevOps Environment",
+    "image": "registry.fedoraproject.org/fedora-toolbox:41",
+    "runArgs": [
+        "--hostname=ansible-lab",
+        "--security-opt=label=disable"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
                 "redhat.ansible",
-                "ms-vscode-remote.remote-containers"
-            ]
+                "redhat.vscode-yaml",
+                "ms-azuretools.vscode-docker"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "ansible.ansible.path": "/usr/local/bin/ansible",
+                "ansible.python.interpreterPath": "/usr/bin/python3",
+                "ansible.ansible-lint.path": "/usr/local/bin/ansible-lint",
+                "ansible.validation.lint.path": "/usr/local/bin/ansible-lint"
+            }
         }
     },
-    "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind,Z"
-    ],
-    "remoteUser": "vscode"
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/ansible,type=bind",
+    "workspaceFolder": "/workspaces/ansible",
+    "remoteUser": "root",
+    "onCreateCommand": "dnf install -y git openssh-clients python3-pip && pip install ansible ansible-lint",
+    "shutdownAction": "stopContainer"
 }
