@@ -1,19 +1,21 @@
 ---
-#Prepare the Targets (Remote Nodes)
+# Prepare the Targets (Remote Nodes)
 
-- name: TARGET - Ensure the user {{ bootstrap_user }} exists
+- name: TARGET - Ensure the user "{{ ansible_user }}" exists
   ansible.builtin.user:
-    name: "{{ bootstrap_user }}"
-    shell: /bin/zsh
+    name: "{{ ansible_user }}"
+    shell: /bin/bash
     groups: "{{ bootstrap_admin_group }}"
     append: true
     create_home: true
+    state: present  # Ensure idempotency
 
-- name: TARGET - Configure passwordless sudo
+- name: TARGET - Configure passwordless sudo for "{{ ansible_user }}"
   ansible.builtin.copy:
-    dest: "/etc/sudoers.d/{{ bootstrap_user }}"
-    content: "%{{ admin_group }} ALL=(ALL) NOPASSWD: ALL"
+    dest: "/etc/sudoers.d/{{ ansible_user }}"
+    content: |
+      %{{ bootstrap_admin_group }} ALL=(ALL) NOPASSWD: ALL
     owner: root
     group: root
     mode: '0440'
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: '/usr/sbin/visudo -cf %s'  # Validate sudoers file before applying

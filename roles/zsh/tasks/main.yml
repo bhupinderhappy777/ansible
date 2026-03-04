@@ -1,0 +1,74 @@
+---
+# tasks file for roles/zsh
+- name: Install Zsh if not present
+  ansible.builtin.package:
+    name: zsh
+    state: present
+  become: true
+
+- name: Locate zsh binary path
+  ansible.builtin.command: which zsh
+  register: zsh_path
+  changed_when: false
+
+- name: ZSH | Download Starship Installer
+  ansible.builtin.get_url:
+    url: https://starship.rs/install.sh
+    dest: /tmp/starship_install.sh
+    mode: '0755'
+
+- name: Check if Starship is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/starship
+  register: zsh_starship_stat
+
+- name: ZSH | Install Starship Prompt
+  ansible.builtin.command:
+    cmd: /tmp/starship_install.sh -y
+    creates: /usr/local/bin/starship
+  become: true
+  when: not zsh_starship_stat.stat.exists
+
+- name: Check if Oh My Zsh is already installed
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
+  register: zsh_oh_my_zsh_stat
+
+- name: ZSH | Install Oh My Zsh
+  ansible.builtin.git:
+    repo: 'https://github.com/ohmyzsh/ohmyzsh.git'
+    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
+    version: master
+    depth: 1
+    update: true
+  when: not zsh_oh_my_zsh_stat.stat.exists
+
+- name: Check if Zsh plugins are already installed
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
+  register: zsh_plugin_stat
+  with_items:
+    - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
+    - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
+    - { name: 'zsh-auto-switch-virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-auto-switch-virtualenv' }
+    - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
+
+- name: ZSH | Install Plugins (Suggestions, Highlighting, Autoswitch, and History Substring Search)
+  ansible.builtin.git:
+    repo: "{{ item.repo }}"
+    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
+    depth: 1
+    version: master
+    update: true
+  when: not item.stat.exists
+  with_items:
+    - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
+    - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
+    - { name: 'zsh-auto-switch-virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-auto-switch-virtualenv' }
+    - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
+
+- name: Ensure Zsh is the default shell
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: /usr/bin/zsh
+  become: true

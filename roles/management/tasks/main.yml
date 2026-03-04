@@ -41,18 +41,19 @@
     content: "{{ private_key }}"
     dest: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
     mode: '0600'
+    no_log: true  # Hide sensitive data from logs
 
 - name: Check if OCI API key exists
   ansible.builtin.stat:
     path: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
-  register: oci_key_stat
+  register: management_oci_key_stat
 
 - name: Generate OCI API private key if missing
   ansible.builtin.command: >
     openssl genrsa -out /home/{{ ansible_user }}/.oci/oci_api_key.pem 2048
   args:
     creates: "/home/{{ ansible_user }}/.oci/oci_api_key.pem"
-  when: not oci_key_stat.stat.exists
+  when: not management_oci_key_stat.stat.exists
 
 - name: Generate OCI API public key
   ansible.builtin.command: >
@@ -64,8 +65,8 @@
 - name: Fetch public key for manual console upload
   ansible.builtin.slurp:
     src: "/home/{{ ansible_user }}/.oci/oci_api_key_public.pem"
-  register: oci_pub_key
+  register: management_oci_pub_key
 
 - name: Show Public Key for OCI Console
   ansible.builtin.debug:
-    msg: "{{ oci_pub_key['content'] | b64decode }}"
+    msg: "{{ management_oci_pub_key['content'] | b64decode }}"

@@ -2,12 +2,12 @@
 # Playbook to check connectivity to all hosts
 - name: Ping all hosts
   hosts: all
-  gather_factstrue
-  
+  gather_facts: true
+
   tasks:
     - name: Ping hosts
-      ping:
-      
+      ansible.builtin.ping:
+
     - name: Display success message
-      debug:
+      ansible.builtin.debug:
         msg: "Successfully connected to {{ inventory_hostname }}"

@@ -1,11 +1,5 @@
 ---
 # tasks file for /home/bhupi/ansible/roles/terminal
-- name: Install Starship Prompt (Binary)
-  shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
-  become: true
-  args:
-    creates: /usr/local/bin/starship
-
 - name: Ensure Local Font Directory Exists
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.local/share/fonts"
@@ -13,24 +7,25 @@
     mode: '0755'
 
 - name: Install DM Mono Nerd Font
-  unarchive:
+  ansible.builtin.unarchive:
     src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/DroidSansMono.tar.xz" # DM Mono is part of the Droid family in Nerd Fonts
     dest: "{{ ansible_facts['user_dir'] }}/.local/share/fonts"
     remote_src: true
     creates: "{{ ansible_facts['user_dir'] }}/.local/share/fonts/Droid Sans Mono Nerd Font Complete.otf"
 
 - name: Check current font
-  command: grep -q "Font=DroidSansMono Nerd Font" "{{ ansible_facts['user_dir'] }}/.local/share/konsole/my_profile.profile"
-  register: font_check
+  ansible.builtin.command: grep -q "Font=DroidSansMono Nerd Font" "{{ ansible_facts['user_dir'] }}/.local/share/konsole/my_profile.profile"
+  register: terminal_font_check
   failed_when: false
   changed_when: false
   tags: gui
 
 - name: Set Font in Konsole Profile
-  ini_file:
+  ansible.builtin.ini_file:
     path: "{{ ansible_facts['user_dir'] }}/.local/share/konsole/my_profile.profile"
     section: "Appearance"
     option: "Font"
     value: "DroidSansMono Nerd Font,11,-1,5,50,0,0,0,0,0"
-  when: font_check.rc != 0
+    mode: '0644'
+  when: terminal_font_check.rc != 0
   tags: gui

@@ -18,6 +18,13 @@
   no_log: true
   become: true
 
+- name: Run Tailscale up command
+  ansible.builtin.command:
+    cmd: tailscale up --authkey={{ tailscale_auth_key }}
+  register: tailscale_up_result
+  changed_when: "'Success.' in tailscale_up_result.stdout"
+  failed_when: "tailscale_up_result.rc != 0 or 'Error' in tailscale_up_result.stderr"
+
 - name: Display Tailscale IP address
   ansible.builtin.debug:
     msg: "Tailscale IP: {{ ansible_facts['all_ipv4_addresses'] | select('match', '^100\\.') | first | default('Not Found') }}"

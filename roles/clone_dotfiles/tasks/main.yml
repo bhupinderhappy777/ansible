@@ -11,13 +11,23 @@
     content: "{{ ssh_private_key }}"
     dest: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
     mode: '0600'
-  no_log: true
+    force: false  # Avoid overwriting if the file already exists
+  no_log: true  # Hide sensitive data from logs
+
+- name: Validate repository URL before cloning
+  ansible.builtin.uri:
+    url: "{{ clone_dotfiles_repo }}"
+    method: HEAD
+    status_code: 200
+  register: clone_dotfiles_repo_validation
+  failed_when: clone_dotfiles_repo_validation.status != 200
 
 - name: Sync Dotfiles Repository
-  git:
-    repo: "{{ dotfiles_repo }}"
-    dest: "{{ dotfiles_home }}"
-    version: "{{ dotfiles_branch }}"
+  ansible.builtin.git:
+    repo: "{{ clone_dotfiles_repo }}"
+    dest: "{{ clone_dotfiles_home }}"
+    version: "{{ clone_dotfiles_branch }}"
     accept_hostkey: true
     update: true
     force: true
+  register: clone_dotfiles_repo_validation

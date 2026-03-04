@@ -15,9 +15,58 @@
 
 - name: TARGET - Add authorized SSH key
   ansible.posix.authorized_key:
-    user: "{{ bootstrap_user }}"
+    user: "{{ ansible_user }}"
     state: present
-    key: "{{ ssh_pub_key }}"
+    key: "{{ bootstrap_ssh_pub_key }}"
+
+- name: Disable root login
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: Restart sshd
+
+- name: Disable password authentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify: Restart sshd
+
+- name: Enforce SSH protocol 2
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Protocol'
+    line: 'Protocol 2'
+  notify: Restart sshd
+
+- name: Allow only specific users
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AllowUsers'
+    line: 'AllowUsers {{ ansible_user }}'
+  notify: Restart sshd
+
+- name: Set idle timeout interval
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?ClientAliveInterval'
+    line: 'ClientAliveInterval 300'
+  notify: Restart sshd
+
+- name: Set maximum idle timeout count
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?ClientAliveCountMax'
+    line: 'ClientAliveCountMax 2'
+  notify: Restart sshd
+
+- name: Enable SSH logging
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?LogLevel'
+    line: 'LogLevel VERBOSE'
+  notify: Restart sshd
 
 - name: Ensure SSH listens on all interfaces
   ansible.builtin.lineinfile:
@@ -32,4 +81,23 @@
     permanent: true
     state: enabled
     immediate: true
-  when: ansible_facts['virtualization_type'] != 'wsl'
+
+- name: Restrict SSH access to Tailscale and specific IPs in sshd_config
+  ansible.builtin.blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      Match Address 100.64.0.0/10,198.162.116.140
+        PermitRootLogin no
+        PasswordAuthentication no
+  notify: Restart sshd
+
+- name: Restrict SSH access to Tailscale and specific IPs
+  ansible.posix.firewalld:
+    source: "{{ item }}"
+    service: ssh
+    permanent: true
+    state: enabled
+    immediate: true
+  loop:
+    - 100.64.0.0/10
+    - 198.162.116.140
