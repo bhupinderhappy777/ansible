@@ -40,6 +40,6 @@
     - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
 - name: Ensure Zsh is the default shell
   ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ ansible_user }}"
     shell: /usr/bin/zsh
   become: true
