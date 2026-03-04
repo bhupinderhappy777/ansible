@@ -53,6 +53,14 @@
     immediate: true
     zone: public
 
+- name: FIREWALL | Trust Tailscale Interface completely
+  ansible.posix.firewalld:
+    interface: tailscale0
+    state: enabled
+    permanent: true
+    immediate: true
+    zone: trusted
+
 - name: FIREWALL | Allow SSH only from Tailscale and specific IPs
   ansible.posix.firewalld:
     rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
