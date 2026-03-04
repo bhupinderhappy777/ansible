@@ -1,76 +1,65 @@
 ---
-- name: Secure SSH and Firewall Configuration
-  hosts: all
-  become: true
-  tasks:
-    - name: SSH | Ensure OpenSSH Server is installed
-      ansible.builtin.package:
-        name: openssh-server
-        state: present
+- name: SSH | Ensure OpenSSH Server is installed
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
 
-    - name: SSH | Ensure sshd is enabled and running
-      ansible.builtin.service:
-        name: ssh
-        state: started
-        enabled: true
+- name: SSH | Ensure sshd is enabled and running
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true
 
-    - name: TARGET - Add authorized SSH key
-      ansible.posix.authorized_key:
-        user: "{{ ansible_user }}"
-        state: present
-        key: "{{ bootstrap_ssh_pub_key }}"
+- name: TARGET - Add authorized SSH key
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ bootstrap_ssh_pub_key }}"
 
-    - name: Configure SSH Basics (Global)
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      loop:
-        - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
-        - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
-        - { regexp: '^#?Protocol', line: 'Protocol 2' }
-        - { regexp: '^#?ClientAliveInterval', line: 'ClientAliveInterval 300' }
-        - { regexp: '^#?ClientAliveCountMax', line: 'ClientAliveCountMax 2' }
-        - { regexp: '^#?LogLevel', line: 'LogLevel VERBOSE' }
-        - { regexp: '^#?ListenAddress 0.0.0.0', line: 'ListenAddress 0.0.0.0' }
-      notify: Restart sshd
+- name: Configure SSH Basics (Global)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+    - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+    - { regexp: '^#?Protocol', line: 'Protocol 2' }
+    - { regexp: '^#?ClientAliveInterval', line: 'ClientAliveInterval 300' }
+    - { regexp: '^#?ClientAliveCountMax', line: 'ClientAliveCountMax 2' }
+    - { regexp: '^#?LogLevel', line: 'LogLevel VERBOSE' }
+    - { regexp: '^#?ListenAddress 0.0.0.0', line: 'ListenAddress 0.0.0.0' }
+  notify: Restart sshd
 
-    - name: SSH | Restrict user access to specific source IPs
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^#?AllowUsers'
-        # This is the "kill switch": bhupi can ONLY login from these subnets
-        line: "AllowUsers {{ ansible_user }}@100.64.0.0/10 {{ ansible_user }}@198.162.116.140"
-      notify: Restart sshd
+- name: SSH | Restrict user access to specific source IPs
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AllowUsers'
+    line: "AllowUsers {{ ansible_user }}@100.64.0.0/10 {{ ansible_user }}@198.162.116.140"
+  notify: Restart sshd
 
-    - name: FIREWALL | Remove global/public SSH access
-      ansible.posix.firewalld:
-        service: ssh
-        permanent: true
-        state: disabled
-        immediate: true
+- name: FIREWALL | Remove global/public SSH access
+  ansible.posix.firewalld:
+    service: ssh
+    permanent: true
+    state: disabled
+    immediate: true
 
-    - name: FIREWALL | Allow SSH only from Tailscale and specific IPs
-      ansible.posix.firewalld:
-        rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
-        state: enabled
-        immediate: true
-        permanent: true
-      loop:
-        - "100.64.0.0/10"
-        - "198.162.116.140"
+- name: FIREWALL | Allow SSH only from Tailscale and specific IPs
+  ansible.posix.firewalld:
+    rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
+    state: enabled
+    immediate: true
+    permanent: true
+  loop:
+    - "100.64.0.0/10"
+    - "198.162.116.140"
 
-    - name: USER | Check if lingering is enabled
-      ansible.builtin.stat:
-        path: "/var/lib/systemd/lingering/{{ ansible_user }}"
-      register: bootstrap_user_lingering
+- name: USER | Check if lingering is enabled
+  ansible.builtin.stat:
+    path: "/var/lib/systemd/lingering/{{ ansible_user }}"
+  register: bootstrap_user_lingering
 
-    - name: USER | Enable lingering
-      ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
-      when: not bootstrap_user_lingering.stat.exists
-
-  handlers:
-    - name: Restart sshd
-      ansible.builtin.service:
-        name: ssh
-        state: restarted
+- name: USER | Enable lingering
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
+  when: not bootstrap_user_lingering.stat.exists
