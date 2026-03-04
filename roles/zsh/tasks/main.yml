@@ -43,10 +43,10 @@
     update: true
   when: not zsh_oh_my_zsh_stat.stat.exists
 
-- name: Check if Zsh plugins are already installed
+- name: Check if ZSH plugins exist
   ansible.builtin.stat:
     path: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
-  register: zsh_plugin_stat
+  register: plugin_stat
   with_items:
     - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
     - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
@@ -60,7 +60,7 @@
     depth: 1
     version: master
     update: true
-  when: not item.stat.exists
+  when: not plugin_stat.results[loop.index0].stat.exists
   with_items:
     - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
     - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
