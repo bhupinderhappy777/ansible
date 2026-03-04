@@ -101,3 +101,13 @@
     - "100.64.0.0/10"
     - "198.162.116.140"
   notify: Restart sshd
+
+- name: USER | Check if lingering is enabled for {{ ansible_facts['user_id'] }}
+  ansible.builtin.stat:
+    path: "/var/lib/systemd/lingering/{{ ansible_facts['user_id'] }}"
+  register: bootstrap_user_lingering
+
+- name: USER | Enable lingering for {{ ansible_facts['user_id'] }}
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_facts['user_id'] }}"
+  when: not bootstrap_user_lingering.stat.exists
+  become: true
