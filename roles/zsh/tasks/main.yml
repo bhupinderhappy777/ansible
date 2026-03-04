@@ -21,24 +21,23 @@
 - name: ZSH | Install Oh My Zsh
   ansible.builtin.git:
     repo: 'https://github.com/ohmyzsh/ohmyzsh.git'
-    dest: "{{ ansible_user_dir }}/.oh-my-zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
     version: master
     depth: 1
   # The git module is idempotent; it won't re-clone if the dest exists.
-  # Using ansible_user_dir is safer than ansible_facts['user_dir'] in some versions.
+  # Using ansible_facts['user_dir'] is safer than ansible_user_dir in some versions.
 
 - name: ZSH | Install Plugins
   ansible.builtin.git:
     repo: "{{ item.repo }}"
-    dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
+    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
     version: master
     update: true
   loop:
     - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
     - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
-    - { name: 'zsh-auto-switch-virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-auto-switch-virtualenv' }
+    - { name: 'zsh-autoswitch-virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv' }
     - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
-
 - name: Ensure Zsh is the default shell
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"
