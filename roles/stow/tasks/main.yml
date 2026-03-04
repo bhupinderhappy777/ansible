@@ -62,17 +62,17 @@
 # Plasma Version Specific Layout (v5 vs v6)
 - name: Ensure Restart Script is Executable
   ansible.builtin.file:
-    path: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
     mode: '0755'
   tags: gui
 
 - name: Ensure Restart Script Exists
   ansible.builtin.stat:
-    path: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
   register: stow_stat
 
 - name: Run Version-Specific Restart Script
-  ansible.builtin.shell: "{{ dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+  ansible.builtin.shell: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
   when: stow_stat.stat.exists
   changed_when: false
   failed_when: stow_result.rc != 0
