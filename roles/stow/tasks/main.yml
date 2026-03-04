@@ -38,7 +38,7 @@
   ansible.builtin.command:
     cmd: "stow -R --no-folding -t {{ ansible_facts['user_dir'] }} {{ item }}"
   args:
-    chdir: "{{ dotfiles_home }}"
+    chdir: "{{ clone_dotfiles_home }}"
   loop:
     - "zsh"
     - "konsole"
@@ -54,7 +54,7 @@
     # Adding --no-folding here is the MAGIC FIX for the .config error
     cmd: "stow -R --no-folding -t {{ ansible_facts['user_dir'] }} -d plasma common"
   args:
-    chdir: "{{ dotfiles_home }}"
+    chdir: "{{ clone_dotfiles_home }}"
   register: stow_plasma
   changed_when: "'LINK' in stow_plasma.stderr"
   tags: gui
