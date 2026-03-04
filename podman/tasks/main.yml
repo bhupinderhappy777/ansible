@@ -1,5 +1,21 @@
 ---
 # tasks file for podman
+- name: Podman | Ensure shadow-utils (uidmap) is installed
+  ansible.builtin.package:
+    name: uidmap
+    state: present
+  become: true
+
+- name: Podman | Ensure subuid/subgid ranges exist for the user
+  ansible.builtin.lineinfile:
+    path: "/etc/{{ item }}"
+    line: "{{ ansible_facts['user_id'] }}:100000:65536"
+    state: present
+  become: true
+  loop:
+    - subuid
+    - subgid
+
 - name: Podman | Install Podman and components
   ansible.builtin.package:
     name:
@@ -9,6 +25,10 @@
       - skopeo
     state: present
   become: true
+
+- name: Podman | Trigger system migrate if ranges were added
+  ansible.builtin.command: podman system migrate
+  changed_when: false
 
 - name: Podman | Check if Podman is working
   ansible.builtin.command: podman --version
