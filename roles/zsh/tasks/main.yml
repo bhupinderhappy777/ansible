@@ -60,7 +60,7 @@
     depth: 1
     version: master
     update: true
-  when: not plugin_stat.results[loop.index0].stat.exists
+  when: not item.stat.exists
   with_items:
     - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
     - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
