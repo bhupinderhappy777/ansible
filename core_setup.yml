@@ -23,3 +23,4 @@
     - { role: zsh, tags: ['zsh'] }
     - { role: podman, tags: ['podman'] }
 
+#ansible-playbook core_setup.yml -c=local -i localhost, --skip-tags=gui,optional,tailscale,bootstrap,vscode,podman --vault-id=~/.pass
