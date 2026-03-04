@@ -1,14 +1,13 @@
 ---
 # Prepare the Targets (Remote Nodes)
 
-- name: TARGET - Ensure the user "{{ ansible_user }}" exists
+- name: TARGET - Ensure the user exists
   ansible.builtin.user:
     name: "{{ ansible_user }}"
-    shell: /bin/bash
     groups: "{{ bootstrap_admin_group }}"
     append: true
     create_home: true
-    state: present  # Ensure idempotency
+    state: present 
 
 - name: TARGET - Configure passwordless sudo for "{{ ansible_user }}"
   ansible.builtin.copy:

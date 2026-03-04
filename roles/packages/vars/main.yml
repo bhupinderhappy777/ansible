@@ -16,7 +16,7 @@ system_packages:
       - { pkg: "pipx", bin: "pipx" }
     optional:
       - { pkg: "btop", bin: "btop" }
-      - { pkg: "fastfetch", bin: "fastfetch" }
+      - { pkg: "neofetch", bin: "neofetch" }
       - { pkg: "tmux", bin: "tmux" }
       - { pkg: "tree", bin: "tree" }
       - { pkg: "kate", bin: "kate" }
