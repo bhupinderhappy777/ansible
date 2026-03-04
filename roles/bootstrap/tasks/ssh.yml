@@ -45,6 +45,14 @@
     state: disabled
     immediate: true
 
+- name: FIREWALL | Remove manual port 22 override
+  ansible.posix.firewalld:
+    port: 22/tcp
+    state: disabled
+    permanent: true
+    immediate: true
+    zone: public
+
 - name: FIREWALL | Allow SSH only from Tailscale and specific IPs
   ansible.posix.firewalld:
     rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
