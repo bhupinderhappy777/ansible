@@ -19,6 +19,8 @@
     - ".config/doublecmd/shortcuts.scf"
     - ".config/doublecmd/colors.json"
     - ".config/doublecmd/multiarc.ini"
+    - ".var/app/com.visualstudio.code/config/Code/User/settings.json"
+    - ".var/app/com.visualstudio.code/config/Code/User/argv.json"
 
 # 2. Purge only the specific items that are NOT symlinks
 - name: Stow | Purge real files to allow for symlinks
@@ -33,6 +35,12 @@
   loop_control:
     label: "{{ item.item }}"
 
+- name: Stow | Ensure VS Code config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/config/Code/User"
+    state: directory
+    mode: '0755'
+
 # 3. Use --no-folding to prevent the .config conflict
 - name: Stow Core Configurations
   ansible.builtin.command:
@@ -46,6 +54,7 @@
     - "systemd"
     - "audacity"
     - "doublecmd"
+    - "vscode"
   register: stow_result
   changed_when: "'LINK' in stow_result.stderr or 'SYMLINK' in stow_result.stderr"
 

@@ -1,17 +1,16 @@
 {
-  "name": "Ansible Control Node",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:1": {}
-  },
-  "remoteEnv": {
-    "ANSIBLE_SSH_KEY": "${localEnv:ID_ED25519}",
-    "TS_AUTHKEY": "${secrets:TS_AUTHKEY}"
-  },
-  "postAttachCommand": "chmod +x .devcontainer/post-attach.sh && .devcontainer/post-attach.sh",
-  "customizations": {
-    "vscode": {
-      "extensions": ["redhat.ansible"]
-    }
-  }
+    "name": "Ansible Home Lab",
+    "image": "mcr.microsoft.com/devcontainers/base:fedora",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "redhat.ansible",
+                "ms-vscode-remote.remote-containers"
+            ]
+        }
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,Z"
+    ],
+    "remoteUser": "vscode"
 }

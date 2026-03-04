@@ -46,17 +46,36 @@
     name: kwallet-pam
     state: present
   become: true
+  tags: [vscode, config]
 
-- name: Configure VS Code Flatpak permissions
-  community.general.flatpak:
-    name: com.visualstudio.code
-    state: present
-    remote: flathub
-    # Adds the necessary D-Bus permissions for the terminal and KWallet
-    extra_args: >-
-      --user
+- name: VS Code | Ensure Flatpak config directory exists
+  ansible.builtin.file:
+    path: "~/.var/app/com.visualstudio.code/config/Code/User"
+    state: directory
+    mode: '0755'
+    tags: [vscode, config]
+
+- name: VS Code | Force KWallet6 encryption in argv.json
+  ansible.builtin.copy:
+    dest: "~/.var/app/com.visualstudio.code/config/Code/User/argv.json"
+    content: |
+      {
+          "password-store": "kwallet6"
+      }
+    mode: '0644'
+  tags: [vscode, config]
+
+- name: VS Code | Grant Flatpak permissions for KWallet, Terminal, and Podman
+  ansible.builtin.command:
+    cmd: >
+      flatpak override --user
       --talk-name=org.freedesktop.Flatpak
       --talk-name=org.freedesktop.secrets
       --talk-name=org.kde.kwalletd5
       --talk-name=org.kde.kwalletd6
-  tags: [flatpak, gui]
+      --filesystem=xdg-run/podman:create
+      --filesystem=home
+      com.visualstudio.code
+  register: vscode_flatpak_override
+  changed_when: false
+  tags: [vscode, flatpak]

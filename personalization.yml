@@ -24,5 +24,6 @@
     - { role: terminal, tags: ['terminal'] }
     - { role: syncthing, tags: ['syncthing'] }
     - { role: virtualization, tags: ['virtualization'] }
+    - { role: podman, tags: ['podman'] }
 
 
