@@ -39,6 +39,7 @@ WORKDIR /root
 # `docker run -e REPO_URL=... -e REPO_REF=...` without rebuilding.
 # Uses ANSIBLE_VAULT_PASSWORD
 ENTRYPOINT ["sh", "-c", "if [ -n \"${ANSIBLE_VAULT_PASSWORD}\" ]; then \
+    trap 'rm -f /tmp/.vp' EXIT INT TERM; \
     echo \"${ANSIBLE_VAULT_PASSWORD}\" > /tmp/.vp && \
     exec ansible-pull -U ${REPO_URL} -C ${REPO_REF} -i localhost, --skip-tags ${SKIP_TAGS} --vault-id /tmp/.vp ${PLAYBOOK}; \
     else \
