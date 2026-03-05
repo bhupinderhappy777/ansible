@@ -3,7 +3,8 @@
     "image": "registry.fedoraproject.org/fedora-toolbox:41",
     "runArgs": [
         "--hostname=ansible-lab",
-        "--security-opt=label=disable"
+        "--security-opt=label=disable",
+        "--privileged"
     ],
     "customizations": {
         "vscode": {

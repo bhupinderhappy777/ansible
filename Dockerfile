@@ -1,4 +1,4 @@
-FROM Fedora:43
+FROM fedora:43
 
 # Metadata
 LABEL org.opencontainers.image.title="ansible-dev-setup" \
@@ -10,7 +10,6 @@ ARG REPO_URL=https://github.com/bhupinderhappy777/ansible
 ARG REPO_REF=dotfiles
 ARG SKIP_TAGS=gui
 ARG PLAYBOOK=dev_env_setup.yml
-ARG ANSIBLE_VERSION=2.20.3
 
 # Expose sensible defaults as environment variables (runtime override with -e)
 ENV PATH="/root/.local/bin:${PATH}" \
@@ -31,19 +30,20 @@ RUN dnf -y --setopt=install_weak_deps=False install \
     && rm -rf /var/cache/dnf
 
 # Install a pinned Ansible via pipx for reproducibility
-RUN if [ -n "${ANSIBLE_VERSION}" ]; then \
-        pipx install --include-deps "ansible==${ANSIBLE_VERSION}"; \
-    else \
-        pipx install --include-deps ansible; \
-    fi
+RUN pipx install --include-deps ansible;
 
 WORKDIR /root
 
 # Entrypoint builds its args from runtime environment variables so
 # the repository, ref, tags and playbook are configurable with
 # `docker run -e REPO_URL=... -e REPO_REF=...` without rebuilding.
-# Uses ANSIBLE_VAULT_PASSWORD (if set) via --vault-id @env:ANSIBLE_VAULT_PASSWORD
-ENTRYPOINT ["sh", "-c", "if [ -n \"${ANSIBLE_VAULT_PASSWORD}\" ]; then exec ansible-pull -U ${REPO_URL} -C ${REPO_REF} --skip-tags ${SKIP_TAGS} --vault-id @env:ANSIBLE_VAULT_PASSWORD ${PLAYBOOK}; else exec ansible-pull -U ${REPO_URL} -C ${REPO_REF} --skip-tags ${SKIP_TAGS} ${PLAYBOOK}; fi"]
+# Uses ANSIBLE_VAULT_PASSWORD
+ENTRYPOINT ["sh", "-c", "if [ -n \"${ANSIBLE_VAULT_PASSWORD}\" ]; then \
+    echo \"${ANSIBLE_VAULT_PASSWORD}\" > /tmp/.vp && \
+    exec ansible-pull -U ${REPO_URL} -C ${REPO_REF} -i localhost, --skip-tags ${SKIP_TAGS} --vault-id /tmp/.vp ${PLAYBOOK}; \
+    else \
+    exec ansible-pull -U ${REPO_URL} -C ${REPO_REF} -i localhost, --skip-tags ${SKIP_TAGS} ${PLAYBOOK}; \
+    fi"]
 
 # No default CMD required; allow overrides if desired
 CMD []
