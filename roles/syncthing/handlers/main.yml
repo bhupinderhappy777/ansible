@@ -1,7 +1,7 @@
 ---
-- name: restart syncthing
-  systemd:
+- name: Restart syncthing
+  ansible.builtin.systemd:
     name: syncthing
     scope: user
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true

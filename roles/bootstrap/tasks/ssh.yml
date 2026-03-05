@@ -1,7 +1,7 @@
 ---
 - name: SSH | Set OS-specific variables
-  set_fact:
-    ssh_service: "{{ ssh_service_mapping[ansible_facts['os_family']]['service'] }}"
+  ansible.builtin.set_fact:
+    ssh_service: "{{ bootstrap_ssh_service_mapping[ansible_facts['os_family']]['service'] }}"
 
 - name: SSH | Ensure OpenSSH Server is installed
   ansible.builtin.package:
@@ -11,7 +11,7 @@
 
 - name: SSH | Ensure sshd is enabled and running
   ansible.builtin.service:
-    name: "{{ ssh_service }}"
+    name: "{{ bootstrap_ssh_service }}"
     state: started
     enabled: true
   become: true
@@ -28,11 +28,10 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
-    - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
-    - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
-    - { regexp: '^#?Protocol', line: 'Protocol 2' }
-    # ... (rest of your items)
-  notify: "Restart {{ ssh_service }}"
+    - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
+    - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+    - { regexp: "^#?Protocol", line: "Protocol 2" }
+  notify: "Restart {{ bootstrap_ssh_service }}"
   become: true
 
 # --- FIREWALL LOGIC ---
@@ -56,12 +55,12 @@
     - name: FIREWALL | Deny all SSH by default
       community.general.ufw:
         rule: deny
-        port: '22'
+        port: "22"
     - name: FIREWALL | Allow Tailscale and Specific IPs
       community.general.ufw:
         rule: allow
         src: "{{ item }}"
-        port: '22'
+        port: "22"
         proto: tcp
       loop: ["100.64.0.0/10", "198.162.116.140"]
 

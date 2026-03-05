@@ -1,0 +1,71 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/vscode for redhat and kde plasma desktop
+- name: Ensure Flatpak is installed
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+  become: true
+
+- name: Ensure Flathub repository is enabled
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+  become: true
+
+- name: Install VS Code via Flatpak
+  community.general.flatpak:
+    name: com.visualstudio.code
+    state: present
+    method: system
+    remote: flathub
+  become: true
+
+- name: Ensure KWallet Secret Service bridge is installed
+  ansible.builtin.dnf:
+    name: kwallet-pam
+    state: present
+  become: true
+  tags: [kde]
+
+- name: VS Code | Ensure Flatpak config directory exists
+  ansible.builtin.file:
+    path: "~/.var/app/com.visualstudio.code/config/Code/User"
+    state: directory
+    mode: "0755"
+
+- name: VS Code | Force KWallet6 encryption in argv.json
+  ansible.builtin.copy:
+    dest: "~/.var/app/com.visualstudio.code/config/Code/User/argv.json"
+    content: |
+      {
+          "password-store": "kwallet6"
+      }
+    mode: "0644"
+
+- name: VS Code | Create internal Flatpak bin directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/data/node_modules/.bin"
+    state: directory
+    mode: "0755"
+
+- name: VS Code | Link host wrapper to internal Flatpak bin
+  ansible.builtin.file:
+    src: "{{ ansible_facts['user_dir'] }}/.local/bin/docker"
+    dest: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/data/node_modules/.bin/docker"
+    state: link
+
+- name: VS Code | Apply Final Flatpak Overrides
+  ansible.builtin.command:
+    cmd: >
+      flatpak override --user
+      --filesystem=home/.local/bin:ro
+      --filesystem=xdg-run/podman:create
+      --filesystem=/tmp
+      --talk-name=org.freedesktop.Flatpak
+      --talk-name=org.freedesktop.portal.Flatpak
+      --env=SHELL=/usr/bin/zsh
+      --env=PATH=/usr/bin:/app/bin:/app/extra/node_modules/.bin:/home/bhupi/.var/app/com.visualstudio.code/data/node_modules/.bin
+      com.visualstudio.code
+  changed_when: false

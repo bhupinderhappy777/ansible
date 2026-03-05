@@ -3,7 +3,7 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: '0700'
+    mode: "0700"
   loop:
     - "{{ ansible_facts['env']['HOME'] }}/.local/bin"
     - "{{ ansible_facts['env']['HOME'] }}/.local/state/syncthing"
@@ -12,7 +12,7 @@
   ansible.builtin.file:
     path: "{{ item | replace('~', ansible_facts['env']['HOME']) }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
   loop:
     - "~/Inbox_Folder/Mobile/Pixel8/Download"
     - "~/Inbox_Folder/Mobile/Pixel8/WA"
@@ -33,7 +33,7 @@
   ansible.builtin.file:
     path: "{{ item | replace('~', ansible_facts['env']['HOME']) }}/.stfolder"
     state: directory
-    mode: '0755'
+    mode: "0755"
   loop:
     - "~/Inbox_Folder/Mobile/Pixel8/Download"
     - "~/Inbox_Folder/Mobile/Pixel8/WA"
@@ -60,36 +60,35 @@
   ansible.builtin.copy:
     src: "/tmp/syncthing-linux-amd64-v{{ syncthing_version }}/syncthing"
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/syncthing"
-    mode: '0755'
+    mode: "0755"
     remote_src: true
 
 - name: Deploy Vaulted Identity, HTTPS Keys, and Config
   ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/state/syncthing/{{ item.dest }}"
-    mode: '0600'
+    mode: "0600"
   loop:
-    - { src: 'cert.pem', dest: 'cert.pem' }
-    - { src: 'key.pem', dest: 'key.pem' }
-    - { src: 'https-cert.pem', dest: 'https-cert.pem' }
-    - { src: 'https-key.pem', dest: 'https-key.pem' }
-    - { src: 'config.xml', dest: 'config.xml' }
+    - { src: "cert.pem", dest: "cert.pem" }
+    - { src: "key.pem", dest: "key.pem" }
+    - { src: "https-cert.pem", dest: "https-cert.pem" }
+    - { src: "https-key.pem", dest: "https-key.pem" }
+    - { src: "config.xml", dest: "config.xml" }
   no_log: true
   notify: restart syncthing
 
 - name: Reset GUI credentials
   ansible.builtin.replace:
     path: "{{ ansible_facts['env']['HOME'] }}/.local/state/syncthing/config.xml"
-    regexp: '<user>.*</user>\s*<password>.*</password>'
-    replace: '<user></user><password></password>'
+    regexp: "<user>.*</user>\\s*<password>.*</password>"
+    replace: "<user></user><password></password>"
   notify: restart syncthing
-
 
 - name: Setup Systemd User Service
   ansible.builtin.template:
     src: syncthing.service.j2
     dest: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user/syncthing.service"
-    mode: '0644'
+    mode: "0644"
   notify: restart syncthing
 
 - name: Enable and Start Service

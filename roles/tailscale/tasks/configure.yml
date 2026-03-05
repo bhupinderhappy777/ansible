@@ -1,5 +1,4 @@
 ---
-
 - name: Check Tailscale login status
   ansible.builtin.command: tailscale status
   register: tailscale_status_check

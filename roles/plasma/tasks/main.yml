@@ -1,0 +1,39 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/plasma
+
+# Plasma Version Specific Layout (v5 vs v6)
+
+- name: Ensure Restart Script Exists
+  ansible.builtin.stat:
+    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+  register: plasma_stat
+  tags: gui
+
+- name: Ensure Restart Script is Executable
+  ansible.builtin.file:
+    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+    mode: "0755"
+  tags: gui
+
+- name: Run Version-Specific Restart Script
+  ansible.builtin.command: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
+  when: plasma_stat.stat.exists
+  changed_when: false
+  failed_when: plasma_result.rc != 0
+  register: plasma_result
+  tags: gui
+  # skip_ansible_lint: Use shell only when shell functionality is required.
+
+- name: Enable and Refresh User Services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    scope: user
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop:
+    - wallpaper-refresh.timer
+    - wallpaper-refresh.service
+    - inbox-watcher.service
+  tags: gui

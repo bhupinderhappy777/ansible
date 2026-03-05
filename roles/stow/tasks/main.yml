@@ -39,7 +39,14 @@
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/config/Code/User"
     state: directory
-    mode: '0755'
+    mode: "0755"
+
+# Ensure that stow is installed before attempting to use it
+- name: Ensure stow is installed
+  ansible.builtin.package:
+    name: stow
+    state: present
+  become: true
 
 # 3. Use --no-folding to prevent the .config conflict
 - name: Stow Core Configurations
@@ -67,38 +74,3 @@
   register: stow_plasma
   changed_when: "'LINK' in stow_plasma.stderr"
   tags: gui
-
-# Plasma Version Specific Layout (v5 vs v6)
-- name: Ensure Restart Script is Executable
-  ansible.builtin.file:
-    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
-    mode: '0755'
-  tags: gui
-
-- name: Ensure Restart Script Exists
-  ansible.builtin.stat:
-    path: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
-  register: stow_stat
-
-- name: Run Version-Specific Restart Script
-  ansible.builtin.shell: "{{ clone_dotfiles_home }}/plasma/{{ plasma_v }}/apply_layout.sh"
-  when: stow_stat.stat.exists
-  changed_when: false
-  failed_when: stow_result.rc != 0
-  register: stow_result
-  tags: gui
-  # skip_ansible_lint: Use shell only when shell functionality is required.
-
-- name: Enable and Refresh User Services
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    scope: user
-    enabled: true
-    state: started
-    daemon_reload: true
-  loop:
-    - wallpaper-refresh.timer
-    - wallpaper-refresh.service
-    - inbox-watcher.service
-  tags: gui
-

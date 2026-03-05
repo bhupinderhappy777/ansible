@@ -1,3 +1,4 @@
+---
 - name: Install system dependencies for OCI SDK (RedHat)
   ansible.builtin.package:
     name: [python3-pip, python3-setuptools, openssl, gcc, libffi-devel]
@@ -24,20 +25,20 @@
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.oci"
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: Deploy OCI configuration file
   ansible.builtin.template:
     src: oci_config.j2
     dest: "{{ ansible_facts['user_dir'] }}/.oci/config"
-    mode: '0600'
+    mode: "0600"
 
 - name: OCI - Deploy Private Key
   ansible.builtin.copy:
     content: "{{ private_key }}"
     dest: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem"
-    mode: '0600'
-  no_log: true  # Hide sensitive data from logs
+    mode: "0600"
+  no_log: true # Hide sensitive data from logs
 
 - name: Check if OCI API key exists
   ansible.builtin.stat:

@@ -1,7 +1,6 @@
 ---
 # Tailscale installation role metadata
 dependencies: []
-
 galaxy_info:
   author: Infrastructure Team
   description: Install and configure Tailscale VPN

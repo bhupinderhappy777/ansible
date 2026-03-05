@@ -1,3 +1,4 @@
+---
 # system_packages for Workstation Personalization
 system_packages:
   Debian:
@@ -49,7 +50,6 @@ system_packages:
 
 flatpak_packages:
   - com.google.Chrome
-  - com.visualstudio.code
   - md.obsidian.Obsidian
   - org.audacityteam.Audacity
   - org.videolan.VLC

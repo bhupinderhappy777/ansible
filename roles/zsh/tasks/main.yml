@@ -10,7 +10,7 @@
   ansible.builtin.get_url:
     url: https://starship.rs/install.sh
     dest: /tmp/starship_install.sh
-    mode: '0755'
+    mode: "0755"
 
 - name: ZSH | Install Starship Prompt
   ansible.builtin.command:
@@ -20,7 +20,7 @@
 
 - name: ZSH | Install Oh My Zsh
   ansible.builtin.git:
-    repo: 'https://github.com/ohmyzsh/ohmyzsh.git'
+    repo: "https://github.com/ohmyzsh/ohmyzsh.git"
     dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
     version: master
     depth: 1
@@ -34,10 +34,10 @@
     version: master
     update: true
   loop:
-    - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions' }
-    - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
-    - { name: 'autoswitch_virtualenv', repo: 'https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv' }
-    - { name: 'zsh-history-substring-search', repo: 'https://github.com/zsh-users/zsh-history-substring-search' }
+    - { name: "zsh-autosuggestions", repo: "https://github.com/zsh-users/zsh-autosuggestions" }
+    - { name: "zsh-syntax-highlighting", repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git" }
+    - { name: "autoswitch_virtualenv", repo: "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv" }
+    - { name: "zsh-history-substring-search", repo: "https://github.com/zsh-users/zsh-history-substring-search" }
 - name: Ensure Zsh is the default shell
   ansible.builtin.user:
     name: "{{ ansible_user }}"

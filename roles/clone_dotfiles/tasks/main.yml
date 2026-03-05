@@ -4,15 +4,15 @@
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.ssh"
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: Deploy Private SSH Key from Vault
   ansible.builtin.copy:
     content: "{{ ssh_private_key }}"
     dest: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
-    mode: '0600'
-    force: false  # Avoid overwriting if the file already exists
-  no_log: true  # Hide sensitive data from logs
+    mode: "0600"
+    force: false # Avoid overwriting if the file already exists
+  no_log: true # Hide sensitive data from logs
 
 - name: Sync Dotfiles Repository
   ansible.builtin.git:
