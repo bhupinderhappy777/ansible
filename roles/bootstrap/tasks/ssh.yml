@@ -46,7 +46,7 @@
         state: enabled
         immediate: true
         permanent: true
-      loop: ["100.64.0.0/10", "198.162.116.140"]
+      loop: ["100.64.0.0/10", "198.162.112.2"]
 
 - name: FIREWALL | Ubuntu (UFW) Setup
   when: ansible_facts['os_family'] == "Debian"
@@ -62,7 +62,7 @@
         src: "{{ item }}"
         port: "22"
         proto: tcp
-      loop: ["100.64.0.0/10", "198.162.116.140"]
+      loop: ["100.64.0.0/10", "198.162.112.2"]
 
 # --- LINGER LOGIC ---
 
