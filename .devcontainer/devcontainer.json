@@ -1,6 +1,6 @@
 {
     "name": "Ansible & DevOps Environment",
-    "image": "registry.fedoraproject.org/fedora-toolbox:41",
+    "image": "registry.fedoraproject.org/fedora:41",
     "runArgs": [
         "--hostname=ansible-lab",
         "--security-opt=label=disable",
