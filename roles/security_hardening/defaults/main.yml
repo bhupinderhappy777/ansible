@@ -1,4 +1,17 @@
----
+hardening_profile: cis_paranoid
+
+# Global switches
+hardening_apply_network_firewall: true
+hardening_enable_auditd: true
+hardening_verify_only: false
+
+# Linux SSH settings
 hardening_ssh_port: 22
 hardening_permit_root_login: "no"
 hardening_password_auth: "no"
+
+# Windows settings
+hardening_windows_rdp_enabled: false
+hardening_windows_allowed_ports:
+  - 5985
+  - 5986
