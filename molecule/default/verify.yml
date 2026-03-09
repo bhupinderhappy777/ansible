@@ -4,12 +4,15 @@
   gather_facts: true
   tasks:
     - name: Verify bootstrap user exists
-      ansible.builtin.user:
-        name: testuser
-        state: present
-      check_mode: true
-      register: user_check
-      failed_when: user_check.changed or user_check.failed
+      ansible.builtin.getent:
+        database: passwd
+        key: testuser
+      register: getent_check
+
+    - name: Fail if bootstrap user is missing
+      ansible.builtin.fail:
+        msg: "The bootstrap user 'testuser' does not exist."
+      when: getent_check.failed | default(false) or 'testuser' not in getent_check.ansible_facts.getent_passwd
 
     - name: Verify SSH service is running
       ansible.builtin.service:

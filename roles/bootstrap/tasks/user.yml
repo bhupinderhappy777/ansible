@@ -3,7 +3,7 @@
 
 - name: USER | Ensure the admin user exists
   ansible.builtin.user:
-    name: "{{ ansible_user | default(ansible_facts['user_id']) }}"
+    name: "{{ bootstrap_user }}"
     groups: "{{ bootstrap_admin_group }}"
     append: true
     create_home: true
@@ -13,9 +13,9 @@
 
 - name: USER | Configure passwordless sudo for admin user
   ansible.builtin.copy:
-    dest: "/etc/sudoers.d/{{ ansible_user | default(ansible_facts['user_id']) }}"
+    dest: "/etc/sudoers.d/{{ bootstrap_user }}"
     content: |
-      {{ ansible_user | default(ansible_facts['user_id']) }} ALL=(ALL) NOPASSWD: ALL
+      {{ bootstrap_user }} ALL=(ALL) NOPASSWD: ALL
     owner: root
     group: root
     mode: "0440"
