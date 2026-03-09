@@ -9,7 +9,6 @@
 
 - name: Setup Administrative User
   ansible.builtin.include_tasks: user.yml
-...
 
 - name: Harden SSH Configuration
   ansible.builtin.include_tasks: ssh.yml
