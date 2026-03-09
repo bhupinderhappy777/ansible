@@ -2,7 +2,6 @@
 - name: Converge
   hosts: all
   gather_facts: true
-  become: true
   vars:
     bootstrap_user: testuser
     bootstrap_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"

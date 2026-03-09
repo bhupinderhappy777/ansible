@@ -5,3 +5,4 @@
   loop: "{{ common_system_packages[ansible_facts['os_family']] | default(common_system_packages['Debian']) }}"
   loop_control:
     label: "{{ item.pkg }}"
+  become: true

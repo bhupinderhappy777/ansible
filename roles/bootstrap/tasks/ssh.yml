@@ -17,6 +17,7 @@
     user: "{{ ansible_user | default(ansible_facts['user_id']) }}"
     state: present
     key: "{{ bootstrap_ssh_key }}"
+  become: true
 
 - name: SSH | Configure SSH Basics (Global)
   ansible.builtin.lineinfile:

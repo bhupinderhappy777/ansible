@@ -9,6 +9,7 @@
     create_home: true
     state: present
     shell: /bin/bash
+  become: true
 
 - name: USER | Configure passwordless sudo for admin user
   ansible.builtin.copy:
@@ -19,3 +20,4 @@
     group: root
     mode: "0440"
     validate: "/usr/sbin/visudo -cf %s"
+  become: true

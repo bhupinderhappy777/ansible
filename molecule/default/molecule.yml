@@ -36,6 +36,8 @@ provisioner:
   inventory:
     hosts:
       all:
+        vars:
+          ansible_user: root
         hosts:
           ubuntu-24.04:
             ansible_python_interpreter: /usr/bin/python3

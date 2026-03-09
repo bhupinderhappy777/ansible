@@ -2,7 +2,6 @@
 - name: Converge
   hosts: all
   gather_facts: true
-  become: true
   vars:
     tailscale_auth_key: "{{ lookup('env', 'TAILSCALE_AUTH_KEY') | default('', true) }}"
     tailscale_up: "{{ (lookup('env', 'TAILSCALE_AUTH_KEY') != '') | bool }}"

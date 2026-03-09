@@ -1,6 +1,7 @@
 ---
 - name: Install Tailscale | Debian/Ubuntu
   when: ansible_facts['os_family'] == 'Debian'
+  become: true
   block:
     - name: Install Tailscale | Add GPG key
       ansible.builtin.get_url:
@@ -19,6 +20,7 @@
 
 - name: Install Tailscale | RedHat/Fedora
   when: ansible_facts['os_family'] == 'RedHat'
+  become: true
   block:
     - name: Install Tailscale | Add repository
       ansible.builtin.yum_repository:
@@ -33,9 +35,11 @@
   ansible.builtin.package:
     name: tailscale
     state: present
+  become: true
 
 - name: Ensure Tailscale service is started and enabled
   ansible.builtin.systemd:
     name: tailscaled
     state: started
     enabled: true
+  become: true
