@@ -28,9 +28,9 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      roles_path: ../../roles
+      roles_path: ${MOLECULE_PROJECT_DIRECTORY}/roles
   env:
-    ANSIBLE_ROLES_PATH: ../../roles
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
   inventory:
     hosts:
       all:

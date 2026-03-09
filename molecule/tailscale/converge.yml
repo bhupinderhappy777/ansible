@@ -6,7 +6,6 @@
   vars:
     tailscale_auth_key: ""
     tailscale_up: false
-  tasks:
-    - name: Include tailscale role
-      ansible.builtin.include_role:
-        name: tailscale
+    tailscale_args: ""
+  roles:
+    - tailscale
