@@ -39,6 +39,19 @@
   when: ansible_facts['os_family'] == "RedHat"
   become: true
   block:
+    - name: FIREWALL | Ensure firewalld and python bindings are installed
+      ansible.builtin.package:
+        name:
+          - firewalld
+          - python3-firewall
+        state: present
+
+    - name: FIREWALL | Ensure firewalld is enabled and running
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
     - name: FIREWALL | Allow Tailscale and Trusted IPs for SSH
       ansible.posix.firewalld:
         rich_rule: 'rule family="ipv4" source address="{{ item }}" service name="ssh" accept'
@@ -51,6 +64,15 @@
   when: ansible_facts['os_family'] == "Debian"
   become: true
   block:
+    - name: FIREWALL | Ensure ufw is installed
+      ansible.builtin.package:
+        name: ufw
+        state: present
+
+    - name: FIREWALL | Ensure ufw is enabled
+      community.general.ufw:
+        state: enabled
+
     - name: FIREWALL | Deny all SSH by default
       community.general.ufw:
         rule: deny
