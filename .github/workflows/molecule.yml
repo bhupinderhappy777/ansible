@@ -30,6 +30,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible-core molecule molecule-plugins[docker] docker
 
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install -r requirements.yml
+
       - name: Run Molecule tests
         run: molecule test -s ${{ matrix.scenario }}
         env:
