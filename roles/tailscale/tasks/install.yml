@@ -10,7 +10,10 @@
 
     - name: Install Tailscale | Add repository
       ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} main"
+        repo: >-
+          deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg]
+          https://pkgs.tailscale.com/stable/{{ ansible_facts['distribution'] | lower }}
+          {{ ansible_facts['distribution_release'] }} main
         state: present
         filename: tailscale
 
