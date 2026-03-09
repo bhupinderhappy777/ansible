@@ -47,4 +47,4 @@ jobs:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
           TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
-          ANSIBLE_VAULT_PASSWORD_FILE: .vault_pass
+          ANSIBLE_VAULT_PASSWORD_FILE: ${{ github.workspace }}/.vault_pass
