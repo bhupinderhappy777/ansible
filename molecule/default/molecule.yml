@@ -26,6 +26,9 @@ platforms:
 
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      roles_path: ../../roles
   env:
     ANSIBLE_ROLES_PATH: ../../roles
   inventory:

@@ -6,6 +6,10 @@
   vars:
     bootstrap_user: testuser
     bootstrap_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"
-  roles:
-    - role: bootstrap
-    - role: common
+  tasks:
+    - name: Include bootstrap role
+      ansible.builtin.include_role:
+        name: bootstrap
+    - name: Include common role
+      ansible.builtin.include_role:
+        name: common
