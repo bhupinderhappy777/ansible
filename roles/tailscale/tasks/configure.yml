@@ -15,6 +15,8 @@
     cmd: "tailscale up --authkey={{ tailscale_auth_key }} --accept-routes --reset {{ tailscale_args }}"
   when:
     - tailscale_auth_key is defined
+    - tailscale_auth_key != ""
+    - tailscale_up | default(true) | bool
     - tailscale_status.BackendState is not defined or tailscale_status.BackendState != 'Running'
   register: tailscale_up_result
   changed_when: false

@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for roles/gemini_cli
+# package name to install via pip (can include distribution name or PyPI package)
+gemini_cli_package: gemini-cli
+# optional specific version, leave empty to install latest
+gemini_cli_version: ""
+# present/absent
+gemini_cli_state: present
+# system package that provides pip3 (package manager will map to apt/yum/dnf)
+gemini_cli_pip_package: python3-pip
+# extra args passed to pip (e.g. --user, --no-cache-dir)
+gemini_cli_pip_extra_args: ""
+# binary name to verify after install
+gemini_cli_bin: gemini

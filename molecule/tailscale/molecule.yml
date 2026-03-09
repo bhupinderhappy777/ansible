@@ -31,6 +31,7 @@ provisioner:
       roles_path: ${MOLECULE_PROJECT_DIRECTORY}/roles
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+    TAILSCALE_AUTH_KEY: ${TAILSCALE_AUTH_KEY}
   inventory:
     hosts:
       all:

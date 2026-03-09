@@ -12,3 +12,17 @@
       ansible.builtin.assert:
         that:
           - tailscale_binary.stat.exists
+
+    - name: Check tailscale login status
+      ansible.builtin.command: tailscale status
+      register: tailscale_status
+      changed_when: false
+      failed_when: false
+      when: lookup('env', 'TAILSCALE_AUTH_KEY') != ""
+
+    - name: Assert tailscale is logged in
+      ansible.builtin.assert:
+        that:
+          - "'Logged out' not in tailscale_status.stdout"
+        fail_msg: "Tailscale is not logged in even though auth key was provided"
+      when: lookup('env', 'TAILSCALE_AUTH_KEY') != ""

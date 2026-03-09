@@ -25,6 +25,6 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/ansible,type=bind",
     "workspaceFolder": "/workspaces/ansible",
     "remoteUser": "root",
-    "onCreateCommand": "dnf install -y git openssh-clients python3-pip && pip install ansible ansible-lint",
+    "onCreateCommand": "dnf install -y git npm openssh-clients openssh-server python3-pip && pip install ansible ansible-lint && npm install -g @google/gemini-cli",
     "shutdownAction": "stopContainer"
 }

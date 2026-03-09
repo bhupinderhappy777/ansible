@@ -1,0 +1,27 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/gemini_cli
+
+- name: Ensure pip is installed
+	package:
+		name: "{{ gemini_cli_pip_package }}"
+		state: present
+	become: true
+
+- name: Install Gemini CLI via pip
+	ansible.builtin.pip:
+		name: "{{ gemini_cli_package }}{{ ('==' + gemini_cli_version) if gemini_cli_version else '' }}"
+		state: "{{ gemini_cli_state }}"
+		executable: pip3
+		extra_args: "{{ gemini_cli_pip_extra_args }}"
+	become: true
+
+- name: Verify Gemini CLI is available
+	command: "{{ gemini_cli_bin }} --version"
+	register: gemini_cli_version_out
+	failed_when: gemini_cli_version_out.rc != 0
+	changed_when: false
+
+- name: Show installed Gemini CLI version
+	debug:
+		var: gemini_cli_version_out.stdout
