@@ -7,7 +7,7 @@
 
     # Dot Files
     clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
-    clone_dotfiles_branch: "plasma"
+    clone_dotfiles_branch: "main"
     clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
 
   roles:
