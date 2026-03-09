@@ -24,5 +24,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible-lint ansible-core
 
+      - name: Create Vault Password File
+        run: |
+          if [ -n "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" ]; then
+            echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+          else
+            echo "not-a-real-password" > .vault_pass
+          fi
+
       - name: Run ansible-lint
         run: ansible-lint --force-color
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .vault_pass
