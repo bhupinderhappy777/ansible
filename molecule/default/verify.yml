@@ -2,17 +2,26 @@
 - name: Verify
   hosts: all
   gather_facts: true
+  vars:
+    bootstrap_user: testuser
   tasks:
     - name: Verify bootstrap user exists
       ansible.builtin.getent:
         database: passwd
-        key: testuser
+        key: "{{ bootstrap_user }}"
       register: getent_check
+      become: true
+      ignore_errors: true
+
+    - name: Debug getent results on failure
+      ansible.builtin.debug:
+        var: getent_check
+      when: getent_check.failed | default(false)
 
     - name: Fail if bootstrap user is missing
       ansible.builtin.fail:
-        msg: "The bootstrap user 'testuser' does not exist."
-      when: getent_check.failed | default(false) or 'testuser' not in getent_check.ansible_facts.getent_passwd
+        msg: "The bootstrap user '{{ bootstrap_user }}' does not exist."
+      when: getent_check.failed | default(false) or bootstrap_user not in getent_check.ansible_facts.getent_passwd
 
     - name: Verify SSH service is running
       ansible.builtin.service:

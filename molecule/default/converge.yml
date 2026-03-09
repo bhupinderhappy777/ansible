@@ -6,5 +6,6 @@
     bootstrap_user: testuser
     bootstrap_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"
   roles:
-    - bootstrap
+    - role: bootstrap
+      bootstrap_user: testuser
     - common
