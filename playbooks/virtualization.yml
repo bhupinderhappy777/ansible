@@ -5,6 +5,3 @@
 
   roles:
     - { role: virtualization, tags: ['virtualization'] }
-
-
-

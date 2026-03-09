@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    tailscale_auth_key: "" # Empty key means it won't authenticate but will install
+    tailscale_up: false    # Don't try to bring up the interface in CI
+  roles:
+    - role: tailscale

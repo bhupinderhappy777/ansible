@@ -2,10 +2,10 @@
 # Tailscale installation role metadata
 dependencies: []
 galaxy_info:
-  author: Infrastructure Team
+  author: "Your Name"
   description: Install and configure Tailscale VPN
-  company: your-company
-  license: MIT
+  company: "Your Company"
+  license: "MIT"
   min_ansible_version: "2.9"
 
   platforms:

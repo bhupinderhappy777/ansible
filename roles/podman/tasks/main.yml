@@ -58,5 +58,5 @@
 
 - name: Podman | Pre-cache the Toolbox image
   ansible.builtin.command:
-    cmd: "podman pull registry.fedoraproject.org/fedora-toolbox:41"
+    cmd: "podman pull {{ podman_toolbox_image }}"
   changed_when: false

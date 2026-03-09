@@ -7,7 +7,7 @@
   loop:
     - WinRM
     - EventLog
-  when: not (hardening_verify_only | default(false))
+  when: not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:os_baseline
@@ -19,12 +19,11 @@
       - CriticalUpdates
       - SecurityUpdates
       - UpdateRollups
-    reboot: yes
+    reboot: true
     reboot_timeout: 3600
-  when: not (hardening_verify_only | default(false))
+  when: not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:os_baseline
     - security:update
     - security:windows
-

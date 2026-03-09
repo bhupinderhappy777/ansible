@@ -2,6 +2,6 @@
   ansible.builtin.package:
     name: "{{ item.pkg }}"
     state: present
-  loop: "{{ system_packages[ansible_facts['os_family']] | default(system_packages['Debian']) }}"
+  loop: "{{ common_system_packages[ansible_facts['os_family']] | default(common_system_packages['Debian']) }}"
   loop_control:
     label: "{{ item.pkg }}"

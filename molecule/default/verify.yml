@@ -1,14 +1,29 @@
 ---
 - name: Verify
-  hosts: localhost
-  gather_facts: false
+  hosts: all
+  gather_facts: true
   tasks:
-    - name: Check tailscale binary
-      ansible.builtin.stat:
-        path: /usr/bin/tailscale
-      register: tailscale_binary
+    - name: Verify bootstrap user exists
+      ansible.builtin.user:
+        name: testuser
+        state: present
+      check_mode: true
+      register: user_check
+      failed_when: user_check.changed or user_check.failed
 
-    - name: Assert tailscale is installed
-      ansible.builtin.assert:
-        that:
-          - tailscale_binary.stat.exists
+    - name: Verify SSH service is running
+      ansible.builtin.service:
+        name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
+        state: started
+        enabled: true
+      check_mode: true
+      register: service_check
+      failed_when: service_check.changed or service_check.failed
+
+    - name: Verify common packages are installed (curl)
+      ansible.builtin.package:
+        name: curl
+        state: present
+      check_mode: true
+      register: package_check
+      failed_when: package_check.changed or package_check.failed

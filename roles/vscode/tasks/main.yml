@@ -1,4 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/vscode for redhat and kde plasma desktop
 - name: Ensure Flatpak is installed
@@ -66,6 +66,6 @@
       --talk-name=org.freedesktop.Flatpak
       --talk-name=org.freedesktop.portal.Flatpak
       --env=SHELL=/usr/bin/zsh
-      --env=PATH=/usr/bin:/app/bin:/app/extra/node_modules/.bin:/home/bhupi/.var/app/com.visualstudio.code/data/node_modules/.bin
+      --env=PATH=/usr/bin:/app/bin:/app/extra/node_modules/.bin:{{ ansible_facts['user_dir'] }}/.var/app/com.visualstudio.code/data/node_modules/.bin
       com.visualstudio.code
   changed_when: false

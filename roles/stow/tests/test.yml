@@ -1,6 +1,6 @@
-
 ---
-- hosts: localhost
+- name: Test stow role
+  hosts: localhost
   remote_user: root
   roles:
-    - /home/bhupi/ansible/roles/stow
+    - role: stow

@@ -24,7 +24,9 @@
         weekday: "1"
         hour: "3"
         minute: "0"
-        job: "ansible-pull -U https://github.com/bhupinderhappy777/ansible playbooks/security-hardening.yml --vault-id @none >> /var/log/ansible-security.log 2>&1"
+        job: >
+          ansible-pull -U https://github.com/bhupinderhappy777/ansible
+          playbooks/security-hardening.yml --vault-id @none >> /var/log/ansible-security.log 2>&1
         state: present
         user: root
 

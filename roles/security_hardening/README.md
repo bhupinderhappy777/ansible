@@ -36,27 +36,27 @@ selectively apply or override behavior via variables and tags.
 
 Defined in `defaults/main.yml`:
 
-- `hardening_profile` (default: `cis_paranoid`)\n  High-level intent flag reserved for future profile-specific tuning.
+- `security_hardening_profile` (default: `cis_paranoid`)\n  High-level intent flag reserved for future profile-specific tuning.
 
-- `hardening_apply_network_firewall` (default: `true`)\n  Whether to manage host firewalls at all.
+- `security_hardening_apply_network_firewall` (default: `true`)\n  Whether to manage host firewalls at all.
 
-- `hardening_enable_auditd` (default: `true`)\n  Whether to ensure `auditd` is installed/enabled on Linux where available.
+- `security_hardening_enable_auditd` (default: `true`)\n  Whether to ensure `auditd` is installed/enabled on Linux where available.
 
-- `hardening_verify_only` (default: `false`)\n  When `true`, the role is intended to run verification checks only (you can\n  gate mutating tasks on this variable).
+- `security_hardening_verify_only` (default: `false`)\n  When `true`, the role is intended to run verification checks only (you can\n  gate mutating tasks on this variable).
 
 ### Linux-specific
 
-- `hardening_ssh_port` (default: `22`)\n  SSH port; kept on 22 by default but can be moved to a non-standard port.
+- `security_hardening_ssh_port` (default: `22`)\n  SSH port; kept on 22 by default but can be moved to a non-standard port.
 
-- `hardening_permit_root_login` (default: `"no"`)\n  Controls `PermitRootLogin` in `sshd_config`.
+- `security_hardening_permit_root_login` (default: `"no"`)\n  Controls `PermitRootLogin` in `sshd_config`.
 
-- `hardening_password_auth` (default: `"no"`)\n  Controls `PasswordAuthentication` in `sshd_config`.
+- `security_hardening_password_auth` (default: `"no"`)\n  Controls `PasswordAuthentication` in `sshd_config`.
 
 ### Windows-specific
 
-- `hardening_windows_rdp_enabled` (default: `false`)\n  Whether RDP should be enabled; when `false` the role disables the RDP service.
+- `security_hardening_windows_rdp_enabled` (default: `false`)\n  Whether RDP should be enabled; when `false` the role disables the RDP service.
 
-- `hardening_windows_allowed_ports` (default: `[5985, 5986]`)\n  List of TCP ports that should be allowed inbound through Windows Firewall for\n  management (e.g. WinRM HTTP/HTTPS).
+- `security_hardening_windows_allowed_ports` (default: `[5985, 5986]`)\n  List of TCP ports that should be allowed inbound through Windows Firewall for\n  management (e.g. WinRM HTTP/HTTPS).
 
 ## Tags
 
@@ -88,9 +88,9 @@ Example from a playbook:
 Override defaults in inventory or group vars as needed, for example:
 
 ```yaml
-hardening_ssh_port: 2222
-hardening_windows_rdp_enabled: true
-hardening_windows_allowed_ports:
+security_hardening_ssh_port: 2222
+security_hardening_windows_rdp_enabled: true
+security_hardening_windows_allowed_ports:
   - 5985
   - 5986
   - 3389

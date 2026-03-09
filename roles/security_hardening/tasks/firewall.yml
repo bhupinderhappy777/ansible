@@ -6,7 +6,7 @@
     permanent: true
     state: enabled
   when: ansible_facts['os_family'] == "RedHat"
-  notify: reload firewalld
+  notify: Reload firewalld
 
 # Ubuntu / Debian (Debian Family)
 - name: Allow SSH in UFW
@@ -15,4 +15,4 @@
     name: OpenSSH
     state: enabled
   when: ansible_facts['os_family'] == "Debian"
-  notify: reload ufw
+  notify: Reload ufw

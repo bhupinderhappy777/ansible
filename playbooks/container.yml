@@ -1,0 +1,46 @@
+---
+- name: Container / Dev Environment Setup
+  hosts: all
+  connection: local
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: auto_silent
+    stow_install_package: false # Assume installed or skipped
+    clone_dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
+    clone_dotfiles_home: "{{ ansible_user_dir }}/dotfiles"
+
+  tasks:
+    - name: Ensure git and stow are installed (if root)
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop: [git, stow, zsh]
+      when: ansible_user_uid == 0
+      failed_when: false
+
+    - name: Clone Dotfiles
+      ansible.builtin.git:
+        repo: "{{ clone_dotfiles_repo }}"
+        dest: "{{ clone_dotfiles_home }}"
+        version: "master"
+        force: true
+
+    - name: Run Stow to link dotfiles
+      ansible.builtin.command:
+        cmd: "stow -R --no-folding -t {{ ansible_user_dir }} {{ item }}"
+        chdir: "{{ clone_dotfiles_home }}"
+      loop:
+        - "zsh"
+        - "git"
+        - "starship" # If applicable
+      failed_when: false
+      changed_when: false
+      # Stow might fail if conflicts exist, we ignore for now in container mode
+
+    - name: Setup Zsh Plugin Manager (Antidote/Oh-My-Zsh)
+      # Simplified version of zsh role for containers
+      ansible.builtin.git:
+        repo: "https://github.com/ohmyzsh/ohmyzsh.git"
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh"
+        version: "master"
+        depth: 1

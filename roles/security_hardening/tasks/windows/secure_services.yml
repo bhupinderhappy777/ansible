@@ -8,7 +8,7 @@
     - RemoteRegistry
     - SSDPSRV
     - upnphost
-  when: not (hardening_verify_only | default(false))
+  when: not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:services
@@ -19,10 +19,9 @@
     name: TermService
     state: stopped
     start_mode: disabled
-  when: not (hardening_windows_rdp_enabled | default(false))
+  when: not (security_hardening_windows_rdp_enabled | default(false))
   tags:
     - security
     - security:services
     - security:windows
     - security:rdp
-

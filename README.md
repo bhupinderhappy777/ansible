@@ -36,15 +36,20 @@ Standardized **Ed25519** keys are used across the entire fleet. To ensure portab
 ```text
 ansible/
 ├── ansible.cfg          # Optimized with vault_password_file & host_key_checking
-├── inventory/
-│   └── hosts.ini        # Multi-cloud inventory grouped by environment
-├── playbooks/
+├── inventory/           # Host definitions and group variables
+├── playbooks/           # All playbooks (site, security, setup, etc.)
 │   └── ping.yml         # Connection verification suite
-├── scripts/
+├── scripts/             # Support scripts and automation utilities
 │   └── get_vault_pass.sh # OCI CLI script for dynamic secret retrieval
+├── roles/               # Modular components for system configuration
 └── group_vars/          # Encrypted variables via Ansible Vault
-
 ```
+
+### 🛠 Recent Improvements (2026 Overhaul)
+- **Standardized Handlers:** Unified SSH and Firewall handlers across the entire codebase.
+- **Native Package Management:** Improved Tailscale installation using official repositories instead of shell scripts.
+- **Enhanced Validation:** Added `validate` checks for `sshd_config` and `sudoers` files.
+- **FQCN Usage:** Transitioned to Fully Qualified Collection Names (e.g., `ansible.builtin.service`) for better long-term compatibility.
 
 ---
 

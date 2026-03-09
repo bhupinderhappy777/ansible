@@ -5,14 +5,14 @@
     key: "{{ item.key }}"
     value: "{{ item.value }}"
   loop:
-    - { key: "PasswordComplexity",        value: 1 }
-    - { key: "MinimumPasswordLength",     value: 14 }
-    - { key: "MaximumPasswordAge",        value: 60 }
-    - { key: "PasswordHistorySize",       value: 24 }
-    - { key: "LockoutBadCount",           value: 5 }
-    - { key: "ResetLockoutCount",         value: 30 }
-    - { key: "LockoutDuration",           value: 30 }
-  when: not (hardening_verify_only | default(false))
+    - {key: "PasswordComplexity", value: 1}
+    - {key: "MinimumPasswordLength", value: 14}
+    - {key: "MaximumPasswordAge", value: 60}
+    - {key: "PasswordHistorySize", value: 24}
+    - {key: "LockoutBadCount", value: 5}
+    - {key: "ResetLockoutCount", value: 30}
+    - {key: "LockoutDuration", value: 30}
+  when: not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:auth
@@ -25,11 +25,10 @@
     data: 1
     type: dword
   when:
-    - hardening_windows_rdp_enabled | default(false)
-    - not (hardening_verify_only | default(false))
+    - security_hardening_windows_rdp_enabled | default(false)
+    - not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:auth
     - security:windows
     - security:rdp
-

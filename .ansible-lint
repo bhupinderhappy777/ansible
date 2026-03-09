@@ -1,0 +1,31 @@
+---
+# .ansible-lint
+profile: production
+exclude_paths:
+  - .github/
+  - .git/
+  - .vscode/
+  - molecule/
+  - scripts/
+  - .devcontainer/
+  - archive/
+
+# Checking for all rules
+skip_list:
+  - no-handler # Some roles might not have handlers
+  - fqcn-builtins # We want to enforce this, but maybe not strictly for all legacy
+  - experimental # Skip experimental checks
+  - role-name # We have some roles that might not match strictly (e.g. plasma)
+
+warn_list:
+  - command-instead-of-module # Sometimes necessary
+  - no-changed-when # Sometimes we just run commands
+  - yaml[line-length] # Subjective and hard to fix for some URLs/commands
+  - risky-file-permissions # Can be complex to manage across all files
+  - command-instead-of-shell # Shell is often needed for complex logic
+  - latest[git] # Sometimes we want master/main which is effectively latest
+  - risky-shell-pipe # Hard to enforce on all one-liners
+  - yaml[commas] # Minor formatting
+
+# Enforce strict checking
+strict: true

@@ -1,0 +1,51 @@
+---
+- name: System Maintenance and Updates
+  hosts: all
+  become: true
+  serial: 1  # Update one host at a time to prevent full outage
+  vars:
+    reboot_if_required: true
+
+  tasks:
+    - name: Update apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family == 'Debian'
+
+    - name: Upgrade all packages (Debian/Ubuntu)
+      ansible.builtin.apt:
+        upgrade: dist
+        autoremove: true
+        purge: true
+      when: ansible_os_family == 'Debian'
+      register: apt_upgrade
+
+    - name: Update all packages (RedHat/Fedora)
+      ansible.builtin.dnf:
+        name: "*"
+        state: present
+        autoremove: true
+      when: ansible_os_family == 'RedHat'
+      register: dnf_upgrade
+
+    - name: Check if reboot is required (Debian)
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required_debian
+      when: ansible_os_family == 'Debian'
+
+    - name: Reboot if required
+      ansible.builtin.reboot:
+        msg: "Rebooting due to system updates"
+        pre_reboot_delay: 10
+        post_reboot_delay: 30
+      when:
+        - reboot_if_required
+        - (reboot_required_debian.stat.exists | default(false)) or
+          (dnf_upgrade.changed | default(false)) # Simple logic: reboot if dnf upgraded anything significant
+
+    - name: Cleanup old journals
+      ansible.builtin.command:
+        cmd: journalctl --vacuum-time=7d
+      changed_when: true

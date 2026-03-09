@@ -1,21 +1,18 @@
 ---
-
-- hosts: all
+- name: Setup Ansible control node and user
+  hosts: all
   become: true
-
   tasks:
     - name: Create ansible user
       user:
         name: ansible
         shell: /bin/bash
         create_home: true
-
     - name: Add ansible to admin group (distro-aware)
       user:
         name: ansible
         groups: "{{ 'wheel' if ansible_facts['os_family'] == 'RedHat' else 'sudo' }}"
         append: true
-
     - name: Enable NOPASSWD sudo (distro-aware)
       ansible.builtin.copy:
         dest: "/etc/sudoers.d/ansible"
@@ -24,7 +21,6 @@
         group: root
         mode: '0440'
         validate: '/usr/sbin/visudo -cf %s'
-
     - name: Ensure .ssh dir
       ansible.builtin.file:
         path: /home/ansible/.ssh
@@ -32,33 +28,31 @@
         owner: ansible
         group: ansible
         mode: '0700'
-
     - name: Adding public key (hardcoded)
       ansible.posix.authorized_key:
         user: ansible
         state: present
         key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCR+YCc9AluIbnedoE0Ied8cG0CpnQBh2Mf4lYR71/x"
-
     - name: Ensure SSH listens on all interfaces
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
         regexp: '^ListenAddress'
         line: 'ListenAddress 0.0.0.0'
-      notify: restart sshd
-
+        validate: '/usr/sbin/sshd -t -f %s'
+      notify: Restart SSH
     - name: Firewall allow SSH from Tailscale
-      firewalld:
+      ansible.posix.firewalld:
         port: 22/tcp
         permanent: true
         state: enabled
-      notify: reload firewalld
-
-
+      notify: Reload firewalld
   handlers:
-    - name: restart sshd
-      systemd:
-        name: sshd
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
         state: restarted
-
-    - name: reload firewalld
-      ansible.builtin.command: firewall-cmd --reload
+    - name: Reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+      when: ansible_facts['os_family'] == "RedHat"

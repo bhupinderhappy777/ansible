@@ -1,6 +1,6 @@
 ---
 # Default packages if none are provided
-system_packages:
+common_system_packages:
   Debian:
     - { pkg: "htop", bin: "htop" }
     - { pkg: "sysstat", bin: "sar" }

@@ -1,3 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # defaults file for roles/podman
+podman_toolbox_image: "registry.fedoraproject.org/fedora-toolbox:41"

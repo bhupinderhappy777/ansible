@@ -3,7 +3,7 @@
   ansible.builtin.command: sshd -t
   changed_when: false
   failed_when: false
-  register: ssh_test  # <--- This defines the variable!
+  register: security_hardening_ssh_test  # <--- This defines the variable!
 
 - name: Verify SSH Service Facts
   ansible.builtin.service_facts:
@@ -11,7 +11,7 @@
 - name: Assert SSH Logic and Service State
   ansible.builtin.assert:
     that:
-      - ssh_test.rc == 0
+      - security_hardening_ssh_test.rc == 0
       - ansible_facts.services[ssh_service_name + '.service'].state == 'running'
     fail_msg: "❌ SSH Service or Config failed verification on {{ inventory_hostname }}"
     success_msg: "✅ SSH is secure and running on {{ inventory_hostname }}"

@@ -6,13 +6,11 @@
     state: enabled
     immediate: true
   when: ansible_facts['os_family'] == "RedHat"
-  notify: reload firewalld
-
+  notify: Reload firewalld
 - name: Linux - allow SSH in UFW
   community.general.ufw:
     rule: allow
     name: OpenSSH
     state: enabled
   when: ansible_facts['os_family'] == "Debian"
-  notify: reload ufw
-
+  notify: Reload ufw

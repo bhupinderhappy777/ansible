@@ -1,5 +1,5 @@
 # Variables
-PLAYBOOK = site.yml
+PLAYBOOK = playbooks/site.yml
 LOG_DIR = logs
 TIMESTAMP = $(shell date +%F_%H-%M)
 

@@ -2,7 +2,7 @@
 - name: Windows - verify firewall is enabled
   ansible.windows.win_shell: |
     netsh advfirewall show allprofiles state
-  register: win_fw_state
+  register: security_hardening_win_fw_state
   changed_when: false
   tags:
     - security
@@ -12,8 +12,9 @@
 - name: Windows - assert firewall enabled on all profiles
   ansible.builtin.assert:
     that:
-      - "'ON' in win_fw_state.stdout"
-    fail_msg: "Windows Firewall not enabled on all profiles on {{ inventory_hostname }}"
+      - "'ON' in security_hardening_win_fw_state.stdout"
+    fail_msg: >-
+      Windows Firewall not enabled on all profiles on {{ inventory_hostname }}
   tags:
     - security
     - security:verify
@@ -22,7 +23,7 @@
 - name: Windows - verify RDP state (TermService)
   ansible.windows.win_service_info:
     name: TermService
-  register: rdp_service
+  register: security_hardening_rdp_service
   changed_when: false
   tags:
     - security
@@ -33,11 +34,15 @@
 - name: Windows - assert RDP disabled when not allowed
   ansible.builtin.assert:
     that:
-      - (hardening_windows_rdp_enabled | default(false)) or (rdp_service.exists and rdp_service.state != 'running')
-    fail_msg: "RDP service should be disabled by hardening but is running on {{ inventory_hostname }}"
+      - >-
+        (security_hardening_windows_rdp_enabled | default(false)) or
+        (security_hardening_rdp_service.exists and
+         security_hardening_rdp_service.state != 'running')
+    fail_msg: >-
+      RDP service should be disabled by hardening but is running on
+      {{ inventory_hostname }}
   tags:
     - security
     - security:verify
     - security:windows
     - security:rdp
-

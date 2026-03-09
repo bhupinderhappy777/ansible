@@ -1,22 +1,26 @@
 ---
 # tasks file for roles/zsh
-- name: Install Zsh if not present
+- name: ZSH | Install Zsh
   ansible.builtin.package:
     name: zsh
     state: present
   become: true
 
-- name: ZSH | Download Starship Installer
-  ansible.builtin.get_url:
-    url: https://starship.rs/install.sh
-    dest: /tmp/starship_install.sh
-    mode: "0755"
+- name: ZSH | Check if Starship is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/starship
+  register: zsh_starship_bin
 
 - name: ZSH | Install Starship Prompt
-  ansible.builtin.command:
-    cmd: /tmp/starship_install.sh -y
-    creates: /usr/local/bin/starship
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  args:
+    executable: /bin/bash
+  when: not zsh_starship_bin.stat.exists
   become: true
+  register: zsh_starship_install
+  changed_when: zsh_starship_install.rc == 0
 
 - name: ZSH | Install Oh My Zsh
   ansible.builtin.git:
@@ -24,8 +28,7 @@
     dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
     version: master
     depth: 1
-  # The git module is idempotent; it won't re-clone if the dest exists.
-  # Using ansible_facts['user_dir'] is safer than ansible_user_dir in some versions.
+  # Runs as current user, no become: true
 
 - name: ZSH | Install Plugins
   ansible.builtin.git:
@@ -33,13 +36,15 @@
     dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
     version: master
     update: true
+    depth: 1
   loop:
     - { name: "zsh-autosuggestions", repo: "https://github.com/zsh-users/zsh-autosuggestions" }
     - { name: "zsh-syntax-highlighting", repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git" }
     - { name: "autoswitch_virtualenv", repo: "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv" }
     - { name: "zsh-history-substring-search", repo: "https://github.com/zsh-users/zsh-history-substring-search" }
-- name: Ensure Zsh is the default shell
+
+- name: ZSH | Ensure Zsh is the default shell
   ansible.builtin.user:
     name: "{{ ansible_facts['user_id'] }}"
-    shell: /usr/bin/zsh
+    shell: /bin/zsh
   become: true

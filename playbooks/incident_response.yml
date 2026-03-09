@@ -1,0 +1,44 @@
+---
+- name: 🚨 EMERGENCY LOCKDOWN 🚨
+  hosts: all
+  become: true
+  vars:
+    lockdown_reason: "Emergency Lockdown Initiated via Ansible"
+    admin_user: "bhupi" # The ONLY user allowed
+
+  tasks:
+    - name: LOCKDOWN | Disable Root Login immediately
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        validate: '/usr/sbin/sshd -t -f %s'
+      notify: Restart SSH
+
+    - name: LOCKDOWN | Allow only Admin User
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^AllowUsers'
+        line: 'AllowUsers {{ admin_user }}'
+        validate: '/usr/sbin/sshd -t -f %s'
+      notify: Restart SSH
+
+    - name: LOCKDOWN | Kill all user sessions except admin
+      ansible.builtin.shell: |
+        set -o pipefail
+        pkill -KILL -u $(getent passwd | awk -F: '$3 >= 1000 && $1 != "{{ admin_user }}" {print $1}')
+      failed_when: false
+      changed_when: true
+      args:
+        executable: /bin/bash
+
+    - name: LOCKDOWN | Wall message
+      ansible.builtin.command:
+        cmd: wall "SYSTEM UNDER LOCKDOWN. CONTACT ADMINISTRATOR."
+      changed_when: false
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

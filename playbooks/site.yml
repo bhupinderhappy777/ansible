@@ -4,6 +4,6 @@
   become: true
   roles:
     - { role: bootstrap, tags: ['bootstrap', 'setup'] }
-    - { role: common,    tags: ['common', 'packages'] }
+    - { role: common, tags: ['common', 'packages'] }
     - { role: tailscale, tags: ['tailscale', 'network'] }
     - { role: security_hardening, tags: ['security'] }

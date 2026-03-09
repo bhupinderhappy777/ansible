@@ -28,15 +28,21 @@
         mode: '0755'
 
     - name: Verify scripts deployed
-      shell: "ls -la /home/ansible/loadscripts/"
+      ansible.builtin.shell: "ls -la /home/ansible/loadscripts/"
       register: scripts_list
+      changed_when: false
+      args:
+        executable: /bin/bash
 
     - name: Show deployed scripts
-      debug:
+      ansible.builtin.debug:
         var: scripts_list.stdout_lines
 
     - name: Start load_controller.sh daemon (background forever)
-      shell: nohup /home/ansible/loadscripts/load_controller.sh > /home/ansible/load_controller.log 2>&1 &
+      ansible.builtin.shell: |
+        set -o pipefail
+        nohup /home/ansible/loadscripts/load_controller.sh > /home/ansible/load_controller.log 2>&1 &
+      changed_when: false
       environment:
         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       args:

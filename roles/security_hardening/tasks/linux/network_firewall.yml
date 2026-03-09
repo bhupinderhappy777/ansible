@@ -5,8 +5,8 @@
     state: present
   when:
     - ansible_facts['os_family'] == "Debian"
-    - hardening_apply_network_firewall | default(true)
-    - not (hardening_verify_only | default(false))
+    - security_hardening_apply_network_firewall | default(true)
+    - not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:network
@@ -18,8 +18,8 @@
     state: present
   when:
     - ansible_facts['os_family'] == "RedHat"
-    - hardening_apply_network_firewall | default(true)
-    - not (hardening_verify_only | default(false))
+    - security_hardening_apply_network_firewall | default(true)
+    - not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:network
@@ -32,8 +32,8 @@
     enabled: true
   when:
     - ansible_facts['os_family'] == "RedHat"
-    - hardening_apply_network_firewall | default(true)
-    - not (hardening_verify_only | default(false))
+    - security_hardening_apply_network_firewall | default(true)
+    - not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:network
@@ -42,11 +42,10 @@
 - name: Linux - allow SSH in firewall
   ansible.builtin.include_tasks: network_firewall_ssh.yml
   when:
-    - hardening_apply_network_firewall | default(true)
-    - not (hardening_verify_only | default(false))
+    - security_hardening_apply_network_firewall | default(true)
+    - not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:network
     - security:firewall
     - security:ssh
-

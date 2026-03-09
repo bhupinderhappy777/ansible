@@ -1,6 +1,6 @@
-
 ---
-- hosts: localhost
+- name: Test terminal role
+  hosts: localhost
   remote_user: root
   roles:
-    - /home/bhupi/ansible/roles/terminal
+    - role: terminal

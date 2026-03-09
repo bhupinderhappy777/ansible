@@ -8,7 +8,7 @@ set -e
 # --- Configuration ---
 REPO_URL="https://github.com/bhupinderhappy777/ansible.git"
 BRANCH="dotfiles"
-PLAYBOOK="personalization.yml"
+PLAYBOOK="playbooks/personalization.yml"
 
 echo "🚀 Starting Workstation Kickstart..."
 echo "📍 Source: $REPO_URL ($BRANCH)"

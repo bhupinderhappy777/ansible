@@ -56,12 +56,13 @@
     - name: Extract GUI password
       shell: grep -oP '(?<=<password>).*?(?=</password>)' "/home/{{ syncthing_user }}/.config/syncthing/gui.xml"
       register: sync_pass
-      ignore_errors: true
+      changed_when: false
+      failed_when: false
 
     - name: Firewall - Open GUI port
       block:
         - name: Firewalld
-          firewalld:
+          ansible.posix.firewalld:
             port: "8384/tcp"
             permanent: true
             state: enabled
@@ -69,7 +70,7 @@
           when: "'firewalld' in ansible_facts.services"
 
         - name: UFW
-          ufw:
+          community.general.ufw:
             rule: allow
             port: '8384/tcp'
           when: "'ufw' in ansible_facts.services"

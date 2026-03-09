@@ -1,6 +1,6 @@
 ---
 # system_packages for Workstation Personalization
-system_packages:
+packages_system_packages:
   Debian:
     core:
       - { pkg: "zsh", bin: "zsh" }
@@ -48,7 +48,7 @@ system_packages:
       - { pkg: "doublecmd-qt", bin: "doublecmd" }
       - { pkg: "pavucontrol", bin: "pavucontrol" }
 
-flatpak_packages:
+packages_flatpak_packages:
   - com.google.Chrome
   - md.obsidian.Obsidian
   - org.audacityteam.Audacity

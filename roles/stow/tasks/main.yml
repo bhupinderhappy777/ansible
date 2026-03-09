@@ -47,6 +47,9 @@
     name: stow
     state: present
   become: true
+  when:
+    - stow_install_package | default(true)
+    - ansible_user_id != 'root' or ansible_user_uid == 0
 
 # 3. Use --no-folding to prevent the .config conflict
 - name: Stow Core Configurations

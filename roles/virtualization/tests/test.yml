@@ -1,6 +1,6 @@
-
 ---
-- hosts: localhost
+- name: Test virtualization role
+  hosts: localhost
   remote_user: root
   roles:
     - roles/virtualization

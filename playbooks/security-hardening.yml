@@ -7,4 +7,3 @@
   roles:
     - role: security_hardening
       tags: ['security']
-

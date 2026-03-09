@@ -4,7 +4,7 @@
   ansible.builtin.package:
     name: "{{ item.pkg }}"
     state: present
-  loop: "{{ system_packages[ansible_facts['os_family']].core + system_packages[ansible_facts['os_family']].utilities }}"
+  loop: "{{ packages_system_packages[ansible_facts['os_family']].core + packages_system_packages[ansible_facts['os_family']].utilities }}"
   become: true
   tags: [core]
 
@@ -12,7 +12,7 @@
   ansible.builtin.package:
     name: "{{ item.pkg }}"
     state: present
-  loop: "{{ system_packages[ansible_facts['os_family']].optional }}"
+  loop: "{{ packages_system_packages[ansible_facts['os_family']].optional }}"
   become: true
   tags: [optional]
 
@@ -22,6 +22,16 @@
     state: present
   become: true
   tags: [flatpak, gui]
+
+- name: Install Fedora KDE Group (if missing)
+  ansible.builtin.dnf:
+    name: "@kde-desktop-environment"
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_distribution == 'Fedora'
+  become: true
+  tags: [gui, kde]
 
 - name: Ensure Flathub repository is enabled
   community.general.flatpak_remote:
@@ -37,6 +47,6 @@
     state: present
     method: system
     remote: flathub
-  loop: "{{ flatpak_packages }}"
+  loop: "{{ packages_flatpak_packages }}"
   become: true
   tags: [flatpak, gui]

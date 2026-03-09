@@ -119,23 +119,28 @@ ansible all -m systemd -a "name=tailscaled state=restarted" --become
 
 ## Advanced: Using Ansible Vault for Secrets
 
-Store sensitive data securely:
+Store sensitive data securely. This project is configured to use an OCI-backed retrieval script by default.
+
+### OCI Secret Management (Default)
+
+The `ansible.cfg` is set to use `scripts/get_vault_pass.sh`. Ensure you have the OCI CLI configured and the environment variable set:
 
 ```bash
-# Create vault password file
-echo "my-secret-password" > .vault_pass
-
-# Create encrypted vault file
-ansible-vault create group_vars/all/vault.yml
-
-# Add your secrets:
-# vault_tailscale_auth_key: "tskey-auth-xxxxx"
-
-# Reference in playbook
-ansible-playbook playbooks/install-tailscale.yml \
-  -e "tailscale_auth_key={{ vault_tailscale_auth_key }}" \
-  --vault-password-file .vault_pass
+export ANSIBLE_SECRET_OCID="ocid1.vaultsecret.oc1..."
 ```
+
+### Manual Vault Password (Alternative)
+
+If you are not using OCI, you can override the password source:
+
+```bash
+# Create encrypted vault file
+ansible-vault create group_vars/all/vault.yml --vault-id your-password-source
+
+# Run playbook with manual vault ID
+ansible-playbook playbooks/site.yml --vault-id @prompt
+```
+
 
 ## Troubleshooting
 

@@ -7,6 +7,6 @@
     validate: 'sshd -t -f %s'
     backup: true
   loop:
-    - { regexp: '^#?PermitRootLogin', line: "PermitRootLogin {{ hardening_permit_root_login }}" }
-    - { regexp: '^#?PasswordAuthentication', line: "PasswordAuthentication {{ hardening_password_auth }}" }
-  notify: restart ssh
+    - { regexp: '^#?PermitRootLogin', line: "PermitRootLogin {{ security_hardening_permit_root_login }}" }
+    - { regexp: '^#?PasswordAuthentication', line: "PasswordAuthentication {{ security_hardening_password_auth }}" }
+  notify: Restart SSH

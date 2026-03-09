@@ -10,9 +10,8 @@
     - Policy Change
     - Privilege Use
     - System
-  when: not (hardening_verify_only | default(false))
+  when: not (security_hardening_verify_only | default(false))
   tags:
     - security
     - security:audit
     - security:windows
-

@@ -1,8 +1,11 @@
 ---
 - name: Install Virtualization Packages
   ansible.builtin.package:
-    name: "{{ (ansible_facts.os_family == 'RedHat') | ternary(['@virtualization', 'bridge-utils', 'libvirt-devel'], ['qemu-kvm', 'libvirt-daemon-system', 'libvirt-clients',
-      'virt-manager', 'bridge-utils']) }}"
+    name: >-
+      {{ (ansible_facts.os_family == 'RedHat') |
+         ternary(['@virtualization', 'bridge-utils', 'libvirt-devel'],
+                 ['qemu-kvm', 'libvirt-daemon-system', 'libvirt-clients',
+                  'virt-manager', 'bridge-utils']) }}
     state: present
 
 - name: Configure Fedora Modular Virtualization

@@ -1,0 +1,43 @@
+---
+- name: Personalize the Workstation (Fedora 43 KDE Ready)
+  hosts: all
+  become: false
+  vars:
+    ansible_user: "bhupi"
+
+    # Dot Files
+    clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    clone_dotfiles_branch: "plasma"
+    clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+
+    # Plasma Version Logic (Fedora 40+ uses Plasma 6)
+    plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' and ansible_facts['distribution_major_version'] | int >= 40 else 'v5' }}"
+
+  roles:
+    # System Bootstrap (Root tasks)
+    - { role: bootstrap, tags: ['bootstrap', 'system'], become: true }
+
+    # Core Networking & Management
+    - { role: tailscale, tags: ['tailscale', 'network'], become: true }
+    - { role: management, tags: ['management', 'oci'] }
+
+    # Package Installation
+    - { role: packages, tags: ['packages', 'software'], become: true }
+
+    # User Configuration (Dotfiles & Stow)
+    - { role: clone_dotfiles, tags: ['dotfiles', 'clone'] }
+    - { role: stow, tags: ['stow', 'dotfiles'] }
+
+    # Shell Environment
+    - { role: zsh, tags: ['zsh', 'shell'] }
+
+    # Desktop Environment Configuration
+    - { role: plasma, tags: ['plasma', 'gui'] }
+
+    # Development Tools
+    - { role: podman, tags: ['podman', 'containers'], become: true }
+    - { role: vscode, tags: ['vscode', 'ide'] }
+
+# Usage:
+# ansible-playbook playbooks/core_setup.yml -K
+# For a quick dotfiles update: ansible-playbook playbooks/core_setup.yml --tags dotfiles

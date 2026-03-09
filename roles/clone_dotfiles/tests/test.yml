@@ -1,6 +1,6 @@
-
 ---
-- hosts: localhost
+- name: Test clone_dotfiles role
+  hosts: localhost
   remote_user: root
   roles:
     - roles/clone_dotfiles
