@@ -33,9 +33,18 @@ jobs:
       - name: Install Ansible collections
         run: ansible-galaxy collection install -r requirements.yml
 
+      - name: Create Vault Password File
+        run: |
+          if [ -n "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" ]; then
+            echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+          else
+            echo "not-a-real-password" > .vault_pass
+          fi
+
       - name: Run Molecule tests
         run: molecule test -s ${{ matrix.scenario }}
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
           TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          ANSIBLE_VAULT_PASSWORD_FILE: .vault_pass

@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: "Your Name"
   description: Initial system bootstrap, user creation, and SSH hardening.
