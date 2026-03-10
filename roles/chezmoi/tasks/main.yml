@@ -67,11 +67,13 @@
 - name: Chezmoi | Install via script (Debian/Ubuntu/Fallback)
   ansible.builtin.shell:
     cmd: "set -o pipefail && curl -sfL https://git.io/chezmoi | sh -s -- -b /usr/local/bin"
+    executable: /bin/bash
     creates: /usr/local/bin/chezmoi
   become: true
   when:
     - chezmoi_install_package | default(true)
-    - ansible_os_family == 'Debian' or (ansible_os_family != 'RedHat' and chezmoi_check.rc != 0)
+    - chezmoi_check.rc != 0
+    - ansible_os_family == 'Debian' or ansible_os_family != 'RedHat'
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Ensure dotfiles repository is configured
