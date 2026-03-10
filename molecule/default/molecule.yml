@@ -44,6 +44,11 @@ provisioner:
             ansible_python_interpreter: /usr/bin/python3
           fedora-40:
             ansible_python_interpreter: /usr/bin/python3
+    children:
+      molecule:
+        hosts:
+          ubuntu-24.04:
+          fedora-40:
 
 verifier:
   name: ansible

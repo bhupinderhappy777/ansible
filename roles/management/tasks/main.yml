@@ -17,7 +17,7 @@
   ansible.builtin.pip:
     name: [pip, oci, oci-cli]
     state: present
-    virtualenv: "{{ oci_venv_path }}"
+    virtualenv: "{{ management_oci_venv_path }}"
     virtualenv_command: python3 -m venv
   become: true
 

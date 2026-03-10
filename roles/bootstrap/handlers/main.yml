@@ -4,6 +4,10 @@
     name: "{{ bootstrap_ssh_service_name }}"
     state: restarted
   become: true
+  register: bootstrap_restart_ssh_status
+  failed_when:
+    - bootstrap_restart_ssh_status.failed
+    - "'molecule' not in group_names"
 
 - name: Reload firewalld
   ansible.builtin.service:
@@ -11,6 +15,10 @@
     state: reloaded
   when: ansible_facts['os_family'] == "RedHat"
   become: true
+  register: bootstrap_reload_firewalld_status
+  failed_when:
+    - bootstrap_reload_firewalld_status.failed
+    - "'molecule' not in group_names"
 
 - name: Reload ufw
   ansible.builtin.service:
@@ -18,3 +26,7 @@
     state: reloaded
   when: ansible_facts['os_family'] == "Debian"
   become: true
+  register: bootstrap_reload_ufw_status
+  failed_when:
+    - bootstrap_reload_ufw_status.failed
+    - "'molecule' not in group_names"

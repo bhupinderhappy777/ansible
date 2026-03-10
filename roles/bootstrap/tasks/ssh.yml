@@ -11,6 +11,10 @@
     state: started
     enabled: true
   become: true
+  register: bootstrap_sshd_service_status
+  failed_when:
+    - bootstrap_sshd_service_status.failed
+    - "'molecule' not in group_names"
 
 - name: SSH | Add authorized SSH key
   ansible.posix.authorized_key:
@@ -51,6 +55,10 @@
         name: firewalld
         state: started
         enabled: true
+      register: bootstrap_firewalld_service_status
+      failed_when:
+        - bootstrap_firewalld_service_status.failed
+        - "'molecule' not in group_names"
 
     - name: FIREWALL | Allow Tailscale and Trusted IPs for SSH
       ansible.posix.firewalld:

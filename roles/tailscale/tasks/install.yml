@@ -43,3 +43,8 @@
     state: started
     enabled: true
   become: true
+  register: tailscale_tailscaled_service
+  failed_when:
+    - tailscale_tailscaled_service.failed
+    - "'not found' not in tailscale_tailscaled_service.msg"
+    - "'molecule' not in group_names"

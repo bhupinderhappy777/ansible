@@ -66,7 +66,7 @@
 
 - name: Chezmoi | Install via script (Debian/Ubuntu/Fallback)
   ansible.builtin.shell:
-    cmd: "curl -sfL https://git.io/chezmoi | sh -s -- -b /usr/local/bin"
+    cmd: "set -o pipefail && curl -sfL https://git.io/chezmoi | sh -s -- -b /usr/local/bin"
     creates: /usr/local/bin/chezmoi
   become: true
   when:
@@ -90,15 +90,15 @@
 - name: Chezmoi | Initialize source from repository
   ansible.builtin.command:
     cmd: >-
-      chezmoi init 
+      chezmoi init
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
       {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
       --exclude {{ chezmoi_exclude | join(',') }}
       {% endif %}
-      --branch {{ chezmoi_branch }} 
-      --destination {{ chezmoi_home }} 
-      --source {{ chezmoi_source_path }} 
+      --branch {{ chezmoi_branch }}
+      --destination {{ chezmoi_home }}
+      --source {{ chezmoi_source_path }}
       {{ chezmoi_repo }}
   when: not chezmoi_initialized.stat.exists
   register: chezmoi_init
@@ -110,13 +110,13 @@
 - name: Chezmoi | Update source state
   ansible.builtin.command:
     cmd: >-
-      chezmoi update 
+      chezmoi update
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
       {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
       --exclude {{ chezmoi_exclude | join(',') }}
       {% endif %}
-      --destination {{ chezmoi_home }} 
+      --destination {{ chezmoi_home }}
       --source {{ chezmoi_source_path }}
   when: chezmoi_initialized.stat.exists
   register: chezmoi_update
@@ -128,9 +128,9 @@
 - name: Chezmoi | Check pending changes
   ansible.builtin.command:
     cmd: >-
-      chezmoi status 
+      chezmoi status
       --no-tty
-      --destination {{ chezmoi_home }} 
+      --destination {{ chezmoi_home }}
       --source {{ chezmoi_source_path }}
   register: chezmoi_status
   changed_when: false
@@ -141,14 +141,14 @@
 - name: Chezmoi | Apply dotfiles
   ansible.builtin.command:
     cmd: >-
-      chezmoi apply 
+      chezmoi apply
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
       {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
       --exclude {{ chezmoi_exclude | join(',') }}
       {% endif %}
-      --destination {{ chezmoi_home }} 
-      --source {{ chezmoi_source_path }} 
+      --destination {{ chezmoi_home }}
+      --source {{ chezmoi_source_path }}
   when: chezmoi_status.stdout | trim != ''
   register: chezmoi_apply
   changed_when: chezmoi_apply.rc == 0

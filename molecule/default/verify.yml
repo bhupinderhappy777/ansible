@@ -23,11 +23,10 @@
         msg: "The bootstrap user '{{ bootstrap_user }}' does not exist."
       when: getent_check.failed | default(false) or bootstrap_user not in getent_check.ansible_facts.getent_passwd
 
-    - name: Verify SSH service is running
-      ansible.builtin.service:
-        name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
-        state: started
-        enabled: true
+    - name: Verify SSH package is installed
+      ansible.builtin.package:
+        name: "{{ 'openssh-server' if ansible_facts['os_family'] == 'Debian' else 'openssh-server' }}"
+        state: present
       check_mode: true
       register: service_check
       failed_when: service_check.changed or service_check.failed

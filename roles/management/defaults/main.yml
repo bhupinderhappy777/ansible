@@ -2,4 +2,4 @@
 # defaults file for roles/management
 management_user: "{{ ansible_user_id }}"
 management_home: "{{ ansible_facts['user_dir'] }}"
-oci_venv_path: "/opt/oci"
+management_oci_venv_path: "/opt/oci"
