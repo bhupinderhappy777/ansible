@@ -32,6 +32,30 @@
       when: is_gui
       tags: [always]
 
+    - name: Ensure target user owns their home directory (Fix root-owned files)
+      ansible.builtin.file:
+        path: "{{ target_home }}"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        recurse: no # We only want the top level and known config dirs to be fast
+      become: true
+      tags: [always]
+
+    - name: Fix ownership of critical config directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+        state: directory
+        recurse: yes
+      loop:
+        - "{{ target_home }}/.config"
+        - "{{ target_home }}/.local"
+        - "{{ target_home }}/.ansible"
+      become: true
+      ignore_errors: true
+      tags: [always]
+
   roles:
     - { 
         role: management, 
