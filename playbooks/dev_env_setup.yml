@@ -29,7 +29,7 @@
   roles:
     - { role: management, tags: ["management", "cli"] }
     - { role: clone_dotfiles, tags: ["clone", "cli"] }
-    - { role: chezmoi, tags: ["chezmoi", "cli"] }
+    - { role: chezmoi, tags: ["chezmoi", "cli"], chezmoi_exclude: "{{ ['scripts'] if not is_gui else [] }}" }
     - { role: zsh, tags: ["zsh", "cli"] }
 
     # Desktop related roles (only run if GUI is detected)

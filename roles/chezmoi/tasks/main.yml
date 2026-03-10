@@ -71,6 +71,9 @@
       chezmoi init 
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
+      {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
+      --exclude {{ chezmoi_exclude | join(',') }}
+      {% endif %}
       --branch {{ chezmoi_branch }} 
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
@@ -86,6 +89,9 @@
       chezmoi update 
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
+      {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
+      --exclude {{ chezmoi_exclude | join(',') }}
+      {% endif %}
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }}
   when: chezmoi_initialized.stat.exists
@@ -110,6 +116,9 @@
       chezmoi apply 
       --no-tty
       {{ '--force' if chezmoi_force_apply else '' }}
+      {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
+      --exclude {{ chezmoi_exclude | join(',') }}
+      {% endif %}
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
   when: chezmoi_status.stdout | trim != ''
