@@ -7,12 +7,18 @@
     # Dot Files
     clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
     clone_dotfiles_branch: "main"
-    clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+    clone_dotfiles_home: "{{ target_home }}/dotfiles"
 
     # Chezmoi logic
     chezmoi_force_apply: true
 
   pre_tasks:
+    - name: Detect target user and home
+      ansible.builtin.set_fact:
+        target_user: "{{ ansible_env.SUDO_USER | default(ansible_env.USER) | default(ansible_user_id) }}"
+        target_home: "{{ ansible_env.HOME | default(ansible_facts['user_dir']) }}"
+      tags: [always]
+
     - name: Detect if GUI environment is present
       ansible.builtin.set_fact:
         is_gui: "{{ (ansible_env.DISPLAY is defined and ansible_env.DISPLAY | length > 0) or 
@@ -27,10 +33,32 @@
       tags: [always]
 
   roles:
-    - { role: management, tags: ["management", "cli"] }
-    - { role: clone_dotfiles, tags: ["clone", "cli"] }
-    - { role: chezmoi, tags: ["chezmoi", "cli"], chezmoi_exclude: "{{ ['scripts'] if not is_gui else [] }}" }
-    - { role: zsh, tags: ["zsh", "cli"] }
+    - { 
+        role: management, 
+        tags: ["management", "cli"],
+        management_user: "{{ target_user }}",
+        management_home: "{{ target_home }}"
+      }
+    - { 
+        role: clone_dotfiles, 
+        tags: ["clone", "cli"],
+        clone_dotfiles_user: "{{ target_user }}",
+        clone_dotfiles_user_home: "{{ target_home }}",
+        clone_dotfiles_home: "{{ target_home }}/dotfiles"
+      }
+    - { 
+        role: chezmoi, 
+        tags: ["chezmoi", "cli"], 
+        chezmoi_user: "{{ target_user }}",
+        chezmoi_home: "{{ target_home }}",
+        chezmoi_exclude: "{{ ['scripts'] if not is_gui else [] }}" 
+      }
+    - { 
+        role: zsh, 
+        tags: ["zsh", "cli"],
+        zsh_user: "{{ target_user }}",
+        zsh_home: "{{ target_home }}"
+      }
 
     # Desktop related roles (only run if GUI is detected)
     - { role: plasma, tags: ["plasma", "gui"], when: is_gui }

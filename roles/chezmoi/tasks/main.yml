@@ -33,6 +33,8 @@
   loop: "{{ chezmoi_config_stats.results }}"
   loop_control:
     label: "{{ item.item }}"
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Ensure VS Code config directory exists
@@ -40,6 +42,8 @@
     path: "{{ chezmoi_home }}/.var/app/com.visualstudio.code/config/Code/User"
     state: directory
     mode: "0755"
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, gui]
 
 - name: Chezmoi | Check if binary exists
@@ -99,6 +103,8 @@
   when: not chezmoi_initialized.stat.exists
   register: chezmoi_init
   changed_when: chezmoi_init.rc == 0
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Update source state
@@ -115,6 +121,8 @@
   when: chezmoi_initialized.stat.exists
   register: chezmoi_update
   changed_when: "'Already up to date.' not in chezmoi_update.stdout"
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Check pending changes
@@ -126,6 +134,8 @@
       --source {{ chezmoi_source_path }}
   register: chezmoi_status
   changed_when: false
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Apply dotfiles
@@ -142,4 +152,6 @@
   when: chezmoi_status.stdout | trim != ''
   register: chezmoi_apply
   changed_when: chezmoi_apply.rc == 0
+  become: true
+  become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]

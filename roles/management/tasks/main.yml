@@ -23,46 +23,60 @@
 
 - name: Create OCI configuration directory
   ansible.builtin.file:
-    path: "{{ ansible_facts['user_dir'] }}/.oci"
+    path: "{{ management_home }}/.oci"
     state: directory
     mode: "0700"
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Deploy OCI configuration file
   ansible.builtin.template:
     src: oci_config.j2
-    dest: "{{ ansible_facts['user_dir'] }}/.oci/config"
+    dest: "{{ management_home }}/.oci/config"
     mode: "0600"
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: OCI - Deploy Private Key
   ansible.builtin.copy:
     content: "{{ private_key }}"
-    dest: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem"
+    dest: "{{ management_home }}/.oci/oci_api_key.pem"
     mode: "0600"
   no_log: true # Hide sensitive data from logs
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Check if OCI API key exists
   ansible.builtin.stat:
-    path: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem"
+    path: "{{ management_home }}/.oci/oci_api_key.pem"
   register: management_oci_key_stat
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Generate OCI API private key if missing
   ansible.builtin.command: >
-    openssl genrsa -out {{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem 2048
+    openssl genrsa -out {{ management_home }}/.oci/oci_api_key.pem 2048
   args:
-    creates: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem"
+    creates: "{{ management_home }}/.oci/oci_api_key.pem"
   when: not management_oci_key_stat.stat.exists
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Generate OCI API public key
   ansible.builtin.command: >
-    openssl rsa -pubout -in {{ ansible_facts['user_dir'] }}/.oci/oci_api_key.pem
-    -out {{ ansible_facts['user_dir'] }}/.oci/oci_api_key_public.pem
+    openssl rsa -pubout -in {{ management_home }}/.oci/oci_api_key.pem
+    -out {{ management_home }}/.oci/oci_api_key_public.pem
   args:
-    creates: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key_public.pem"
+    creates: "{{ management_home }}/.oci/oci_api_key_public.pem"
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Fetch public key for manual console upload
   ansible.builtin.slurp:
-    src: "{{ ansible_facts['user_dir'] }}/.oci/oci_api_key_public.pem"
+    src: "{{ management_home }}/.oci/oci_api_key_public.pem"
   register: management_oci_pub_key
+  become: true
+  become_user: "{{ management_user }}"
 
 - name: Show Public Key for OCI Console
   ansible.builtin.debug:

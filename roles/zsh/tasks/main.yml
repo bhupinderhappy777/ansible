@@ -25,15 +25,16 @@
 - name: ZSH | Install Oh My Zsh
   ansible.builtin.git:
     repo: "https://github.com/ohmyzsh/ohmyzsh.git"
-    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh"
+    dest: "{{ zsh_home }}/.oh-my-zsh"
     version: master
     depth: 1
-  # Runs as current user, no become: true
+  become: true
+  become_user: "{{ zsh_user }}"
 
 - name: ZSH | Install Plugins
   ansible.builtin.git:
     repo: "{{ item.repo }}"
-    dest: "{{ ansible_facts['user_dir'] }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
+    dest: "{{ zsh_home }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
     version: master
     update: true
     depth: 1
@@ -42,9 +43,11 @@
     - { name: "zsh-syntax-highlighting", repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git" }
     - { name: "autoswitch_virtualenv", repo: "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv" }
     - { name: "zsh-history-substring-search", repo: "https://github.com/zsh-users/zsh-history-substring-search" }
+  become: true
+  become_user: "{{ zsh_user }}"
 
 - name: ZSH | Ensure Zsh is the default shell
   ansible.builtin.user:
-    name: "{{ ansible_facts['user_id'] }}"
+    name: "{{ zsh_user }}"
     shell: /bin/zsh
   become: true
