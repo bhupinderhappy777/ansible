@@ -2,6 +2,37 @@
 # Universal Bootstrap for Ansible Dev Env
 set -e
 
+repair_yarn_apt_repo() {
+    local SUDO_CMD="$1"
+    local keyring_dir="/etc/apt/keyrings"
+    local keyring_file="${keyring_dir}/yarn-archive-keyring.gpg"
+    local key_url="https://dl.yarnpkg.com/debian/pubkey.gpg"
+
+    if [ ! -f /etc/debian_version ]; then
+        return 0
+    fi
+
+    if ! grep -Rqs "dl.yarnpkg.com/debian" /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null; then
+        return 0
+    fi
+
+    echo "Detected Yarn APT repository; ensuring keyring and signed-by are configured..."
+    $SUDO_CMD mkdir -p "$keyring_dir"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$key_url" | $SUDO_CMD gpg --dearmor -o "$keyring_file"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO- "$key_url" | $SUDO_CMD gpg --dearmor -o "$keyring_file"
+    else
+        echo "WARNING: curl/wget not found; cannot refresh Yarn key automatically."
+        return 0
+    fi
+
+    $SUDO_CMD chmod 0644 "$keyring_file"
+
+    $SUDO_CMD sh -c "printf '%s\n' 'deb [signed-by=$keyring_file] https://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list"
+}
+
 echo "--- Starting Container Bootstrap ---"
 
 # 1. Environment Variable Check (Handle sudo stripping)
@@ -21,6 +52,8 @@ if [ -f /etc/redhat-release ]; then
     $SUDO dnf install -y git python3 ansible-core curl || $SUDO dnf install -y git python3 ansible curl
 elif [ -f /etc/debian_version ]; then
     echo "Detected Debian-based system"
+    $SUDO apt-get install -y ca-certificates gnupg >/dev/null 2>&1 || true
+    repair_yarn_apt_repo "$SUDO"
     $SUDO apt-get update -y || echo "Warning: apt update errors, proceeding..."
     $SUDO apt-get install -y git python3 ansible curl
 fi
