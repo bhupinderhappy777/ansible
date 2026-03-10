@@ -5,16 +5,16 @@
   gather_facts: true
   vars:
     ansible_python_interpreter: auto_silent
-    stow_install_package: false # Assume installed or skipped
     clone_dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
+    clone_dotfiles_branch: "main"
     clone_dotfiles_home: "{{ ansible_user_dir }}/dotfiles"
 
   tasks:
-    - name: Ensure git and stow are installed (if root)
+    - name: Ensure git and chezmoi are installed (if root)
       ansible.builtin.package:
         name: "{{ item }}"
         state: present
-      loop: [git, stow, zsh]
+      loop: [git, chezmoi, zsh]
       when: ansible_user_uid == 0
       failed_when: false
 
@@ -25,17 +25,19 @@
         version: "master"
         force: true
 
-    - name: Run Stow to link dotfiles
+    - name: Initialize chezmoi from dotfiles repository
       ansible.builtin.command:
-        cmd: "stow -R --no-folding -t {{ ansible_user_dir }} {{ item }}"
-        chdir: "{{ clone_dotfiles_home }}"
-      loop:
-        - "zsh"
-        - "git"
-        - "starship" # If applicable
+        cmd: "chezmoi init --branch {{ clone_dotfiles_branch }} {{ clone_dotfiles_repo }}"
+      register: chezmoi_init
       failed_when: false
       changed_when: false
-      # Stow might fail if conflicts exist, we ignore for now in container mode
+
+    - name: Apply chezmoi dotfiles
+      ansible.builtin.command:
+        cmd: chezmoi apply
+      when: chezmoi_init.rc == 0
+      failed_when: false
+      changed_when: false
 
     - name: Setup Zsh Plugin Manager (Antidote/Oh-My-Zsh)
       # Simplified version of zsh role for containers

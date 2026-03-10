@@ -31,10 +31,12 @@
         state: absent
       when: zshrc_stat.stat.exists and not zshrc_stat.stat.islnk
 
-    - name: Link Zsh using Stow
-      ansible.builtin.command: "stow -R -t {{ target_home }} zsh"
-      args:
-        chdir: "{{ dotfiles_home }}"
+    - name: Initialize chezmoi from dotfiles repository
+      ansible.builtin.command: "chezmoi init --branch {{ dotfiles_branch }} {{ dotfiles_repo }}"
+      changed_when: false
+
+    - name: Apply dotfiles with chezmoi
+      ansible.builtin.command: "chezmoi apply"
       changed_when: false
 
     - name: Ensure Plasma config directory exists

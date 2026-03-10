@@ -4,14 +4,31 @@
   connection: local
   become: false
   vars:
-
     # Dot Files
     clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
     clone_dotfiles_branch: "main"
     clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
 
+  pre_tasks:
+    - name: Detect if GUI environment is present
+      ansible.builtin.set_fact:
+        is_gui: "{{ (ansible_env.DISPLAY is defined and ansible_env.DISPLAY | length > 0) or 
+                    (ansible_env.WAYLAND_DISPLAY is defined and ansible_env.WAYLAND_DISPLAY | length > 0) or
+                    (ansible_env.XDG_CURRENT_DESKTOP is defined and ansible_env.XDG_CURRENT_DESKTOP | length > 0) }}"
+      tags: [always]
+
+    - name: Set Plasma Version Logic
+      ansible.builtin.set_fact:
+        plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' and ansible_facts['distribution_major_version'] | int >= 40 else 'v5' }}"
+      when: is_gui
+      tags: [always]
+
   roles:
-    - { role: management, tags: ["management"] }
-    - { role: clone_dotfiles, tags: ["clone"] }
-    - { role: stow, tags: ["stow"] } # --skip-tags=gui
-    - { role: zsh, tags: ["zsh"] }
+    - { role: management, tags: ["management", "cli"] }
+    - { role: clone_dotfiles, tags: ["clone", "cli"] }
+    - { role: chezmoi, tags: ["chezmoi", "cli"] }
+    - { role: zsh, tags: ["zsh", "cli"] }
+
+    # Desktop related roles (only run if GUI is detected)
+    - { role: plasma, tags: ["plasma", "gui"], when: is_gui }
+    - { role: vscode, tags: ["vscode", "gui"], when: is_gui }

@@ -21,7 +21,7 @@ The project has undergone a significant architectural and structural streamlinin
 - `playbooks/site.yml`: The master playbook for full infrastructure state application.
 - `ansible.cfg`: Configured for SSH pipelining, automatic vault password retrieval, and strict host key checking.
 - `inventory/hosts.ini`: Defines host groups (`oci_nodes`, `home_lab`, `cloud`, `production`) using Tailscale IPs.
-- `roles/`: Modular components (bootstrap, common, tailscale, security_hardening, stow, zsh, etc.).
+- `roles/`: Modular components (bootstrap, common, tailscale, security_hardening, chezmoi, zsh, etc.).
 - `playbooks/`: Specific task-oriented playbooks (ping, security-hardening, install-packages, core_setup, dev_env_setup, etc.).
 - `scripts/get_vault_pass.sh`: A critical utility that uses OCI CLI to fetch Ansible Vault passwords from OCI Secrets.
 - `Makefile`: Provides a simplified CLI interface for common management tasks.

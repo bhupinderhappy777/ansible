@@ -1,0 +1,111 @@
+---
+- name: Chezmoi | Check status of existing config files
+  ansible.builtin.stat:
+    path: "{{ chezmoi_home }}/{{ item }}"
+  register: chezmoi_config_stats
+  loop:
+    - ".zshrc"
+    - ".gitconfig"
+    - ".local/share/konsole/my_profile.profile"
+    - ".config/kwinrc"
+    - ".config/kglobalshortcutsrc"
+    - ".config/kscreenlockerrc"
+    - ".config/kdeglobals"
+    - ".config/kwalletrc"
+    - ".config/konsolerc"
+    - ".config/audacity/audacity.cfg"
+    - ".config/doublecmd/doublecmd.xml"
+    - ".config/doublecmd/shortcuts.scf"
+    - ".config/doublecmd/colors.json"
+    - ".config/doublecmd/multiarc.ini"
+    - ".var/app/com.visualstudio.code/config/Code/User/settings.json"
+    - ".var/app/com.visualstudio.code/config/Code/User/argv.json"
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Purge real files to allow for managed config
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  when:
+    - item.stat.exists
+    - not item.stat.isdir
+    - not item.stat.islnk
+  loop: "{{ chezmoi_config_stats.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Ensure VS Code config directory exists
+  ansible.builtin.file:
+    path: "{{ chezmoi_home }}/.var/app/com.visualstudio.code/config/Code/User"
+    state: directory
+    mode: "0755"
+  tags: [chezmoi, gui]
+
+- name: Chezmoi | Ensure package is installed
+  ansible.builtin.package:
+    name: chezmoi
+    state: present
+  become: true
+  when:
+    - chezmoi_install_package | default(true)
+    - ansible_user_id != 'root' or ansible_user_uid == 0
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Ensure dotfiles repository is configured
+  ansible.builtin.assert:
+    that:
+      - chezmoi_repo | length > 0
+    fail_msg: "Set clone_dotfiles_repo or chezmoi_repo before running the chezmoi role"
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Check if initialized
+  ansible.builtin.stat:
+    path: "{{ chezmoi_source_path }}/.git"
+  register: chezmoi_initialized
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Initialize source from repository
+  ansible.builtin.command:
+    cmd: >-
+      chezmoi init --branch {{ chezmoi_branch }} 
+      --destination {{ chezmoi_home }} 
+      --source {{ chezmoi_source_path }} 
+      {{ chezmoi_repo }}
+  when: not chezmoi_initialized.stat.exists
+  register: chezmoi_init
+  changed_when: chezmoi_init.rc == 0
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Update source state
+  ansible.builtin.command:
+    cmd: >-
+      chezmoi update 
+      --destination {{ chezmoi_home }} 
+      --source {{ chezmoi_source_path }}
+  when: chezmoi_initialized.stat.exists
+  register: chezmoi_update
+  changed_when: "'Already up to date.' not in chezmoi_update.stdout"
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Check pending changes
+  ansible.builtin.command:
+    cmd: >-
+      chezmoi status 
+      --destination {{ chezmoi_home }} 
+      --source {{ chezmoi_source_path }}
+  register: chezmoi_status
+  changed_when: false
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Apply dotfiles
+  ansible.builtin.command:
+    cmd: >-
+      chezmoi apply 
+      --destination {{ chezmoi_home }} 
+      --source {{ chezmoi_source_path }} 
+      {{ '--force' if chezmoi_force_apply else '' }}
+  when: chezmoi_status.stdout | trim != ''
+  register: chezmoi_apply
+  changed_when: chezmoi_apply.rc == 0
+  tags: [chezmoi, cli, gui]

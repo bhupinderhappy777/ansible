@@ -10,7 +10,7 @@ common_system_packages:
     - { pkg: "pipx", bin: "pipx" }
     - { pkg: "wget", bin: "wget" }
     - { pkg: "zsh", bin: "zsh" }
-    - { pkg: "stow", bin: "stow" }
+    - { pkg: "chezmoi", bin: "chezmoi" }
   RedHat:
     - { pkg: "htop", bin: "htop" }
     - { pkg: "sysstat", bin: "sar" }
@@ -20,4 +20,4 @@ common_system_packages:
     - { pkg: "wget", bin: "wget" }
     - { pkg: "zsh", bin: "zsh" }
     - { pkg: "pipx", bin: "pipx" }
-    - { pkg: "stow", bin: "stow" }
+    - { pkg: "chezmoi", bin: "chezmoi" }

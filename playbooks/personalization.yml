@@ -19,7 +19,7 @@
     - { role: clone_dotfiles, tags: ["clone"] }
     - { role: tailscale, tags: ["tailscale"] }
     - { role: packages, tags: ["packages"] }
-    - { role: stow, tags: ["stow"] } # --skip-tags=gui if do not want plasma refresh
+    - { role: chezmoi, tags: ["chezmoi", "stow"] } # --skip-tags=gui if do not want plasma refresh
     - { role: zsh, tags: ["zsh"] }
     - { role: terminal, tags: ["terminal"] }
     - { role: syncthing, tags: ["syncthing"] }

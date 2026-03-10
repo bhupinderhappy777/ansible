@@ -4,7 +4,7 @@ packages_system_packages:
   Debian:
     core:
       - { pkg: "zsh", bin: "zsh" }
-      - { pkg: "stow", bin: "stow" }
+      - { pkg: "chezmoi", bin: "chezmoi" }
       - { pkg: "git", bin: "git" }
       - { pkg: "curl", bin: "curl" }
       - { pkg: "wget", bin: "wget" }
@@ -27,7 +27,7 @@ packages_system_packages:
   RedHat:
     core:
       - { pkg: "zsh", bin: "zsh" }
-      - { pkg: "stow", bin: "stow" }
+      - { pkg: "chezmoi", bin: "chezmoi" }
       - { pkg: "git", bin: "git" }
       - { pkg: "curl", bin: "curl" }
       - { pkg: "wget", bin: "wget" }

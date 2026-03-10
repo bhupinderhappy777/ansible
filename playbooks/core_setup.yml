@@ -24,9 +24,9 @@
     # Package Installation
     - { role: packages, tags: ['packages', 'software'], become: true }
 
-    # User Configuration (Dotfiles & Stow)
+    # User Configuration (Dotfiles & Chezmoi)
     - { role: clone_dotfiles, tags: ['dotfiles', 'clone'] }
-    - { role: stow, tags: ['stow', 'dotfiles'] }
+    - { role: chezmoi, tags: ['chezmoi', 'stow', 'dotfiles'] }
 
     # Shell Environment
     - { role: zsh, tags: ['zsh', 'shell'] }

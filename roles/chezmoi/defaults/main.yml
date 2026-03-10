@@ -1,0 +1,8 @@
+---
+chezmoi_user: "{{ ansible_user_id }}"
+chezmoi_home: "{{ ansible_facts['user_dir'] }}"
+chezmoi_repo: "{{ clone_dotfiles_repo | default('') }}"
+chezmoi_branch: "{{ clone_dotfiles_branch | default('main') }}"
+chezmoi_source_path: "{{ chezmoi_home }}/.local/share/chezmoi"
+chezmoi_install_package: true
+chezmoi_force_apply: false
