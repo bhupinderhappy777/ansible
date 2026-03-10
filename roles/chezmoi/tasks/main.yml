@@ -42,14 +42,32 @@
     mode: "0755"
   tags: [chezmoi, gui]
 
-- name: Chezmoi | Ensure package is installed
+- name: Chezmoi | Check if binary exists
+  ansible.builtin.command: which chezmoi
+  register: chezmoi_check
+  ignore_errors: true
+  changed_when: false
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Install package (RedHat/Fedora)
   ansible.builtin.package:
     name: chezmoi
     state: present
   become: true
   when:
     - chezmoi_install_package | default(true)
-    - ansible_user_id != 'root' or ansible_user_uid == 0
+    - ansible_os_family == 'RedHat'
+    - chezmoi_check.rc != 0
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Install via script (Debian/Ubuntu/Fallback)
+  ansible.builtin.shell:
+    cmd: "curl -sfL https://git.io/chezmoi | sh -s -- -b /usr/local/bin"
+    creates: /usr/local/bin/chezmoi
+  become: true
+  when:
+    - chezmoi_install_package | default(true)
+    - ansible_os_family == 'Debian' or (ansible_os_family != 'RedHat' and chezmoi_check.rc != 0)
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Ensure dotfiles repository is configured
