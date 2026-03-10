@@ -79,11 +79,30 @@ ansible-playbook playbooks/ping.yml
 
 ---
 
-### 📈 Future Roadmap
+### 📈 Future Roadmap (DevSecOps Engineering Evolution)
 
-* [ ] Implement **Docker Swarm** across all ARM nodes for high-availability.
-* [ ] Deploy **Firefly III** with automated backups to OCI Object Storage.
-* [ ] Integrate **GitHub Actions** for CI/CD linting of playbooks.
+We are evolving this project into a full-fledged production-ready DevSecOps ecosystem, emphasizing modularity, Infrastructure as Code (IaC), zero-trust networking, and shift-left security principles across multiple specialized repositories.
+
+#### 1. Infrastructure Provisioning (Terraform Repo)
+*   **Multi-Cloud Architecture**: Create a dedicated **Terraform** repository to provision at least 4 VMs across various cloud providers (e.g., OCI, AWS, Azure) and local Home Labs.
+*   **IaC Security Posure**: Integrate static analysis tools (like `tfsec`, `checkov`, or `trivy`) to ensure infrastructure is provisioned securely out-of-the-box.
+*   **Cloud Firewalls**: Provision restrictive Security Lists/Groups, exposing *only* essential ports (like the Tailscale UDP port) to the public internet, completely dropping public SSH access.
+
+#### 2. Configuration Management & Security Hardening (Ansible Repo - Current)
+*   **Zero-Trust Identity**: Automate Tailscale/WireGuard mesh network configurations for secure, decentralized access across boundaries.
+*   **OS Hardening**: Enforce CIS benchmarks, strict SSH policies, automated OS patch management, and automated incident response tools.
+*   **Advanced Secret Management**: Deepen integration with modern secret managers (OCI Vault, HashiCorp Vault, SOPS) to completely remove plain-text variables from Git history.
+*   **Pre-Flight Security**: Expand on existing local testing with Molecule, linting via `ansible-lint`, and checking playbook idempotence.
+
+#### 3. Container Orchestration & Observability (Docker & K3s Repos)
+*   **Container Runtime & Orchestration**: Spin up dedicated repositories configuring **K3s** (lightweight Kubernetes) and **Docker** Swarm/Standalone setups as the primary deployment fabric.
+*   **Zero-Day Observability**: Deploy a comprehensive observability stack (Prometheus, Grafana, Loki, ELK) for real-time monitoring, metrics collection, distributed tracing, and incident alerting.
+*   **Cluster Security**: Enforce runtime security, container vulnerability scanning, and restrictive network policies (e.g., Calico/Cilium) across the Home Lab K3s clusters.
+
+#### 4. Application Deployment & CI/CD Pipelines (Firefly III Fork)
+*   **CI/CD Automation**: Fork the **Firefly III** repository and build a complete CI/CD pipeline using **GitHub Actions** and self-hosted **GitHub Agents** running within our hardened K3s/Docker environment.
+*   **Shift-Left Security**: Embed continuous security testing in the pipeline, including SAST/DAST, dependency scanning (Dependabot/Renovate), and secret detection.
+*   **Immutable Deployments**: Automate the creation of signed and scanned Docker images for Firefly III. Deploy them to the K3s/Docker home lab using modern GitOps tools and strategies (e.g., ArgoCD, Flux).
 
 ---
 

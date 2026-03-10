@@ -59,3 +59,18 @@ The project uses a `Makefile` to streamline operations.
 - `playbooks/site.yml`: High-level role orchestration.
 - `scripts/get_vault_pass.sh`: Entry point for secret management.
 - `QUICK_START.md`: Detailed onboarding guide.
+
+## Future Roadmap (DevSecOps Engineering Evolution)
+As the project scales, the architecture will be split into specialized repositories to build a comprehensive, production-grade DevSecOps toolchain. This evolution showcases advanced, automated infrastructure lifecycle management:
+
+- **Phase 1: Multi-Cloud Infrastructure Provisioning (Terraform)**
+  A new `terraform-infrastructure` repository will deploy at least 4 VMs across varied cloud providers and local home-lab environments. We will strictly enforce Infrastructure as Code (IaC) principles, integrate pre-apply security scanners (like `tfsec`/`checkov`), and lock down public ingress exclusively to VPN/Tailscale endpoints.
+
+- **Phase 2: Configuration & Zero-Trust Security (Ansible - Current Repo)**
+  This repository will evolve to focus purely on enforcing CIS benchmarks, rolling out security hardening, managing advanced dynamic secrets (OCI Vault, HashiCorp Vault), and establishing the Tailscale Zero-Trust mesh network across the Terraform-provisioned fleet.
+
+- **Phase 3: Containerization & Observability (Docker / K3s)**
+  Dedicated repositories will manage K3s and Docker deployments. This phase establishes the orchestration fabric and deploys a complete Observability Stack (Prometheus, Grafana, Loki/ELK) to supply metrics, logging, distributed tracing, and runtime container security insights (e.g., Trivy, Falco).
+
+- **Phase 4: CI/CD & Secure Application Pipelines (Firefly III Fork)**
+  We will fork the *Firefly III* application to demonstrate full end-to-end CI/CD mastery. Using GitHub Actions accompanied by our own self-hosted GitHub Agents (deployed via Phase 3), the pipeline will feature Shift-Left security tasks (SAST, DAST, dependency scanning). It will securely build, scan, and sign custom Docker images before deploying them into the automated home lab using GitOps patterns (ArgoCD/Flux).
