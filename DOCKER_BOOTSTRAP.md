@@ -30,7 +30,7 @@ export ANSIBLE_VAULT_PASSWORD="your_vault_password"
 If you have hosted the `scripts/bootstrap_container.sh` file on a public URL (e.g., GitHub Raw):
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/bhupinderhappy777/ansible/main/scripts/bootstrap_container.sh | bash
+curl -sSL raw.githubusercontent.com/bhupinderhappy777/ansible/refs/heads/main/scripts/bootstrap_container.sh | sudo -E bash
 ```
 
 ### Docker Run Example
