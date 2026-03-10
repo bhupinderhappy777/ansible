@@ -68,7 +68,9 @@
 - name: Chezmoi | Initialize source from repository
   ansible.builtin.command:
     cmd: >-
-      chezmoi init --branch {{ chezmoi_branch }} 
+      chezmoi init 
+      --no-tty
+      --branch {{ chezmoi_branch }} 
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
       {{ chezmoi_repo }}
@@ -81,6 +83,7 @@
   ansible.builtin.command:
     cmd: >-
       chezmoi update 
+      --no-tty
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }}
   when: chezmoi_initialized.stat.exists
@@ -92,6 +95,7 @@
   ansible.builtin.command:
     cmd: >-
       chezmoi status 
+      --no-tty
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }}
   register: chezmoi_status
@@ -102,6 +106,7 @@
   ansible.builtin.command:
     cmd: >-
       chezmoi apply 
+      --no-tty
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
       {{ '--force' if chezmoi_force_apply else '' }}
