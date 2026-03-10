@@ -25,15 +25,17 @@ elif [ -f /etc/debian_version ]; then
     $SUDO apt-get install -y git python3 ansible curl
 fi
 
-# 3. Setup secure workspace (Self-cleaning to avoid "directory already exists" errors)
-WORKSPACE="${HOME}/.ansible/bootstrap"
+# 3. Setup workspace paths
+# BASE_DIR stores the password script, WORKSPACE is for the git clone
+BASE_DIR="${HOME}/.ansible"
+WORKSPACE="${BASE_DIR}/bootstrap"
+PASS_SCRIPT="${BASE_DIR}/.vault_pass.sh"
+
+mkdir -p "$BASE_DIR"
 echo "Cleaning workspace: $WORKSPACE"
 rm -rf "$WORKSPACE"
-mkdir -p "$WORKSPACE"
-chmod 700 "$WORKSPACE"
 
-# 4. Handle Ansible Vault Password
-PASS_SCRIPT="$WORKSPACE/.vault_pass.sh"
+# 4. Handle Ansible Vault Password (Store OUTSIDE the workspace)
 echo '#!/bin/bash' > "$PASS_SCRIPT"
 echo "echo '$ANSIBLE_VAULT_PASSWORD'" >> "$PASS_SCRIPT"
 chmod +x "$PASS_SCRIPT"
@@ -47,6 +49,7 @@ REPO_URL="${ANSIBLE_REPO_URL:-https://github.com/bhupinderhappy777/ansible.git}"
 echo "Running ansible-pull from $REPO_URL into $WORKSPACE..."
 
 # Path and Config Overrides
+# Note: These will only be valid AFTER the clone happens
 export ANSIBLE_ROLES_PATH="$WORKSPACE/roles"
 export ANSIBLE_CONFIG="$WORKSPACE/ansible.cfg"
 
