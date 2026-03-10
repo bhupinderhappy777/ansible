@@ -9,6 +9,9 @@
     clone_dotfiles_branch: "main"
     clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
 
+    # Chezmoi logic
+    chezmoi_force_apply: true
+
   pre_tasks:
     - name: Detect if GUI environment is present
       ansible.builtin.set_fact:

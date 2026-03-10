@@ -70,6 +70,7 @@
     cmd: >-
       chezmoi init 
       --no-tty
+      {{ '--force' if chezmoi_force_apply else '' }}
       --branch {{ chezmoi_branch }} 
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
@@ -84,6 +85,7 @@
     cmd: >-
       chezmoi update 
       --no-tty
+      {{ '--force' if chezmoi_force_apply else '' }}
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }}
   when: chezmoi_initialized.stat.exists
@@ -107,9 +109,9 @@
     cmd: >-
       chezmoi apply 
       --no-tty
+      {{ '--force' if chezmoi_force_apply else '' }}
       --destination {{ chezmoi_home }} 
       --source {{ chezmoi_source_path }} 
-      {{ '--force' if chezmoi_force_apply else '' }}
   when: chezmoi_status.stdout | trim != ''
   register: chezmoi_apply
   changed_when: chezmoi_apply.rc == 0
