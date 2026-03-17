@@ -50,6 +50,7 @@ SUDO=""
 if [ -f /etc/redhat-release ]; then
     echo "Detected RedHat-based system"
     $SUDO dnf install -y git python3 ansible-core curl || $SUDO dnf install -y git python3 ansible curl
+    $SUDO ansible-galaxy collection install community.general
 elif [ -f /etc/debian_version ]; then
     echo "Detected Debian-based system"
     $SUDO apt-get install -y ca-certificates gnupg >/dev/null 2>&1 || true
