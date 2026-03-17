@@ -60,7 +60,7 @@
   become: true
   when:
     - chezmoi_install_package | default(true)
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - chezmoi_check.rc != 0
   tags: [chezmoi, cli, gui]
 
@@ -73,7 +73,7 @@
   when:
     - chezmoi_install_package | default(true)
     - chezmoi_check.rc != 0
-    - ansible_os_family == 'Debian' or ansible_os_family != 'RedHat'
+    - ansible_facts['os_family'] != 'RedHat'
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Ensure dotfiles repository is configured
@@ -102,6 +102,8 @@
       --destination {{ chezmoi_home }}
       --source {{ chezmoi_source_path }}
       {{ chezmoi_repo }}
+  environment:
+    GIT_SSH_COMMAND: "ssh -i {{ chezmoi_home }}/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
   when: not chezmoi_initialized.stat.exists
   register: chezmoi_init
   changed_when: chezmoi_init.rc == 0
@@ -120,6 +122,8 @@
       {% endif %}
       --destination {{ chezmoi_home }}
       --source {{ chezmoi_source_path }}
+  environment:
+    GIT_SSH_COMMAND: "ssh -i {{ chezmoi_home }}/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
   when: chezmoi_initialized.stat.exists
   register: chezmoi_update
   changed_when: "'Already up to date.' not in chezmoi_update.stdout"
