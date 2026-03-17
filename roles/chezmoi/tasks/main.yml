@@ -161,3 +161,33 @@
   become: true
   become_user: "{{ chezmoi_user }}"
   tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Fix ownership of critical directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ chezmoi_user }}"
+    group: "{{ chezmoi_user }}"
+    state: directory
+    recurse: true
+  loop:
+    - "{{ chezmoi_home }}/.ssh"
+    - "{{ chezmoi_home }}/.config"
+    - "{{ chezmoi_home }}/.local"
+    - "{{ chezmoi_home }}/.var"
+  become: true
+  ignore_errors: true
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Fix ownership of critical files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ chezmoi_user }}"
+    group: "{{ chezmoi_user }}"
+    state: file
+  loop:
+    - "{{ chezmoi_home }}/.zshrc"
+    - "{{ chezmoi_home }}/.gitconfig"
+    - "{{ chezmoi_home }}/.ssh/config"
+  become: true
+  ignore_errors: true
+  tags: [chezmoi, cli, gui]

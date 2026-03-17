@@ -75,6 +75,7 @@
         tags: ["chezmoi", "cli"], 
         chezmoi_user: "{{ target_user }}",
         chezmoi_home: "{{ target_home }}",
+        chezmoi_repo: "{{ target_home }}/dotfiles",
         chezmoi_exclude: "{{ ['scripts'] if not is_gui else [] }}" 
       }
     - { 
