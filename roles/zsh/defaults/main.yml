@@ -1,4 +1,4 @@
 ---
 # defaults file for roles/zsh
 zsh_user: "{{ ansible_facts['user_id'] }}"
-zsh_home: "{{ ansible_facts['user_dir'] }}"
+zsh_home: "{{ lookup('env', 'HOME') }}"

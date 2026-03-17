@@ -1,7 +1,7 @@
 ---
 # defaults file for roles/clone_dotfiles
 clone_dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
-clone_dotfiles_home: "{{ ansible_user_dir }}/dotfiles"
+clone_dotfiles_home: "{{ lookup('env', 'HOME') }}/dotfiles"
 clone_dotfiles_branch: "main"
 clone_dotfiles_user: "{{ ansible_user_id }}"
-clone_dotfiles_user_home: "{{ ansible_facts['user_dir'] }}"
+clone_dotfiles_user_home: "{{ lookup('env', 'HOME') }}"

@@ -16,7 +16,7 @@
     - name: Detect target user and home
       ansible.builtin.set_fact:
         target_user: "{{ ansible_env.SUDO_USER | default(ansible_env.USER) | default(ansible_user_id) }}"
-        target_home: "{{ ansible_env.HOME | default(ansible_facts['user_dir']) }}"
+        target_home: "{{ lookup('env', 'HOME') }}"
       tags: [always]
 
     - name: Detect if GUI environment is present
