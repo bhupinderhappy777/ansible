@@ -56,6 +56,7 @@ elif [ -f /etc/debian_version ]; then
     repair_yarn_apt_repo "$SUDO"
     $SUDO apt-get update -y || echo "Warning: apt update errors, proceeding..."
     $SUDO apt-get install -y git python3 ansible curl
+    $SUDO ansible-galaxy collection install community.general
 fi
 
 # 3. Setup workspace paths
