@@ -24,6 +24,8 @@
     dest: "{{ clone_dotfiles_home }}"
     version: "{{ clone_dotfiles_branch }}"
     accept_hostkey: true
+    key_file: "{{ clone_dotfiles_user_home }}/.ssh/id_ed25519"
+    ssh_opts: "-o IdentitiesOnly=yes"
     update: true
     force: true
   become: true
