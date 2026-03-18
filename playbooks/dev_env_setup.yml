@@ -15,8 +15,8 @@
   pre_tasks:
     - name: Detect target user and home
       ansible.builtin.set_fact:
-        target_user: "{{ ansible_env.get('SUDO_USER') | default(ansible_env.get('USER'), true) | default(ansible_user_id, true) }}"
-        target_home: "{{ ('/home/' ~ ansible_env.get('SUDO_USER')) if (ansible_env.get('SUDO_USER') | default('', true) | length > 0) else (ansible_env.get('HOME') | default(lookup('env', 'HOME'), true)) }}"
+        target_user: "{{ ansible_env.get('USER') | default(ansible_user_id, true) }}"
+        target_home: "{{ ansible_env.get('HOME') | default(lookup('env', 'HOME'), true) }}"
       tags: [always]
 
     - name: Detect if GUI environment is present
@@ -32,28 +32,9 @@
       when: is_gui
       tags: [always]
 
-    - name: Ensure target user owns their home directory (Fix root-owned files)
-      ansible.builtin.file:
-        path: "{{ target_home }}"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        recurse: no # We only want the top level and known config dirs to be fast
-      become: true
-      tags: [always]
-
-    - name: Fix ownership of critical config directories
-      ansible.builtin.file:
-        path: "{{ item }}"
-        owner: "{{ target_user }}"
-        group: "{{ target_user }}"
-        state: directory
-        recurse: yes
-      loop:
-        - "{{ target_home }}/.config"
-        - "{{ target_home }}/.local"
-        - "{{ target_home }}/.ansible"
-      become: true
-      ignore_errors: true
+    - name: User-only mode active
+      ansible.builtin.debug:
+        msg: "Running in user-only mode (no sudo/become). Root-required tasks are skipped with warnings."
       tags: [always]
 
   roles:

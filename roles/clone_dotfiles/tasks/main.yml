@@ -5,8 +5,6 @@
     path: "{{ clone_dotfiles_user_home }}/.ssh"
     state: directory
     mode: "0700"
-  become: true
-  become_user: "{{ clone_dotfiles_user }}"
 
 - name: Deploy Private SSH Key from Vault
   ansible.builtin.copy:
@@ -15,8 +13,6 @@
     mode: "0600"
     force: true
   no_log: true # Hide sensitive data from logs
-  become: true
-  become_user: "{{ clone_dotfiles_user }}"
 
 - name: Sync Dotfiles Repository
   ansible.builtin.git:
@@ -28,5 +24,3 @@
     ssh_opts: "-o IdentitiesOnly=yes"
     update: true
     force: true
-  become: true
-  become_user: "{{ clone_dotfiles_user }}"

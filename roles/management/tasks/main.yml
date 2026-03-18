@@ -1,17 +1,7 @@
 ---
-- name: Install system dependencies for OCI SDK (RedHat)
-  ansible.builtin.package:
-    name: [python3-pip, python3-setuptools, openssl, gcc, libffi-devel]
-    state: present
-  when: ansible_facts['os_family'] == "RedHat"
-  become: true
-
-- name: Install system dependencies for OCI SDK (Debian)
-  ansible.builtin.package:
-    name: [python3-pip, python3-setuptools, python3-venv, build-essential, libffi-dev]
-    state: present
-  when: ansible_facts['os_family'] == "Debian"
-  become: true
+- name: OCI | Root package install skipped in user-only mode
+  ansible.builtin.debug:
+    msg: "Skipping system dependency installation. Ensure python3-venv, pip, openssl, and compiler libraries are preinstalled."
 
 - name: Create OCI venv and install OCI packages
   ansible.builtin.pip:
@@ -19,23 +9,18 @@
     state: present
     virtualenv: "{{ management_oci_venv_path }}"
     virtualenv_command: python3 -m venv
-  become: true
 
 - name: Create OCI configuration directory
   ansible.builtin.file:
     path: "{{ management_home }}/.oci"
     state: directory
     mode: "0700"
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Deploy OCI configuration file
   ansible.builtin.template:
     src: oci_config.j2
     dest: "{{ management_home }}/.oci/config"
     mode: "0600"
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: OCI - Deploy Private Key
   ansible.builtin.copy:
@@ -43,15 +28,11 @@
     dest: "{{ management_home }}/.oci/oci_api_key.pem"
     mode: "0600"
   no_log: true # Hide sensitive data from logs
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Check if OCI API key exists
   ansible.builtin.stat:
     path: "{{ management_home }}/.oci/oci_api_key.pem"
   register: management_oci_key_stat
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Generate OCI API private key if missing
   ansible.builtin.command: >
@@ -59,8 +40,6 @@
   args:
     creates: "{{ management_home }}/.oci/oci_api_key.pem"
   when: not management_oci_key_stat.stat.exists
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Generate OCI API public key
   ansible.builtin.command: >
@@ -68,15 +47,11 @@
     -out {{ management_home }}/.oci/oci_api_key_public.pem
   args:
     creates: "{{ management_home }}/.oci/oci_api_key_public.pem"
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Fetch public key for manual console upload
   ansible.builtin.slurp:
     src: "{{ management_home }}/.oci/oci_api_key_public.pem"
   register: management_oci_pub_key
-  become: "{{ management_user != 'root' }}"
-  become_user: "{{ management_user if management_user != 'root' else omit }}"
 
 - name: Show Public Key for OCI Console
   ansible.builtin.debug:
