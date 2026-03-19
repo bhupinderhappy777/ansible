@@ -26,7 +26,7 @@
 
     # User Configuration (Dotfiles & Chezmoi)
     - { role: clone_dotfiles, tags: ['dotfiles', 'clone'] }
-    - { role: chezmoi, tags: ['chezmoi', 'stow', 'dotfiles'] }
+    - { role: chezmoi, tags: ['chezmoi', 'stow', 'dotfiles'], chezmoi_source_path: "{{ clone_dotfiles_home }}" }
 
     # Shell Environment
     - { role: zsh, tags: ['zsh', 'shell'] }

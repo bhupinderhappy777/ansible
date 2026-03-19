@@ -32,7 +32,7 @@
       when: zshrc_stat.stat.exists and not zshrc_stat.stat.islnk
 
     - name: Initialize chezmoi from dotfiles repository
-      ansible.builtin.command: "chezmoi init --branch {{ dotfiles_branch }} {{ dotfiles_repo }}"
+      ansible.builtin.command: "chezmoi init --branch {{ dotfiles_branch }} --destination {{ target_home }} --source {{ dotfiles_home }} {{ dotfiles_repo }}"
       changed_when: false
 
     - name: Apply dotfiles with chezmoi
