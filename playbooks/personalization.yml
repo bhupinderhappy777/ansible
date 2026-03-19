@@ -6,23 +6,45 @@
     ansible_user: "bhupi"
 
     # Dot Files
-    clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
-    clone_dotfiles_branch: "main"
-    clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+    dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    dotfiles_branch: "main"
+
+    chezmoi_force_apply: true
+    remove_legacy_dotfiles: false
 
     # Plasma Version
     plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' else 'v5' }}"
 
+  pre_tasks:
+    - name: Check for legacy ~/dotfiles directory
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['user_dir'] }}/dotfiles"
+      register: legacy_dotfiles_stat
+      tags: [always]
+
+    - name: Decide whether to force chezmoi source reinit and cleanup
+      ansible.builtin.set_fact:
+        remove_legacy_dotfiles: "{{ legacy_dotfiles_stat.stat.exists }}"
+        chezmoi_migrate_force_source_init: "{{ legacy_dotfiles_stat.stat.exists }}"
+      tags: [always]
+
   roles:
     - { role: bootstrap, tags: ["bootstrap"], become: true }
     - { role: management, tags: ["management", "oci"] }
-    - { role: clone_dotfiles, tags: ["clone"] }
     - { role: tailscale, tags: ["tailscale"] }
     - { role: packages, tags: ["packages"] }
-    - { role: chezmoi, tags: ["chezmoi", "stow"], chezmoi_source_path: "{{ clone_dotfiles_home }}" } # --skip-tags=gui if do not want plasma refresh
+    - { role: chezmoi, tags: ["chezmoi", "stow"], chezmoi_home: "{{ ansible_facts['user_dir'] }}", chezmoi_user: "{{ ansible_user_id }}", chezmoi_repo: "{{ dotfiles_repo }}", chezmoi_branch: "{{ dotfiles_branch }}", chezmoi_source_path: "{{ ansible_facts['user_dir'] }}/.local/share/chezmoi", chezmoi_force_apply: "{{ chezmoi_force_apply }}", chezmoi_force_source_init: "{{ chezmoi_migrate_force_source_init }}" }
     - { role: zsh, tags: ["zsh"] }
     - { role: terminal, tags: ["terminal"] }
     - { role: syncthing, tags: ["syncthing"] }
     - { role: virtualization, tags: ["virtualization"] }
     - { role: podman, tags: ["podman"] }
     - { role: vscode, tags: ["vscode"] }
+
+  post_tasks:
+    - name: Remove legacy ~/dotfiles after migrating to chezmoi source
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/dotfiles"
+        state: absent
+      when: remove_legacy_dotfiles | bool
+      tags: [chezmoi, cleanup]

@@ -23,7 +23,7 @@
   when: ansible_facts['virtualization_type'] != 'wsl'
 
 - name: Run initial wallpaper fetch
-  ansible.builtin.command: "/bin/bash {{ ansible_facts['user_dir'] }}/dotfiles/scripts/wallpaper_wallhaven.sh"
+  ansible.builtin.command: "/bin/bash {{ dotfiles_home }}/scripts/wallpaper_wallhaven.sh"
   register: wallpaper_output
   changed_when: "'Wallpaper updated' in wallpaper_output.stdout"
   when: ansible_facts['virtualization_type'] != 'wsl'

@@ -5,12 +5,12 @@
   become: false
   vars:
     # Dot Files
-    clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
-    clone_dotfiles_branch: "main"
-    clone_dotfiles_home: "{{ target_home }}/dotfiles"
+    dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    dotfiles_branch: "main"
 
     # Chezmoi logic
     chezmoi_force_apply: true
+    remove_legacy_dotfiles: false
 
   pre_tasks:
     - name: Detect target user and home
@@ -37,6 +37,19 @@
         msg: "Running in user-only mode (no sudo/become). Root-required tasks are skipped with warnings."
       tags: [always]
 
+    - name: Check for legacy ~/dotfiles directory
+      ansible.builtin.stat:
+        path: "{{ target_home }}/dotfiles"
+      register: legacy_dotfiles_stat
+      tags: [always]
+
+    - name: Decide whether to force chezmoi source reinit and cleanup
+      ansible.builtin.set_fact:
+        remove_legacy_dotfiles: "{{ legacy_dotfiles_stat.stat.exists }}"
+        chezmoi_migrate_force_source_init: "{{ legacy_dotfiles_stat.stat.exists }}"
+        chezmoi_migrate_patch_plasma_scripts: "{{ legacy_dotfiles_stat.stat.exists }}"
+      tags: [always]
+
   roles:
     - { 
         role: management, 
@@ -45,19 +58,15 @@
         management_home: "{{ target_home }}"
       }
     - { 
-        role: clone_dotfiles, 
-        tags: ["clone", "cli"],
-        clone_dotfiles_user: "{{ target_user }}",
-        clone_dotfiles_user_home: "{{ target_home }}",
-        clone_dotfiles_home: "{{ target_home }}/dotfiles"
-      }
-    - { 
         role: chezmoi, 
         tags: ["chezmoi", "cli"], 
         chezmoi_user: "{{ target_user }}",
         chezmoi_home: "{{ target_home }}",
-        chezmoi_repo: "{{ target_home }}/dotfiles",
-        chezmoi_source_path: "{{ target_home }}/dotfiles",
+        chezmoi_repo: "{{ dotfiles_repo }}",
+        chezmoi_branch: "{{ dotfiles_branch }}",
+        chezmoi_source_path: "{{ target_home }}/.local/share/chezmoi",
+        chezmoi_force_source_init: "{{ chezmoi_migrate_force_source_init }}",
+        chezmoi_patch_plasma_scripts: "{{ chezmoi_migrate_patch_plasma_scripts }}",
         chezmoi_exclude: "{{ ['scripts'] if not is_gui else [] }}" 
       }
     - { 
@@ -68,5 +77,13 @@
       }
 
     # Desktop related roles (only run if GUI is detected)
-    - { role: plasma, tags: ["plasma", "gui"], when: is_gui }
+    - { role: plasma, tags: ["plasma", "gui"], when: is_gui, dotfiles_home: "{{ target_home }}/.local/share/chezmoi" }
     - { role: vscode, tags: ["vscode", "gui"], when: is_gui }
+
+  post_tasks:
+    - name: Remove legacy ~/dotfiles after migrating to chezmoi source
+      ansible.builtin.file:
+        path: "{{ target_home }}/dotfiles"
+        state: absent
+      when: remove_legacy_dotfiles | bool
+      tags: [chezmoi, cleanup]

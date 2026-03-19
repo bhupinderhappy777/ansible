@@ -88,7 +88,7 @@
     cmd: >-
       {{ chezmoi_cmd }} init
       --no-tty
-      {{ '--force' if chezmoi_force_apply else '' }}
+      {{ '--force' if (chezmoi_force_apply or chezmoi_force_source_init) else '' }}
       {% if chezmoi_exclude is defined and chezmoi_exclude | length > 0 %}
       --exclude {{ chezmoi_exclude | join(',') }}
       {% endif %}
@@ -98,9 +98,25 @@
       {{ chezmoi_repo }}
   environment:
     GIT_SSH_COMMAND: "ssh -i {{ chezmoi_home }}/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-  when: not chezmoi_initialized.stat.exists
+  when: (not chezmoi_initialized.stat.exists) or chezmoi_force_source_init
   register: chezmoi_init
   changed_when: chezmoi_init.rc == 0
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Patch plasma apply_layout scripts (remove $HOME/dotfiles dependency)
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../dotfiles/plasma/v5/apply_layout.sh"
+    dest: "{{ chezmoi_source_path }}/plasma/v5/apply_layout.sh"
+    mode: "0755"
+  when: chezmoi_patch_plasma_scripts | bool
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Patch plasma apply_layout scripts (remove $HOME/dotfiles dependency)
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../dotfiles/plasma/v6/apply_layout.sh"
+    dest: "{{ chezmoi_source_path }}/plasma/v6/apply_layout.sh"
+    mode: "0755"
+  when: chezmoi_patch_plasma_scripts | bool
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Update source state
@@ -116,7 +132,7 @@
       --source {{ chezmoi_source_path }}
   environment:
     GIT_SSH_COMMAND: "ssh -i {{ chezmoi_home }}/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-  when: chezmoi_initialized.stat.exists
+  when: chezmoi_initialized.stat.exists and not chezmoi_force_source_init
   register: chezmoi_update
   changed_when: "'Already up to date.' not in chezmoi_update.stdout"
   tags: [chezmoi, cli, gui]
@@ -130,6 +146,21 @@
       --source {{ chezmoi_source_path }}
   register: chezmoi_status
   changed_when: false
+  tags: [chezmoi, cli, gui]
+
+- name: Chezmoi | Fix ownership for systemd user units (migration safety)
+  ansible.builtin.command:
+    cmd: "chown {{ chezmoi_user }}:{{ chezmoi_user }} {{ chezmoi_home }}/.config/systemd/user/{{ item }}"
+  loop:
+    - wallpaper-refresh.service
+    - wallpaper-refresh.timer
+    - inbox-watcher.service
+    - plasma-harvest.service
+    - plasma-harvest.path
+  become: true
+  when: chezmoi_fix_systemd_ownership | bool
+  changed_when: false
+  failed_when: false
   tags: [chezmoi, cli, gui]
 
 - name: Chezmoi | Apply dotfiles

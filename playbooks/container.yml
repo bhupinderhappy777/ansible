@@ -7,7 +7,6 @@
     ansible_python_interpreter: auto_silent
     clone_dotfiles_repo: "https://github.com/bhupinderhappy777/dotfiles.git"
     clone_dotfiles_branch: "main"
-    clone_dotfiles_home: "{{ lookup('env', 'HOME') }}/dotfiles"
 
   tasks:
     - name: Ensure git and chezmoi are installed (if root)
@@ -17,13 +16,6 @@
       loop: [git, chezmoi, zsh]
       when: ansible_user_uid == 0
       failed_when: false
-
-    - name: Clone Dotfiles
-      ansible.builtin.git:
-        repo: "{{ clone_dotfiles_repo }}"
-        dest: "{{ clone_dotfiles_home }}"
-        version: "master"
-        force: true
 
     - name: Initialize chezmoi from dotfiles repository
       ansible.builtin.command:

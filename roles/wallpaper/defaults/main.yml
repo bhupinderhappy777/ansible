@@ -1,2 +1,6 @@
 ---
-# defaults file for wallpaper
+#
+# `dotfiles_home` is the on-disk dotfiles source used by scripts/services.
+# In the new setup, this is expected to be the chezmoi source directory.
+#
+dotfiles_home: "{{ (ansible_env.HOME | default(ansible_user_dir, true)) }}/.local/share/chezmoi"

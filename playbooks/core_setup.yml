@@ -6,12 +6,29 @@
     ansible_user: "bhupi"
 
     # Dot Files
-    clone_dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
-    clone_dotfiles_branch: "main"
-    clone_dotfiles_home: "{{ ansible_facts['user_dir'] }}/dotfiles"
+    dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
+    dotfiles_branch: "main"
+
+    # Chezmoi logic
+    chezmoi_force_apply: true
+    remove_legacy_dotfiles: false
 
     # Plasma Version Logic (Fedora 40+ uses Plasma 6)
     plasma_v: "{{ 'v6' if ansible_facts['distribution'] == 'Fedora' and ansible_facts['distribution_major_version'] | int >= 40 else 'v5' }}"
+
+  pre_tasks:
+    - name: Check for legacy ~/dotfiles directory
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['user_dir'] }}/dotfiles"
+      register: legacy_dotfiles_stat
+      tags: [always]
+
+    - name: Decide whether to force chezmoi source reinit and cleanup
+      ansible.builtin.set_fact:
+        remove_legacy_dotfiles: "{{ legacy_dotfiles_stat.stat.exists }}"
+        chezmoi_migrate_force_source_init: "{{ legacy_dotfiles_stat.stat.exists }}"
+        chezmoi_migrate_patch_plasma_scripts: "{{ legacy_dotfiles_stat.stat.exists }}"
+      tags: [always]
 
   roles:
     # System Bootstrap (Root tasks)
@@ -25,18 +42,25 @@
     - { role: packages, tags: ['packages', 'software'], become: true }
 
     # User Configuration (Dotfiles & Chezmoi)
-    - { role: clone_dotfiles, tags: ['dotfiles', 'clone'] }
-    - { role: chezmoi, tags: ['chezmoi', 'stow', 'dotfiles'], chezmoi_source_path: "{{ clone_dotfiles_home }}" }
+    - { role: chezmoi, tags: ['chezmoi', 'stow', 'dotfiles'], chezmoi_home: "{{ ansible_facts['user_dir'] }}", chezmoi_user: "{{ ansible_user_id }}", chezmoi_repo: "{{ dotfiles_repo }}", chezmoi_branch: "{{ dotfiles_branch }}", chezmoi_source_path: "{{ ansible_facts['user_dir'] }}/.local/share/chezmoi", chezmoi_force_apply: "{{ chezmoi_force_apply }}", chezmoi_force_source_init: "{{ chezmoi_migrate_force_source_init }}", chezmoi_patch_plasma_scripts: "{{ chezmoi_migrate_patch_plasma_scripts }}" }
 
     # Shell Environment
     - { role: zsh, tags: ['zsh', 'shell'] }
 
     # Desktop Environment Configuration
-    - { role: plasma, tags: ['plasma', 'gui'] }
+    - { role: plasma, tags: ['plasma', 'gui'], dotfiles_home: "{{ ansible_facts['user_dir'] }}/.local/share/chezmoi" }
 
     # Development Tools
     - { role: podman, tags: ['podman', 'containers'], become: true }
     - { role: vscode, tags: ['vscode', 'ide'] }
+
+  post_tasks:
+    - name: Remove legacy ~/dotfiles after migrating to chezmoi source
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/dotfiles"
+        state: absent
+      when: remove_legacy_dotfiles | bool
+      tags: [chezmoi, cleanup]
 
 # Usage:
 # ansible-playbook playbooks/core_setup.yml -K

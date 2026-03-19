@@ -7,19 +7,11 @@
     dotfiles_repo: "git@github.com:bhupinderhappy777/dotfiles.git"
     dotfiles_branch: "main"
     target_home: "/home/{{ target_user }}"
-    dotfiles_home: "{{ target_home }}/dotfiles"
+    # chezmoi source-state directory (the thing we'd previously call ~/dotfiles)
+    dotfiles_home: "{{ target_home }}/.local/share/chezmoi"
     ansible_user: "bhupi"
 
   tasks:
-    - name: Clone or Update dotfiles repo
-      git:
-        repo: "{{ dotfiles_repo }}"
-        dest: "{{ dotfiles_home }}"
-        version: "{{ dotfiles_branch }}"
-        update: true
-        force: true
-        accept_hostkey: true
-
     - name: Check status of .zshrc
       stat:
         path: "{{ target_home }}/.zshrc"
@@ -32,11 +24,11 @@
       when: zshrc_stat.stat.exists and not zshrc_stat.stat.islnk
 
     - name: Initialize chezmoi from dotfiles repository
-      ansible.builtin.command: "chezmoi init --branch {{ dotfiles_branch }} --destination {{ target_home }} --source {{ dotfiles_home }} {{ dotfiles_repo }}"
+      ansible.builtin.command: "chezmoi init --force --branch {{ dotfiles_branch }} --destination {{ target_home }} --source {{ dotfiles_home }} {{ dotfiles_repo }}"
       changed_when: false
 
     - name: Apply dotfiles with chezmoi
-      ansible.builtin.command: "chezmoi apply"
+      ansible.builtin.command: "chezmoi apply --force"
       changed_when: false
 
     - name: Ensure Plasma config directory exists
@@ -101,3 +93,8 @@
       changed_when: false
       args:
         executable: /bin/bash
+
+    - name: Remove legacy ~/dotfiles (if present)
+      ansible.builtin.file:
+        path: "{{ target_home }}/dotfiles"
+        state: absent
